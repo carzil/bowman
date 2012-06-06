@@ -1,10 +1,10 @@
 from math import sqrt
 from pickle import dumps
-from random import choice, randint
 import socket
 from game.server.log import game_log, net_log
 from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
+from game.server.weapon import Spear, Axe, Bow
 
 class Bowman():
     health = 250
@@ -16,6 +16,9 @@ class Bowman():
         self.world = world
         self.miss_chance = [True]
         self.set_position(self.x, self.y)
+        self.bow = Bow()
+        self.axe = Axe()
+        self.spear = Spear()
 
     def _set(self):
         self.world.set_cell(self.x, self.y, self)
@@ -92,28 +95,15 @@ class Bowman():
             return False
         return True
 
-    def fire(self, opponent):
+    def fire(self, opponent, weapon):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
+        game_log.info("bowman %d fire bowman %d with %s", self.n, opponent.n, weapon.name)
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
-        chance_add = round((2 / r) * 10)
-        for i in range(chance_add):
-            self.miss_chance.append(False)
-        miss = choice(self.miss_chance)
-        game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
-        if miss:
+        is_miss, damage = weapon.count_damage(self, opponent, r)
+        if is_miss:
             self.miss()
-            if chance_add:
-                self.miss_chance = self.miss_chance[:-chance_add]
             game_log.info("bowman %d missed", self.n)
         else:
-            if len(self.miss_chance) > 1:
-                self.miss_chance.pop()
-            if r < 2:
-                damage = randint(Bowman.health // 2, Bowman.health)
-            elif 2 < r < 10:
-                damage = round((1 / r) * randint(80, 100))
-            else:
-                damage = round((1 / r) * randint(60, 80))
             res = opponent.damage(damage)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
@@ -127,8 +117,20 @@ class Bowman():
         first_letter = string[0]
         if first_letter == "f":
             for i in self.world.get_players():
+                splited_string = string.split(" ")
+                try:
+                    weapon_type = splited_string[1]
+                except IndexError:
+                    weapon_type = "b"
+                if weapon_type == "a":
+                    weapon = self.axe
+                elif weapon_type == "s":
+                    weapon = self.spear
+                else:
+                    weapon = self.bow
                 if i is not self:
-                    self.fire(i)
+                    self.fire(i, weapon)
+                    break
         else:
             splited_string = string.split(" ")
             first_letter = string[0]
