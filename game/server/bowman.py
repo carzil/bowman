@@ -149,13 +149,25 @@ class Bowman():
         if meters > self.max_steps:
             meters = self.max_steps
         if first_letter == "s":
-            return self.move_down(meters)
+            self.move_down(meters)
         elif first_letter == "w":
-            return self.move_up(meters)
+            self.move_up(meters)
         elif first_letter == "a":
-            return self.move_left(meters)
+            self.move_left(meters)
         elif first_letter == "d":
-            return self.move_right(meters)
+            self.move_right(meters)
+        elif first_letter == "q":
+            self.move_up(meters)
+            self.move_left(meters)
+        elif first_letter == "e":
+            self.move_up(meters)
+            self.move_right(meters)
+        elif first_letter == "z":
+            self.move_down(meters)
+            self.move_left(meters)
+        elif first_letter == "c":
+            self.move_down(meters)
+            self.move_right(meters)
 
     def lose(self):
         pass
