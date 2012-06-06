@@ -41,6 +41,10 @@ def main(argv):
                 print("Game finished!")
                 sock.close()
                 break
+            elif data == b"ag":
+                print("Game aborted, because fatal error has been raised on the server!")
+                sock.close()
+                break
 
 
 if __name__ == "__main__":
