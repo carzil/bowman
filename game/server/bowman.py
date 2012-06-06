@@ -47,8 +47,7 @@ class Bowman():
         self.x += m
         if not self.check_position():
             self.near_border()
-            self.x -= m
-            return False
+            self.x = maxy - 1
         self.clean_position(ox, oy)
         self._set()
         game_log.info("bowman %d moved down on %d m", self.n, m)
@@ -59,8 +58,7 @@ class Bowman():
         self.x -= m
         if not self.check_position():
             self.near_border()
-            self.x += m
-            return False
+            self.x = 0
         self.clean_position(ox, oy)
         self._set()
         game_log.info("bowman %d moved up on %d m", self.n, m)
@@ -71,8 +69,7 @@ class Bowman():
         self.y -= m
         if not self.check_position():
             self.near_border()
-            self.y += m
-            return False
+            self.y = 0
         self.clean_position(ox, oy)
         self._set()
         game_log.info("bowman %d moved left on %d m", self.n, m)
@@ -83,8 +80,7 @@ class Bowman():
         self.y += m
         if not self.check_position():
             self.near_border()
-            self.y -= m
-            return False
+            self.y = maxx - 1
         self.clean_position(ox, oy)
         self._set()
         game_log.info("bowman %d moved right on %d m", self.n, m)
@@ -99,16 +95,14 @@ class Bowman():
     def fire(self, opponent):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
-        chance_add = round(2 // r)
+        chance_add = round((2 / r) * 10)
         for i in range(chance_add):
             self.miss_chance.append(False)
         miss = choice(self.miss_chance)
         game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
         if miss:
             self.miss()
-            if chance_add >= len(self.miss_chance):
-                self.miss_chance = self.miss_chance[0]
-            else:
+            if chance_add:
                 self.miss_chance = self.miss_chance[:-chance_add]
             game_log.info("bowman %d missed", self.n)
         else:
@@ -209,9 +203,11 @@ class NetBowman(Bowman):
 
     def lose(self):
         self.socket.send(b"lo")
+        self.end_game()
 
     def win(self):
         self.socket.send(b"wi")
+        self.end_game()
 
     def near_border(self):
         self.socket.send(b"nb")
