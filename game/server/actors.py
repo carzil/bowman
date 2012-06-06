@@ -3,6 +3,7 @@ from game.server.bowman import NetBowman
 
 class Ranger(NetBowman):
     health = 700
+    max_steps = 7
 
     @property
     def bow_damage_mod(self):
@@ -18,6 +19,7 @@ class Ranger(NetBowman):
 
 class Damager(NetBowman):
     health = 480
+    max_steps = 8
 
     @property
     def bow_damage_mod(self):
@@ -33,6 +35,7 @@ class Damager(NetBowman):
 
 class Tank(NetBowman):
     health = 1200
+    max_steps = 6
 
     @property
     def bow_damage_mod(self):
