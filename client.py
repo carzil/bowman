@@ -12,8 +12,16 @@ def is_matrix(bs):
     return False
 
 def main(argv):
-    if len(argv) == 2:
+    if len(argv) >= 2:
         sock = setup_socket(argv[1])
+        if len(argv) == 3:
+            unit_type = argv[2]
+            if unit_type == "d":
+                sock.send("d")
+            elif unit_type == "t":
+                sock.send("t")
+            else:
+                sock.send("r")
         while True:
             data = sock.recv(2)
             if data == b"go":
