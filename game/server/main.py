@@ -1,6 +1,6 @@
 from socket import socket
 from game.server.bowman import NetBowman
-from game.server.exceptions import Restart
+from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
 
@@ -25,7 +25,7 @@ def setup_socket():
 def accept_client(x, y, n, world, server_sock):
     sock, client = server_sock.accept()
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
-    return NetBowman(x, y, n, world, sock)
+    return NetBowman(x, y, n, world, sock, client)
 
 def start():
     global bm1, bm2, world
@@ -40,8 +40,16 @@ def start():
     game_log.info("server has started")
     game_log.info("game started")
     while True:
-        world.update()
+        try:
+            world.update()
+        except:
+            game_log.fatal("unhandled exception have been raised")
+            world.abort_game()
+            game_log.fatal("abort")
+            raise
 try:
     start()
 except Restart:
     restart()
+except Exit:
+    exit(1)

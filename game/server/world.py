@@ -33,7 +33,17 @@ class World():
 
     def end_game(self):
         for player in self.get_players():
-            player.end_game()
+            try:
+                player.end_game()
+            except:
+                pass
+
+    def abort_game(self):
+        for player in self.get_players():
+            try:
+                player.abort_game()
+            except:
+                pass
 
     def render_matrix(self):
         out = ""

@@ -1,9 +1,10 @@
 from math import sqrt
 from pickle import dumps
 from random import choice, randint
-from game.server.log import game_log
+import socket
+from game.server.log import game_log, net_log
 from game.server.const import maxx, maxy
-from game.server.exceptions import Restart
+from game.server.exceptions import Restart, Exit
 
 class Bowman():
     health = 250
@@ -98,14 +99,17 @@ class Bowman():
     def fire(self, opponent):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
-        for i in range(round(2 // r)):
+        chance_add = round(2 // r)
+        for i in range(chance_add):
             self.miss_chance.append(False)
         miss = choice(self.miss_chance)
         game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
         if miss:
             self.miss()
-            self.miss_chance.append(False)
-            self.miss_chance = self.miss_chance[:-r]
+            if chance_add >= len(self.miss_chance):
+                self.miss_chance = self.miss_chance[0]
+            else:
+                self.miss_chance = self.miss_chance[:-chance_add]
             game_log.info("bowman %d missed", self.n)
         else:
             if len(self.miss_chance) > 1:
@@ -179,14 +183,22 @@ class Bowman():
         return out
 
 class NetBowman(Bowman):
-    def __init__(self, maxx, maxy, n, world, socket):
+    def __init__(self, maxx, maxy, n, world, socket, ci):
         super(NetBowman, self).__init__(maxx, maxy, n, world)
         self.socket = socket
+        self.client_info = ci
 
     def update(self):
         self.socket.send(b"go")
-        string = self.socket.recv(5)
-        string = str(string, "utf-8")
+        try:
+            string = self.socket.recv(5)
+            string = str(string, "utf-8")
+        except socket.error:
+            net_log.fatal("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
+            self.world.end_game()
+            game_log.fatal("abort")
+            raise Exit
+        net_log.debug("client '%s:%s' sent '%s'", self.client_info[0], self.client_info[1], string)
         res = self._update(string)
         return res
 
@@ -209,3 +221,6 @@ class NetBowman(Bowman):
 
     def end_game(self):
         self.socket.send(b"eg")
+
+    def abort_game(self):
+        self.socket.send(b"ag")
