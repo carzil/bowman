@@ -1,5 +1,6 @@
 from socket import *
 from game.server.bowman import NetBowman
+from game.server.exceptions import Restart
 from game.server.log import net_log, game_log
 from game.server.world import World
 
@@ -40,5 +41,7 @@ def start():
 
     while True:
         world.update()
-
-start()
+try:
+    start()
+except Restart:
+    restart()
