@@ -5,7 +5,10 @@ import sys
 def setup_socket(remote_ip):
     sock = socket(AF_INET, SOCK_STREAM)
     sock.connect((remote_ip, 9999))
-    return sock
+    data = sock.recv(5)
+    if data == b"hello":
+        return sock
+    raise Exception("Oops! There is an server error")
 
 def is_matrix(bs):
     if bs[-1] == 255:

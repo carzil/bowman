@@ -25,12 +25,17 @@ def setup_socket():
 def accept_client(x, y, n, world, server_sock):
     sock, client = server_sock.accept()
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
+    sock.send(b"hello")
     unit_type = sock.recv(1)
-    cls = Ranger
     if unit_type == b"t":
         cls = Tank
+        game_log.info("added tank")
     elif unit_type == b"d":
         cls = Damager
+        game_log.info("added damager")
+    else:
+        cls = Ranger
+        game_log.info("added ranger")
     return cls(x, y, n, world, sock, client)
 
 def start():
