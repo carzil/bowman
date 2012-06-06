@@ -1,6 +1,6 @@
 from math import sqrt
 from pickle import dumps
-from random import choice
+from random import choice, randint
 from game.server.log import game_log
 from game.server.const import maxx, maxy
 from game.server.exceptions import Restart
@@ -13,7 +13,7 @@ class Bowman():
         self.y = y
         self.n = n
         self.world = world
-        self.miss_chance = [True, False, False, False, False]
+        self.miss_chance = [True]
         self.set_position(self.x, self.y)
 
     def _set(self):
@@ -31,6 +31,7 @@ class Bowman():
         xy = self.world.get_cell(self.x, self.y)
         if xy and not xy is self:
             self.lose()
+            xy.win()
             raise Restart
         return True
 
@@ -49,7 +50,7 @@ class Bowman():
             return False
         self.clean_position(ox, oy)
         self._set()
-        game_log.info("bowman %d moved down", self.n)
+        game_log.info("bowman %d moved down on %d m", self.n, m)
         return True
 
     def move_up(self, m):
@@ -61,7 +62,7 @@ class Bowman():
             return False
         self.clean_position(ox, oy)
         self._set()
-        game_log.info("bowman %d moved up", self.n)
+        game_log.info("bowman %d moved up on %d m", self.n, m)
         return True
 
     def move_left(self, m):
@@ -73,7 +74,7 @@ class Bowman():
             return False
         self.clean_position(ox, oy)
         self._set()
-        game_log.info("bowman %d moved left", self.n)
+        game_log.info("bowman %d moved left on %d m", self.n, m)
         return True
 
     def move_right(self, m):
@@ -85,7 +86,7 @@ class Bowman():
             return False
         self.clean_position(ox, oy)
         self._set()
-        game_log.info("bowman %d moved right", self.n)
+        game_log.info("bowman %d moved right on %d m", self.n, m)
         return True
 
     def damage(self, damage):
@@ -95,30 +96,34 @@ class Bowman():
         return True
 
     def fire(self, opponent):
-        game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
-        r = sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2)
+        r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
+        game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
+        for i in range(r // 2):
+            self.miss_chance.append(False)
         miss = choice(self.miss_chance)
+        game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
         if miss:
             self.miss()
             self.miss_chance.append(False)
+            self.miss_chance = self.miss_chance[:-r]
             game_log.info("bowman %d missed", self.n)
         else:
             if len(self.miss_chance) > 1:
                 self.miss_chance.pop()
             if r < 2:
-                damage = Bowman.health
+                damage = randint(Bowman.health // 2, Bowman.health)
             elif 2 < r < 10:
-                damage = round((1 / r) * 100)
+                damage = round((1 / r) * randint(80, 100))
             else:
-                damage = round((1 / r) * 50)
+                damage = round((1 / r) * randint(60, 80))
             res = opponent.damage(damage)
             if not res:
-                game_log.info("bowman %d killed bowman %d!", self.n, opponent.n)
+                game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
                 self.win()
+                opponent.lose()
                 raise Restart
             else:
                 game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
-        game_log.info("miss_chance for bowman %d is %s", self.n, str(100 / len(self.miss_chance)))
 
     def _update(self, string):
         first_letter = string[0]
@@ -158,6 +163,21 @@ class Bowman():
     def miss(self):
         pass
 
+    def end_game(self):
+        pass
+
+    def send_info(self):
+        pass
+
+    def get_info(self):
+        out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
+        for i in self.world.get_players():
+            if i is not self:
+                out += "Bowman %d have %d lives\n" % (i.n, i.health)
+        out += "\n"
+        out += self.world.render_matrix()
+        return out
+
 class NetBowman(Bowman):
     def __init__(self, maxx, maxy, n, world, socket):
         super(NetBowman, self).__init__(maxx, maxy, n, world)
@@ -168,12 +188,12 @@ class NetBowman(Bowman):
         string = self.socket.recv(5)
         string = str(string, "utf-8")
         res = self._update(string)
-        self.send_matrix()
+        self.send_info()
         return res
 
-    def send_matrix(self):
+    def send_info(self):
         self.socket.send(b"mx")
-        self.socket.send(dumps(self.world.render_to_string()))
+        self.socket.send(dumps(self.get_info()))
         self.socket.send(b"\xff")
 
     def lose(self):
@@ -187,3 +207,6 @@ class NetBowman(Bowman):
 
     def miss(self):
         self.socket.send(b"mi")
+
+    def end_game(self):
+        self.socket.send(b"eg")

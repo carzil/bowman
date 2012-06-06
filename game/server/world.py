@@ -12,10 +12,12 @@ class World():
         self.world_map[x][y] = value
 
     def update(self):
-        for i in self.get_players():
-            i.send_matrix()
         for player in self.get_players():
+            for player2 in self.get_players():
+                player2.send_info()
             player.update()
+            for player2 in self.get_players():
+                player2.send_info()
 
     def get_players(self):
         return self.players
@@ -28,10 +30,12 @@ class World():
     def get_cell(self, x, y):
         return self.world_map[x][y]
 
-    def render_to_string(self):
+    def end_game(self):
+        for player in self.get_players():
+            player.end_game()
+
+    def render_matrix(self):
         out = ""
-        for i in self.get_players():
-            out += "bowman %d have %d lives\n" % (i.n, i.health)
         for i in self.world_map:
             for j in i:
                 if j:
@@ -40,6 +44,3 @@ class World():
                     out += ". "
             out += "\n"
         return out
-
-    def close(self):
-        pass
