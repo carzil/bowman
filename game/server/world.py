@@ -13,8 +13,9 @@ class World():
 
     def update(self):
         for player in self.get_players():
-            for player2 in self.get_players():
-                player2.send_info()
+            player.send_info()
+
+        for player in self.get_players():
             player.update()
             for player2 in self.get_players():
                 player2.send_info()

@@ -1,4 +1,4 @@
-from socket import *
+from socket import socket
 from game.server.bowman import NetBowman
 from game.server.exceptions import Restart
 from game.server.log import net_log, game_log
@@ -15,7 +15,7 @@ def restart():
         start()
 
 def setup_socket():
-    sock = socket(AF_INET, SOCK_STREAM)
+    sock = socket()
     net_log.info("socket has created")
     sock.bind(("", 9999))
     net_log.info("socket has binded")
@@ -38,7 +38,7 @@ def start():
     world.add_player(bm2)
     game_log.info("players added to world")
     game_log.info("server has started")
-
+    game_log.info("game started")
     while True:
         world.update()
 try:

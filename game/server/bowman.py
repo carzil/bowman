@@ -98,7 +98,7 @@ class Bowman():
     def fire(self, opponent):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
-        for i in range(r // 2):
+        for i in range(round(2 // r)):
             self.miss_chance.append(False)
         miss = choice(self.miss_chance)
         game_log.debug("bowman %d is firing, miss_chance is %s", self.n, str(100 / len(self.miss_chance)))
@@ -188,7 +188,6 @@ class NetBowman(Bowman):
         string = self.socket.recv(5)
         string = str(string, "utf-8")
         res = self._update(string)
-        self.send_info()
         return res
 
     def send_info(self):
