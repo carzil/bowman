@@ -19,6 +19,8 @@ def main(argv):
             data = sock.recv(2)
             if data == b"go":
                 string = input(">> ")
+                while not string:
+                    string = input(">> ")
                 data = bytes(string.encode("utf-8"))
                 sock.send(data)
             elif data == b"lo":
@@ -35,6 +37,10 @@ def main(argv):
                     d += sock.recv(1)
                 matrix = loads(d)
                 print(matrix)
+            elif data == b"eg":
+                print("Game finished!")
+                sock.close()
+                break
 
 
 if __name__ == "__main__":
