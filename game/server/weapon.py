@@ -16,7 +16,7 @@ class Bow(Weapon):
         if distance > 20:
             return True, 0
         else:
-            damage = randrange(40, 60) + self.damage_mod
+            damage = randrange(40, 60, 2) + self.damage_mod
             return False, damage
 
 class Axe(Weapon):
@@ -26,7 +26,7 @@ class Axe(Weapon):
         if distance > 2:
             return True, 0
         else:
-            damage = randrange(150, 200) + self.damage_mod
+            damage = randrange(150, 200, 2) + self.damage_mod
             return False, damage
 
 class Spear(Weapon):
@@ -36,5 +36,5 @@ class Spear(Weapon):
         if distance > 9:
             return True, 0
         else:
-            damage = randrange(80, 120) + self.damage_mod
+            damage = randrange(80, 120, 4) + self.damage_mod
             return False, damage
