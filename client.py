@@ -1,5 +1,6 @@
 from socket import *
 from pickle import loads
+import sys
 
 def setup_socket(remote_ip):
     sock = socket(AF_INET, SOCK_STREAM)
@@ -14,14 +15,15 @@ def is_matrix(bs):
 def main(argv):
     if len(argv) >= 2:
         sock = setup_socket(argv[1])
+        unit_type = "r"
         if len(argv) == 3:
             unit_type = argv[2]
-            if unit_type == "d":
-                sock.send("d")
-            elif unit_type == "t":
-                sock.send("t")
-            else:
-                sock.send("r")
+        if unit_type == "d":
+            sock.send(b"d")
+        elif unit_type == "t":
+            sock.send(b"t")
+        else:
+            sock.send(b"r")
         while True:
             data = sock.recv(2)
             if data == b"go":
