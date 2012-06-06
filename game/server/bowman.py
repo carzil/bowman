@@ -8,6 +8,7 @@ from game.server.weapon import Spear, Axe, Bow
 
 class Bowman():
     health = 250
+    damage_mod = 0
 
     def __init__(self, x, y, n, world):
         self.x = x
@@ -16,9 +17,9 @@ class Bowman():
         self.world = world
         self.miss_chance = [True]
         self.set_position(self.x, self.y)
-        self.bow = Bow()
-        self.axe = Axe()
-        self.spear = Spear()
+        self.bow = Bow(self.damage_mod)
+        self.axe = Axe(self.damage_mod)
+        self.spear = Spear(self.damage_mod)
 
     def _set(self):
         self.world.set_cell(self.x, self.y, self)

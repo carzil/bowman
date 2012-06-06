@@ -1,8 +1,8 @@
 from socket import socket
-from game.server.bowman import NetBowman
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
+from game.server.actors import Ranger, Tank, Damager
 
 maxx, maxy = 20, 20
 
@@ -25,7 +25,13 @@ def setup_socket():
 def accept_client(x, y, n, world, server_sock):
     sock, client = server_sock.accept()
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
-    return NetBowman(x, y, n, world, sock, client)
+    unit_type = sock.recv(1)
+    cls = Ranger
+    if unit_type == b"t":
+        cls = Tank
+    elif unit_type == b"d":
+        cls = Damager
+    return cls(x, y, n, world, sock, client)
 
 def start():
     global bm1, bm2, world
