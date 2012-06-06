@@ -12,18 +12,22 @@ def is_matrix(bs):
         return True
     return False
 
+def choice_unit_type():
+    unit_type = b"r"
+    string = input("Enter unit type, which you prefer (t, d, r): ")
+    while not string:
+        string = input("Enter unit type, which you prefer (t, d, r): ")
+    if string == "t":
+        unit_type = b"t"
+    elif string == "d":
+        unit_type = b"d"
+    return unit_type
+
 def main(argv):
     if len(argv) >= 2:
         sock = setup_socket(argv[1])
-        unit_type = "r"
-        if len(argv) == 3:
-            unit_type = argv[2]
-        if unit_type == "d":
-            sock.send(b"d")
-        elif unit_type == "t":
-            sock.send(b"t")
-        else:
-            sock.send(b"r")
+        unit_type = choice_unit_type()
+        sock.send(unit_type)
         while True:
             data = sock.recv(2)
             if data == b"go":
