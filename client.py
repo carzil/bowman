@@ -1,6 +1,5 @@
 from socket import *
 from pickle import loads
-import sys
 
 def setup_socket(remote_ip):
     sock = socket(AF_INET, SOCK_STREAM)
