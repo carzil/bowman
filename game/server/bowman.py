@@ -146,6 +146,8 @@ class Bowman():
 
     def handle_move(self, first_letter, splited_string):
         meters = int(splited_string[1])
+        if meters > self.max_steps:
+            meters = self.max_steps
         if first_letter == "s":
             return self.move_down(meters)
         elif first_letter == "w":
