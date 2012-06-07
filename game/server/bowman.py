@@ -2,7 +2,6 @@ from math import sqrt
 from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
-from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
 from game.server.weapon import Spear, Axe, Bow
 
@@ -25,23 +24,10 @@ class Bowman():
         self.spear = Spear(self.spear_damage_mod)
 
     def _set(self):
-        self.world.set_cell(self.x, self.y, self)
-        game_log.debug("bowman %d is in cell (%d, %d)", self.n, self.y, self.x)
+        return self.world.set_player(self.x, self.y, self)
 
     def clean_position(self, x, y):
-        self.world.set_cell(x, y, None)
-
-    def check_position(self):
-        if self.x < 0 or self.x > (maxx - 1):
-            return False
-        elif self.y < 0 or self.y > (maxy - 1):
-            return False
-        xy = self.world.get_cell(self.x, self.y)
-        if xy and not xy is self:
-            self.lose()
-            xy.win()
-            raise Restart
-        return True
+        self.world.clean_position(x, y)
 
     def set_position(self, x, y):
         self.clean_position(self.x, self.y)
@@ -50,46 +36,46 @@ class Bowman():
         self._set()
 
     def move_down(self, m):
-        ox, oy = self.x, self.y
-        self.x += m
-        if not self.check_position():
-            self.near_border()
-            self.x = maxy - 1
-        self.clean_position(ox, oy)
-        self._set()
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.x += 1
+            if not self._set():
+                self.x -= 1
+                break
+            self.clean_position(ox, oy)
         game_log.info("bowman %d moved down on %d m", self.n, m)
         return True
 
     def move_up(self, m):
-        ox, oy = self.x, self.y
-        self.x -= m
-        if not self.check_position():
-            self.near_border()
-            self.x = 0
-        self.clean_position(ox, oy)
-        self._set()
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.x -= 1
+            if not self._set():
+                self.x += 1
+                break
+            self.clean_position(ox, oy)
         game_log.info("bowman %d moved up on %d m", self.n, m)
         return True
 
     def move_left(self, m):
-        ox, oy = self.x, self.y
-        self.y -= m
-        if not self.check_position():
-            self.near_border()
-            self.y = 0
-        self.clean_position(ox, oy)
-        self._set()
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y -= 1
+            if not self._set():
+                self.y += 1
+                break
+            self.clean_position(ox, oy)
         game_log.info("bowman %d moved left on %d m", self.n, m)
         return True
 
     def move_right(self, m):
-        ox, oy = self.x, self.y
-        self.y += m
-        if not self.check_position():
-            self.near_border()
-            self.y = maxx - 1
-        self.clean_position(ox, oy)
-        self._set()
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y += 1
+            if not self._set():
+                self.y -= 1
+                break
+            self.clean_position(ox, oy)
         game_log.info("bowman %d moved right on %d m", self.n, m)
         return True
 
@@ -156,18 +142,6 @@ class Bowman():
             self.move_left(meters)
         elif first_letter == "d":
             self.move_right(meters)
-        elif first_letter == "q":
-            self.move_up(meters)
-            self.move_left(meters)
-        elif first_letter == "e":
-            self.move_up(meters)
-            self.move_right(meters)
-        elif first_letter == "z":
-            self.move_down(meters)
-            self.move_left(meters)
-        elif first_letter == "c":
-            self.move_down(meters)
-            self.move_right(meters)
 
     def lose(self):
         pass
@@ -195,6 +169,9 @@ class Bowman():
         out += "\n"
         out += self.world.render_matrix()
         return out
+
+    def __str__(self):
+        return str(self.n)
 
 class NetBowman(Bowman):
     def __init__(self, maxx, maxy, n, world, socket, ci):
@@ -240,3 +217,6 @@ class NetBowman(Bowman):
 
     def abort_game(self):
         self.socket.send(b"ag")
+
+    def __str__(self):
+        return str(self.n)

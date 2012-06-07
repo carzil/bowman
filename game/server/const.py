@@ -1,1 +1,1 @@
-maxx, maxy = 20, 20
+maxx, maxy = 25, 25

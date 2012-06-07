@@ -1,10 +1,10 @@
 from socket import socket
+import sys
+from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
 from game.server.actors import Ranger, Tank, Damager
-
-maxx, maxy = 20, 20
 
 def restart():
     print("'q' or 'exit' to exit, something else to restart the server")
@@ -40,8 +40,9 @@ def accept_client(x, y, n, world, server_sock):
 
 def start():
     global bm1, bm2, world
+    map_file = open(sys.argv[1])
     game_log.info("world created")
-    world = World(maxx, maxy)
+    world = World(maxx, maxy, map_file)
     sock = setup_socket()
     bm1 = accept_client(0, 0, 1, world, sock)
     bm2 = accept_client(maxx - 1, maxy - 1, 2, world, sock)
@@ -61,6 +62,6 @@ def start():
 try:
     start()
 except Restart:
-    restart()
+    pass
 except Exit:
     exit(1)
