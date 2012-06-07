@@ -10,7 +10,10 @@ class Bowman():
     axe_damage_mod = 0
     bow_damage_mod = 0
     spear_damage_mod = 0
-    max_steps = 0
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+    max_steps = 5
 
     def __init__(self, x, y, n, world):
         self.x = x
