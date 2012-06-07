@@ -37,6 +37,9 @@ class World():
     def set_cell(self, x, y, value):
         self.world_map[x][y] = value
 
+    def set_cell_copy(self, x, y, value):
+        self.world_map_copy[x][y] = value
+
     def clean_position(self, x, y):
         self.set_cell(x, y, self.world_map_copy[x][y])
 
@@ -46,10 +49,11 @@ class World():
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):
             if entity is not player:
+                game_log.info("bowman %d was killed by bowman %d in a collision")
                 player.lose()
                 entity.win()
                 raise Restart
-        elif entity and not entity.collidable:
+        elif entity and not entity.collidable and not entity.pickable:
             res = player.damage(entity.damage(player))
             if not res:
                 player.lose()
@@ -57,6 +61,9 @@ class World():
                     if i is not player:
                         i.win()
                 raise Restart
+        elif entity and not entity.collidable and entity.pickable:
+            if entity.apply(player):
+                self.set_cell_copy(x, y, Grass())
         elif entity.collidable:
             game_log.info("bowman %d collided with %s in (%d, %d)", player.n, entity.name, x, y)
             return False
