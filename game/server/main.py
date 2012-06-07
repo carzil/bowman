@@ -42,7 +42,7 @@ def start():
         map_file = random_map(sys.argv[1])
     else:
         map_file = open(sys.argv[1])
-    world = World(maxx, maxy, map_file)
+    world = World(map_file)
     try:
         bm1 = accept_client(0, 0, 1, world, sock)
         bm2 = accept_client(maxx - 1, maxy - 1, 2, world, sock)
