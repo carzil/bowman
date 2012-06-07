@@ -49,7 +49,7 @@ def start():
     except error:
         game_log.critical("client disconnected")
         game_log.critical("restart")
-        raise Restart
+        return
     world.add_player(bm1)
     world.add_player(bm2)
     game_log.info("players added to world")
@@ -59,7 +59,7 @@ def start():
         try:
             world.update()
         except (Exit, Restart):
-            raise Restart
+            return
         except:
             game_log.fatal("unhandled exception have been raised")
             world.abort_game()
@@ -69,7 +69,5 @@ def start():
 
 sock = setup_socket()
 
-try:
-    start()
-except Restart:
+while True:
     start()
