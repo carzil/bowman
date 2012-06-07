@@ -1,3 +1,5 @@
+import os
+from random import choice
 from socket import socket
 import sys
 from game.server.const import maxx, maxy
@@ -38,10 +40,16 @@ def accept_client(x, y, n, world, server_sock):
         game_log.info("added ranger")
     return cls(x, y, n, world, sock, client)
 
+def random_map(directory):
+    files = os.listdir(directory)
+    return open(os.path.join(directory, choice(files)))
+
 def start():
     global bm1, bm2, world
-    map_file = open(sys.argv[1])
-    game_log.info("world created")
+    if os.path.isdir(sys.argv[1]):
+        map_file = random_map(sys.argv[1])
+    else:
+        map_file = open(sys.argv[1])
     world = World(maxx, maxy, map_file)
     sock = setup_socket()
     bm1 = accept_client(0, 0, 1, world, sock)
