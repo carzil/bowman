@@ -2,36 +2,36 @@ from random import randrange
 from game.server.bowman import NetBowman
 
 class Ranger(NetBowman):
-    health = 700
+    health = 750
     max_steps = 7
 
     @property
     def bow_damage_mod(self):
-        return randrange(70, 115, 5)
+        return 60
 
     @property
     def spear_damage_mod(self):
-        return randrange(125, 150, 5)
+        return 100
 
     @property
     def axe_damage_mod(self):
-        return randrange(150, 180, 5)
+        return 120
 
 class Damager(NetBowman):
-    health = 500
+    health = 550
     max_steps = 8
 
     @property
     def bow_damage_mod(self):
-        return randrange(100, 135, 5)
+        return 110
 
     @property
     def spear_damage_mod(self):
-        return randrange(140, 165, 5)
+        return 120
 
     @property
     def axe_damage_mod(self):
-        return randrange(180, 230, 5)
+        return 140
 
 class Tank(NetBowman):
     health = 1200
@@ -39,12 +39,12 @@ class Tank(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return randrange(50, 80, 5)
+        return 40
 
     @property
     def spear_damage_mod(self):
-        return randrange(80, 115, 5)
+        return 70
 
     @property
     def axe_damage_mod(self):
-        return randrange(200, 250, 5)
+        return 180
