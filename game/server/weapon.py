@@ -13,7 +13,7 @@ class Bow(Weapon):
     name = "bow"
 
     def count_damage(self, player, opponent, distance):
-        if distance > 20:
+        if distance > 16:
             return True, 0
         else:
             damage = randrange(40, 60, 2) + self.damage_mod
@@ -33,7 +33,7 @@ class Spear(Weapon):
     name = "spear"
 
     def count_damage(self, player, opponent, distance):
-        if distance > 9:
+        if distance > 7:
             return True, 0
         else:
             damage = randrange(80, 120, 4) + self.damage_mod
