@@ -7,15 +7,15 @@ class Ranger(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return rendrenge(60, 83)
+        return randrange(60, 83)
 
     @property
     def spear_damage_mod(self):
-        return rendrenge(91, 112)
+        return randrange(91, 112)
 
     @property
     def axe_damage_mod(self):
-        return rendrenge(134, 167)
+        return randrange(134, 167)
 
 class Damager(NetBowman):
     health = 550
@@ -23,15 +23,15 @@ class Damager(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return rendrenge(103, 142)
+        return randrange(103, 142)
 
     @property
     def spear_damage_mod(self):
-        return rendrenge(143, 151)
+        return randrange(143, 151)
 
     @property
     def axe_damage_mod(self):
-        return rendrenge(181, 210)
+        return randrange(181, 210)
 
 class Tank(NetBowman):
     health = 1200
@@ -39,12 +39,12 @@ class Tank(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return rendrenge(30, 54)
+        return randrange(30, 54)
 
     @property
     def spear_damage_mod(self):
-        return rendrenge(71, 86)
+        return randrange(71, 86)
 
     @property
     def axe_damage_mod(self):
-        return rendrenge(199, 234)
+        return randrange(199, 234)
