@@ -90,6 +90,22 @@ class Bowman():
         game_log.info("bowman %d moved right on %d m", self.n, m)
         return True
 
+    def move_up_left(self, m):
+        self.move_up(m)
+        self.move_left(m)
+
+    def move_up_right(self, m):
+        self.move_up(m)
+        self.move_right(m)
+
+    def move_down_left(self, m):
+        self.move_down(m)
+        self.move_left(m)
+
+    def move_down_right(self, m):
+        self.move_down(m)
+        self.move_right(m)
+
     def damage(self, damage):
         self.health -= damage
         if self.health < 0:
@@ -162,26 +178,22 @@ class Bowman():
         elif first_letter == "q":
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
-            self.move_up(meters)
-            self.move_left(meters)
+            self.move_up_left(meters)
 
         elif first_letter == "e":
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
-            self.move_up(meters)
-            self.move_right(meters)
+            self.move_up_right(meters)
 
         elif first_letter == "z":
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
-            self.move_down(meters)
-            self.move_left(meters)
+            self.move_down_left(meters)
 
         elif first_letter == "c":
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
-            self.move_down(meters)
-            self.move_right(meters)
+            self.move_down_right(meters)
 
     def lose(self):
         pass
