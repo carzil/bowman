@@ -7,12 +7,19 @@ from game.server.weapon import Spear, Axe, Bow
 
 class Bowman():
     health = 250
+
     axe_damage_mod = 0
     bow_damage_mod = 0
     spear_damage_mod = 0
+
     axe_distance_mod = 0
     bow_distance_mod = 0
     spear_distance_mod = 0
+
+    axe_defense = 0
+    bow_defense = 0
+    spear_defense = 0
+
     max_steps = 5
     max_diagonal_steps = 5
 
@@ -94,18 +101,20 @@ class Bowman():
         game_log.info("bowman %d fire bowman %d with %s", self.n, opponent.n, weapon.name)
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
         is_miss, damage = weapon.count_damage(self, opponent, r)
+        defense = weapon.count_defense(self, opponent, r)
         if is_miss:
             self.miss()
             game_log.info("bowman %d missed", self.n)
         else:
+            damage -= defense
             res = opponent.damage(damage)
+            game_log.info("bowman %d %s defense is %d", opponent.n, weapon.name, defense)
+            game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
                 self.win()
                 opponent.lose()
                 raise Restart
-            else:
-                game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
 
     def _update(self, string):
         first_letter = string[0]

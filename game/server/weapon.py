@@ -1,4 +1,4 @@
-from random import randrange
+from random import randrange, randint
 
 class Weapon():
     name = "weapon"
@@ -10,6 +10,10 @@ class Weapon():
     def count_damage(self, player, opponent, distance):
         pass
 
+    def count_defense(self, player, opponent, distance):
+        pass
+
+
 class Bow(Weapon):
     name = "bow"
 
@@ -19,6 +23,9 @@ class Bow(Weapon):
         else:
             damage = randrange(40, 60, 2) + self.damage_mod
             return False, damage
+
+    def count_defense(self, player, opponent, distance):
+        return opponent.bow_defense * randint(1, 5)
 
 class Axe(Weapon):
     name = "axe"
@@ -30,6 +37,9 @@ class Axe(Weapon):
             damage = randrange(150, 200, 2) + self.damage_mod
             return False, damage
 
+    def count_defense(self, player, opponent, distance):
+        return opponent.axe_defense * randint(1, 5)
+
 class Spear(Weapon):
     name = "spear"
 
@@ -39,3 +49,6 @@ class Spear(Weapon):
         else:
             damage = randrange(80, 120, 4) + self.damage_mod
             return False, damage
+
+    def count_defense(self, player, opponent, distance):
+        return opponent.spear_defense * randint(1, 5)
