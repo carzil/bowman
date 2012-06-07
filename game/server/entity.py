@@ -1,3 +1,5 @@
+from random import randrange
+
 class Entity():
     collidable = False
     name = "entity"
@@ -5,7 +7,7 @@ class Entity():
     def __str__(self):
         return ""
 
-    def damage(self):
+    def damage(self, player):
         return 0
 
 class Grass(Entity):
@@ -20,3 +22,12 @@ class Wall(Entity):
 
     def __str__(self):
         return "*"
+
+class Spikes(Entity):
+    name = "spikes"
+
+    def __str__(self):
+        return "#"
+
+    def damage(self, player):
+        return randrange(20, 100)

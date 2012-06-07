@@ -1,6 +1,6 @@
 from game.server.bowman import NetBowman
 from game.server.const import maxx, maxy
-from game.server.entity import Grass, Wall
+from game.server.entity import Grass, Wall, Spikes
 from game.server.exceptions import Restart
 from game.server.log import game_log
 
@@ -22,6 +22,8 @@ class World():
                     obj = Grass()
                 elif j == "*":
                     obj = Wall()
+                elif j == "#":
+                    obj = Spikes()
                 else:
                     obj = Grass()
                 self.world_map[i][cnt] = obj
@@ -47,7 +49,13 @@ class World():
                 entity.win()
                 raise Restart
         elif entity and not entity.collidable:
-            player.damage(entity.damage())
+            res = player.damage(entity.damage(player))
+            if not res:
+                player.lose()
+                for i in self.get_players():
+                    if i is not player:
+                        i.win()
+                raise Restart
         elif entity.collidable:
             game_log.info("bowman %d collided with %s in (%d, %d)", player.n, entity.name, x, y)
             return False
