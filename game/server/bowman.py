@@ -14,6 +14,7 @@ class Bowman():
     bow_distance_mod = 0
     spear_distance_mod = 0
     max_steps = 5
+    max_diagonal_steps = 5
 
     def __init__(self, x, y, n, world):
         self.x = x
@@ -150,18 +151,26 @@ class Bowman():
             self.move_right(meters)
 
         elif first_letter == "q":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
             self.move_up(meters)
             self.move_left(meters)
 
         elif first_letter == "e":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
             self.move_up(meters)
             self.move_right(meters)
 
         elif first_letter == "z":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
             self.move_down(meters)
             self.move_left(meters)
 
         elif first_letter == "c":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
             self.move_down(meters)
             self.move_right(meters)
 
