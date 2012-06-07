@@ -1,20 +1,12 @@
 import os
 from random import choice
-from socket import socket
+from socket import socket, error
 import sys
 from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
 from game.server.actors import Ranger, Tank, Damager
-
-def restart():
-    print("'q' or 'exit' to exit, something else to restart the server")
-    q = input()
-    if q in ["exit", "q"]:
-        exit(0)
-    else:
-        start()
 
 def setup_socket():
     sock = socket()
@@ -45,15 +37,19 @@ def random_map(directory):
     return open(os.path.join(directory, choice(files)))
 
 def start():
-    global bm1, bm2, world
+    global bm1, bm2, world, sock
     if os.path.isdir(sys.argv[1]):
         map_file = random_map(sys.argv[1])
     else:
         map_file = open(sys.argv[1])
     world = World(maxx, maxy, map_file)
-    sock = setup_socket()
-    bm1 = accept_client(0, 0, 1, world, sock)
-    bm2 = accept_client(maxx - 1, maxy - 1, 2, world, sock)
+    try:
+        bm1 = accept_client(0, 0, 1, world, sock)
+        bm2 = accept_client(maxx - 1, maxy - 1, 2, world, sock)
+    except error:
+        game_log.critical("client disconnected")
+        game_log.critical("restart")
+        raise Restart
     world.add_player(bm1)
     world.add_player(bm2)
     game_log.info("players added to world")
@@ -62,14 +58,18 @@ def start():
     while True:
         try:
             world.update()
+        except (Exit, Restart):
+            raise Restart
         except:
             game_log.fatal("unhandled exception have been raised")
             world.abort_game()
+            sock.close()
             game_log.fatal("abort")
             raise
+
+sock = setup_socket()
+
 try:
     start()
 except Restart:
-    pass
-except Exit:
-    exit(1)
+    start()
