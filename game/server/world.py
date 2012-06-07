@@ -10,6 +10,8 @@ class World():
         self.maxy = maxy
         self.load_map(file_obj)
         self.players = []
+        game_log.info("world created")
+        game_log.info("map is '%s'", file_obj.name)
 
     def load_map(self, file_obj):
         self.world_map = [[None for j in range(maxy)] for i in range(maxx)]

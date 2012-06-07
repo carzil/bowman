@@ -7,10 +7,21 @@ from game.server.weapon import Spear, Axe, Bow
 
 class Bowman():
     health = 250
+
     axe_damage_mod = 0
     bow_damage_mod = 0
     spear_damage_mod = 0
-    max_steps = 0
+
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+
+    axe_defense = 0
+    bow_defense = 0
+    spear_defense = 0
+
+    max_steps = 5
+    max_diagonal_steps = 5
 
     def __init__(self, x, y, n, world):
         self.x = x
@@ -79,6 +90,22 @@ class Bowman():
         game_log.info("bowman %d moved right on %d m", self.n, m)
         return True
 
+    def move_up_left(self, m):
+        self.move_up(m)
+        self.move_left(m)
+
+    def move_up_right(self, m):
+        self.move_up(m)
+        self.move_right(m)
+
+    def move_down_left(self, m):
+        self.move_down(m)
+        self.move_left(m)
+
+    def move_down_right(self, m):
+        self.move_down(m)
+        self.move_right(m)
+
     def damage(self, damage):
         self.health -= damage
         if self.health < 0:
@@ -90,18 +117,20 @@ class Bowman():
         game_log.info("bowman %d fire bowman %d with %s", self.n, opponent.n, weapon.name)
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
         is_miss, damage = weapon.count_damage(self, opponent, r)
+        defense = weapon.count_defense(self, opponent, r)
         if is_miss:
             self.miss()
             game_log.info("bowman %d missed", self.n)
         else:
+            damage -= defense
             res = opponent.damage(damage)
+            game_log.info("bowman %d %s defense is %d", opponent.n, weapon.name, defense)
+            game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
                 self.win()
                 opponent.lose()
                 raise Restart
-            else:
-                game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
 
     def _update(self, string):
         first_letter = string[0]
@@ -136,12 +165,35 @@ class Bowman():
             meters = self.max_steps
         if first_letter == "s":
             self.move_down(meters)
+
         elif first_letter == "w":
             self.move_up(meters)
+
         elif first_letter == "a":
             self.move_left(meters)
+
         elif first_letter == "d":
             self.move_right(meters)
+
+        elif first_letter == "q":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
+            self.move_up_left(meters)
+
+        elif first_letter == "e":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
+            self.move_up_right(meters)
+
+        elif first_letter == "z":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
+            self.move_down_left(meters)
+
+        elif first_letter == "c":
+            if meters > self.max_diagonal_steps:
+                meters = self.max_diagonal_steps
+            self.move_down_right(meters)
 
     def lose(self):
         pass

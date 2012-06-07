@@ -3,7 +3,17 @@ from game.server.bowman import NetBowman
 
 class Ranger(NetBowman):
     health = 750
+
     max_steps = 7
+    max_diagonal_steps = 3
+
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+
+    axe_defense = 5
+    bow_defense = 5
+    spear_defense = 5
 
     @property
     def bow_damage_mod(self):
@@ -19,7 +29,17 @@ class Ranger(NetBowman):
 
 class Damager(NetBowman):
     health = 550
+
     max_steps = 8
+    max_diagonal_steps = 4
+
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+
+    axe_defense = 10
+    bow_defense = 2
+    spear_defense = 5
 
     @property
     def bow_damage_mod(self):
@@ -35,7 +55,17 @@ class Damager(NetBowman):
 
 class Tank(NetBowman):
     health = 1200
+
     max_steps = 6
+    max_diagonal_steps = 3
+
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+
+    axe_defense = 5
+    bow_defense = 10
+    spear_defense = 2
 
     @property
     def bow_damage_mod(self):
