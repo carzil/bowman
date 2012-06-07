@@ -2,7 +2,7 @@ from random import randrange
 from game.server.bowman import NetBowman
 
 class Ranger(NetBowman):
-    health = 900
+    health = 1150
 
     max_steps = 6
     max_diagonal_steps = 3
@@ -11,24 +11,24 @@ class Ranger(NetBowman):
     bow_distance_mod = 1
     spear_distance_mod = 1
 
-    axe_defense = 10
-    bow_defense = 10
-    spear_defense = 15
+    axe_defense = 16
+    bow_defense = 4
+    spear_defense = 7
 
     @property
     def bow_damage_mod(self):
-        return randrange(55, 87)
+        return randrange(32, 56)
 
     @property
     def spear_damage_mod(self):
-        return randrange(113, 143)
+        return randrange(145, 169)
 
     @property
     def axe_damage_mod(self):
-        return randrange(170, 200)
+        return randrange(190, 230)
 
 class Damager(NetBowman):
-    health = 700
+    health = 800
 
     max_steps = 8
     max_diagonal_steps = 4
@@ -37,21 +37,21 @@ class Damager(NetBowman):
     bow_distance_mod = 2
     spear_distance_mod = 0
 
-    axe_defense = 0
-    bow_defense = 10
-    spear_defense = 8
+    axe_defense = 3
+    bow_defense = 13
+    spear_defense = 9
 
     @property
     def bow_damage_mod(self):
-        return randrange(134, 156)
+        return randrange(114, 211)
 
     @property
     def spear_damage_mod(self):
-        return randrange(145, 165)
+        return randrange(99, 145)
 
     @property
     def axe_damage_mod(self):
-        return randrange(160, 190)
+        return randrange(198, 199)
 
 class Tank(NetBowman):
     health = 2400
@@ -63,9 +63,9 @@ class Tank(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 0
 
-    axe_defense = 15
-    bow_defense = 10
-    spear_defense = 12
+    axe_defense = 17
+    bow_defense = 11
+    spear_defense = 14
 
     @property
     def bow_damage_mod(self):
@@ -73,8 +73,8 @@ class Tank(NetBowman):
 
     @property
     def spear_damage_mod(self):
-        return randrange(45, 97)
+        return randrange(45, 87)
 
     @property
     def axe_damage_mod(self):
-        return randrange(213, 299)
+        return randrange(237, 331)
