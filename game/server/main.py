@@ -23,13 +23,13 @@ def accept_client(x, y, n, world, server_sock):
     unit_type = sock.recv(1)
     if unit_type == b"t":
         cls = Tank
-        game_log.info("added tank")
+        game_log.info("bowman %d is a tank", n)
     elif unit_type == b"d":
         cls = Damager
-        game_log.info("added damager")
+        game_log.info("bowman %d is a damager", n)
     else:
         cls = Ranger
-        game_log.info("added ranger")
+        game_log.info("bowman %d is a ranger", n)
     return cls(x, y, n, world, sock, client)
 
 def random_map(directory):
