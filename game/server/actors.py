@@ -18,7 +18,7 @@ class Ranger(NetBowman):
         return randrange(150, 180, 5)
 
 class Damager(NetBowman):
-    health = 480
+    health = 500
     max_steps = 8
 
     @property
