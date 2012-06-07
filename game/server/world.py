@@ -44,7 +44,7 @@ class World():
         self.set_cell(x, y, self.world_map_copy[x][y])
 
     def set_player(self, x, y, player):
-        if y < 0 or y > maxy - 1 or x < 0 or x > maxx - 1:
+        if y < 0 or y > self.y - 1 or x < 0 or x > self.x - 1:
             return False
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):

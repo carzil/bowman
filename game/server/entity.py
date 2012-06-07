@@ -35,7 +35,7 @@ class Spikes(Entity):
     def damage(self, player):
         return randrange(20, 100)
 
-class Heal(Entity):
+class HealthPack(Entity):
     lives = 100
     symbol = "+"
     name = "heal"
@@ -46,11 +46,12 @@ class Heal(Entity):
         game_log.info("delta is %d", delta)
         if delta >= self.lives:
             player.damage(-self.lives)
-            game_log.info("heal picked up")
+            game_log.info("health pack picked up")
             return True
         else:
             player.damage(-delta)
             self.lives -= delta
+            game_log.info("health pack rest is %d", self.lives)
             return False
 
 
