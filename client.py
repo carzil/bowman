@@ -25,7 +25,7 @@ def choice_unit_type():
     elif string == "d":
         unit_type = b"d"
     elif string == "m":
-        unit_tipe = b"m"
+        unit_type = b"m"
     return unit_type
 
 def main(argv):
