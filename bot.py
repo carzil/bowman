@@ -15,15 +15,6 @@ def is_matrix(bs):
     return False
 def choice_unit_type():
     unit_type = b"r"
-    string = input("Enter unit type, which you prefer (t, d, r, m): ")
-    while not string:
-        string = input("Enter unit type, which you prefer (t, d, r, m): ")
-    if string == "t":
-        unit_type = b"t"
-    elif string == "d":
-        unit_type = b"d"
-    elif string == "m":
-        unit_type = b"m"
     return unit_type
     
 def parse_matrix():
@@ -50,7 +41,7 @@ def main(argv):
                 parse_matrix()
                 string = do()
                 string = bytes(string.encode("utf-8"))
-                sock.send(data)
+                sock.send(string)
             elif data == b"lo":
                 print("You lose!")
             elif data == b"wi":
