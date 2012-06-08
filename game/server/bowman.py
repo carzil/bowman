@@ -158,11 +158,7 @@ class Bowman():
             self.miss()
             game_log.info("bowman %d missed", self.n)
         else:
-            defense_test = defens + 40
-            if damage > defens_test:
-                damage -= defense
-            else:
-                damage = 40
+            damage -= defense
             res = opponent.damage(damage)
             game_log.info("bowman %d %s defense is %d", opponent.n, weapon.name, defense)
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
