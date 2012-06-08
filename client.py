@@ -36,9 +36,9 @@ def main(argv):
         while True:
             data = sock.recv(2)
             if data == b"go":
-                string = input(">> ")[:5]
+                string = input(">> ").strip()[:5]
                 while not string:
-                    string = input(">> ")[:5]
+                    string = input(">> ").strip()[:5]
                 data = bytes(string.encode("utf-8"))
                 sock.send(data)
             elif data == b"lo":
