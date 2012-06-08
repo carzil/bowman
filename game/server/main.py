@@ -6,7 +6,7 @@ from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
-from game.server.actors import Ranger, Tank, Damager
+from game.server.actors import Ranger, Tank, Damager, Mage
 
 def setup_socket():
     sock = socket()
@@ -27,6 +27,9 @@ def accept_client(x, y, n, world, server_sock):
     elif unit_type == b"d":
         cls = Damager
         game_log.info("bowman %d is a damager", n)
+    elif unit_type == b"m":
+        cls = Mage
+        game_log.info("bowman %d is a mage", n)
     else:
         cls = Ranger
         game_log.info("bowman %d is a ranger", n)
