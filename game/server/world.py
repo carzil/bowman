@@ -80,13 +80,13 @@ class World():
         return True
 
     def update(self):
-        for player in self.get_players():
-            player.send_info()
+        self.send_info()
 
         for player in self.get_players():
             player.update()
-            for player2 in self.get_players():
-                player2.send_info()
+            self.send_info()
+            player.update()
+            self.send_info()
 
         for i in self.get_players():
             game_log.info("bowman %d is in cell (%d, %d)", i.n, i.x, i.y)
@@ -123,3 +123,7 @@ class World():
                 out += str(j) + " "
             out += "\n"
         return out
+
+    def send_info(self):
+        for player in self.get_players():
+            player.send_info()
