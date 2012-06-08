@@ -27,32 +27,16 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
-   global matrix
-   matrix = matrix.split("\n")
-   matrix = 
+    global matrix
+    matrix = matrix.split("\n")
+    matrix = matrix[2:]
+    wmatrix = []
+    for i in matrix:
+       wmatrix.append(i.split())
+    matrix = wmatrix
 
 def do():
-    global bot_class
-    bot_class = choice["t", "r", "d", "m"]
-    return do_bot(), bot_class
-
-def do_bot():
-    if bot_class == "t":
-        return bot_tank()
-    elif bot_class == "r":
-        return bot_ranger()
-    elif bot_class == "d":
-        return bot_damager()
-    elif bot_class == "m":
-        return bot_mage()
-
-def bot_tank():
-    
-def bot_ranger():
-
-def bot_damager():
-
-def bot_mage():
+    return "f"
     
 def main(argv):
     global matrix
@@ -92,4 +76,3 @@ def main(argv):
 if __name__ == "__main__":
     matrix = ""
     main(sys.argv)
-
