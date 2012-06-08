@@ -91,20 +91,56 @@ class Bowman():
         return True
 
     def move_up_left(self, m):
-        self.move_up(m)
-        self.move_left(m)
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y -= 1
+            self.x -= 1
+            if not self._set():
+                self.y += 1
+                self.x += 1
+                break
+            self.clean_position(ox, oy)
+        game_log.info("bowman %d moved by diagonal up left on %d m", self.n, m)
+        return True
 
     def move_up_right(self, m):
-        self.move_up(m)
-        self.move_right(m)
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y += 1
+            self.x -= 1
+            if not self._set():
+                self.y -= 1
+                self.x += 1
+                break
+            self.clean_position(ox, oy)
+        game_log.info("bowman %d moved by diagonal up right on %d m", self.n, m)
+        return True
 
     def move_down_left(self, m):
-        self.move_down(m)
-        self.move_left(m)
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y -= 1
+            self.x += 1
+            if not self._set():
+                self.y += 1
+                self.x -= 1
+                break
+            self.clean_position(ox, oy)
+        game_log.info("bowman %d moved by diagonal down left on %d m", self.n, m)
+        return True
 
     def move_down_right(self, m):
-        self.move_down(m)
-        self.move_right(m)
+        for i in range(m):
+            ox, oy = self.x, self.y
+            self.y += 1
+            self.x += 1
+            if not self._set():
+                self.y -= 1
+                self.x -= 1
+                break
+            self.clean_position(ox, oy)
+        game_log.info("bowman %d moved by diagonal down right on %d m", self.n, m)
+        return True
 
     def damage(self, damage):
         self.health -= damage
@@ -122,11 +158,7 @@ class Bowman():
             self.miss()
             game_log.info("bowman %d missed", self.n)
         else:
-            defense_test = defens + 40
-            if damage > defens_test:
-                damage -= defense
-            else:
-                damage = 40
+            damage -= defense
             res = opponent.damage(damage)
             game_log.info("bowman %d %s defense is %d", opponent.n, weapon.name, defense)
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
@@ -164,7 +196,10 @@ class Bowman():
         return self._update(string)
 
     def handle_move(self, first_letter, splited_string):
-        meters = int(splited_string[1])
+        try:
+            meters = int(splited_string[1])
+        except IndexError:
+            meters = self.max_steps
         if meters > self.max_steps:
             meters = self.max_steps
         if first_letter == "s":

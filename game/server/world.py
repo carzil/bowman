@@ -1,33 +1,32 @@
 from game.server.bowman import NetBowman
 from game.server.const import maxx, maxy
-from game.server.entity import Grass, Wall, Spikes
+from game.server.entity import Grass, Wall, Spikes, Entity
 from game.server.exceptions import Restart
 from game.server.log import game_log
 
 class World():
-    def __init__(self, maxx, maxy, file_obj):
-        self.maxx = maxx
-        self.maxy = maxy
+    def __init__(self, file_obj):
         self.load_map(file_obj)
         self.players = []
         game_log.info("world created")
         game_log.info("map is '%s'", file_obj.name)
 
     def load_map(self, file_obj):
-        self.world_map = [[None for j in range(maxy)] for i in range(maxx)]
-        self.world_map_copy = [[None for j in range(maxy)] for i in range(maxx)]
-        for i in range(self.maxy):
+        x, y = map(int, file_obj.readline().split())
+        self.x = x
+        self.y = y
+        self.world_map = [[None for j in range(x)] for i in range(y)]
+        self.world_map_copy = [[None for j in range(x)] for i in range(y)]
+
+        entities_dict = {}
+        for i in Entity.__subclasses__():
+            i().register(entities_dict)
+
+        for i in range(self.y):
             string = file_obj.readline().split(" ")
             cnt = 0
             for j in string:
-                if j == ".":
-                    obj = Grass()
-                elif j == "*":
-                    obj = Wall()
-                elif j == "#":
-                    obj = Spikes()
-                else:
-                    obj = Grass()
+                obj = entities_dict.get(j, Grass())
                 self.world_map[i][cnt] = obj
                 self.world_map_copy[i][cnt] = obj
                 cnt += 1
@@ -38,19 +37,23 @@ class World():
     def set_cell(self, x, y, value):
         self.world_map[x][y] = value
 
+    def set_cell_copy(self, x, y, value):
+        self.world_map_copy[x][y] = value
+
     def clean_position(self, x, y):
         self.set_cell(x, y, self.world_map_copy[x][y])
 
     def set_player(self, x, y, player):
-        if y < 0 or y > maxy - 1 or x < 0 or x > maxx - 1:
+        if y < 0 or y > self.y - 1 or x < 0 or x > self.x - 1:
             return False
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):
             if entity is not player:
+                game_log.info("bowman %d was killed by bowman %d in a collision")
                 player.lose()
                 entity.win()
                 raise Restart
-        elif entity and not entity.collidable:
+        elif entity and not entity.collidable and not entity.pickable:
             res = player.damage(entity.damage(player))
             if not res:
                 player.lose()
@@ -58,6 +61,9 @@ class World():
                     if i is not player:
                         i.win()
                 raise Restart
+        elif entity and not entity.collidable and entity.pickable:
+            if entity.apply(player):
+                self.set_cell_copy(x, y, Grass())
         elif entity.collidable:
             game_log.info("bowman %d collided with %s in (%d, %d)", player.n, entity.name, x, y)
             return False
