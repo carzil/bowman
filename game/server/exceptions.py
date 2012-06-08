@@ -3,3 +3,6 @@ class Restart(Exception):
 
 class Exit(Exception):
     pass
+
+class Retry(Exception):
+    pass

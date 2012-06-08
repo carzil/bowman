@@ -2,7 +2,7 @@ from math import sqrt
 from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
-from game.server.exceptions import Restart, Exit
+from game.server.exceptions import Restart, Exit, Retry
 from game.server.weapon import Spear, Axe, Bow
 
 class Bowman():
@@ -35,6 +35,9 @@ class Bowman():
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
+
+    def check_heal(self):
+        self.world.check_heal(self)
 
     def clean_position(self, x, y):
         self.world.clean_position(x, y)
@@ -167,7 +170,11 @@ class Bowman():
                 opponent.lose()
                 raise Restart
 
-    def _update(self, string):
+    def prompt(self):
+        return input(">> ")
+
+    def _update(self):
+        string = self.prompt()
         first_letter = string[0]
         if first_letter == "f":
             for i in self.world.get_players():
@@ -194,21 +201,27 @@ class Bowman():
                         else:
                             weapon = self.bow
                     self.fire(i, weapon)
+                    i.check_heal()
                     break
-        else:
+        elif first_letter in ["a", "s", "d", "w", "q", "e", "z", "c"]:
             splited_string = string.split(" ")
             first_letter = string[0]
             self.handle_move(first_letter, splited_string)
+        else:
+            raise Retry
 
     def update(self):
-        string = input()
-        return self._update(string)
+        while True:
+            try:
+                self._update()
+            except (IndexError, Retry):
+                pass
+            else:
+                break
 
     def handle_move(self, first_letter, splited_string):
-        try:
-            meters = int(splited_string[1])
-        except IndexError:
-            meters = self.max_steps
+        meters = int(splited_string[1])
+
         if meters > self.max_steps:
             meters = self.max_steps
         if first_letter == "s":
@@ -279,7 +292,7 @@ class NetBowman(Bowman):
         self.socket = socket
         self.client_info = ci
 
-    def update(self):
+    def prompt(self):
         self.socket.send(b"go")
         try:
             string = self.socket.recv(5)
@@ -290,8 +303,7 @@ class NetBowman(Bowman):
             game_log.fatal("abort")
             raise Exit
         net_log.debug("client '%s:%s' sent '%s'", self.client_info[0], self.client_info[1], string)
-        res = self._update(string)
-        return res
+        return string
 
     def send_info(self):
         self.socket.send(b"mx")
