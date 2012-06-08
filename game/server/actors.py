@@ -103,4 +103,4 @@ class Mage(NetBowman):
 
     @property
     def axe_damage_mod(self):
-        return randrange(0, 300, 300)
+        return randrange(0, 301, 300)
