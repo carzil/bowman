@@ -78,3 +78,23 @@ class Tank(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(237, 331)
+
+class Mage(NetBowman):
+    health = 1060
+    max_steps = 6
+    max_diagonal_steps = 3
+    axe_distance_mod = 0
+    bow_distance_mod = -2
+    spear_distance_mod = -1
+    axe_defense = 3
+    bow_defense = 5
+    spear_defense = 4
+    @property
+    def bow_damage_mod(self):
+        return randrange(-67, 113, 179)
+    @property
+    def spear_damage_mod(self):
+        return randrange(-78, 154, 231)
+    @property
+    def axe_damage_mod(self):
+        return randrange(-211, 456, 666)

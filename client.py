@@ -17,13 +17,15 @@ def is_matrix(bs):
 
 def choice_unit_type():
     unit_type = b"r"
-    string = input("Enter unit type, which you prefer (t, d, r): ")
+    string = input("Enter unit type, which you prefer (t, d, r, m): ")
     while not string:
-        string = input("Enter unit type, which you prefer (t, d, r): ")
+        string = input("Enter unit type, which you prefer (t, d, r, m): ")
     if string == "t":
         unit_type = b"t"
     elif string == "d":
         unit_type = b"d"
+    elif string == "m":
+        unit_tipe = b"m"
     return unit_type
 
 def main(argv):

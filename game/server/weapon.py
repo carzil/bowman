@@ -44,7 +44,7 @@ class Spear(Weapon):
     name = "spear"
 
     def count_damage(self, player, opponent, distance):
-        if distance - self.distance_mod > 7:
+        if distance - self.distance_mod > 8:
             return True, 0
         else:
             damage = randrange(25, 35) + self.damage_mod
