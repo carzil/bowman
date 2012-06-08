@@ -28,7 +28,6 @@ class Bowman():
         self.y = y
         self.n = n
         self.world = world
-        self.miss_chance = [True]
         self.set_position(self.x, self.y)
         self.bow = Bow(self.bow_damage_mod)
         self.axe = Axe(self.axe_damage_mod)
