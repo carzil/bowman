@@ -2,7 +2,7 @@ from random import randrange
 from game.server.bowman import NetBowman
 
 class Ranger(NetBowman):
-    health = 1150
+    health = 3800
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -11,24 +11,24 @@ class Ranger(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 1
 
-    axe_defense = 16
-    bow_defense = 4
-    spear_defense = 7
+    axe_defense = 7
+    bow_defense = 5
+    spear_defense = 8
 
     @property
     def bow_damage_mod(self):
-        return randrange(25, 39)
+        return randrange(69, 73)
 
     @property
     def spear_damage_mod(self):
-        return randrange(79, 113)
+        return randrange(149, 201)
 
     @property
     def axe_damage_mod(self):
-        return randrange(101, 143)
+        return randrange(218, 243)
 
 class Damager(NetBowman):
-    health = 800
+    health = 2500
 
     max_steps = 6
     max_diagonal_steps = 3
@@ -37,24 +37,24 @@ class Damager(NetBowman):
     bow_distance_mod = 2
     spear_distance_mod = 0
 
-    axe_defense = 3
-    bow_defense = 13
-    spear_defense = 9
+    axe_defense = 4
+    bow_defense = 9
+    spear_defense = 5
 
     @property
     def bow_damage_mod(self):
-        return randrange(65, 103)
+        return randrange(79, 132)
 
     @property
     def spear_damage_mod(self):
-        return randrange(69, 111)
+        return randrange(133, 134)
 
     @property
     def axe_damage_mod(self):
-        return randrange(120, 130)
+        return randrange(183, 197)
 
 class Tank(NetBowman):
-    health = 2400
+    health = 8000
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -63,44 +63,44 @@ class Tank(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 0
 
-    axe_defense = 17
-    bow_defense = 11
-    spear_defense = 14
+    axe_defense = 14
+    bow_defense = 8
+    spear_defense = 7
 
     @property
     def bow_damage_mod(self):
-        return randrange(14, 41)
+        return randrange(34, 49)
 
     @property
     def spear_damage_mod(self):
-        return randrange(22, 56)
+        return randrange(50, 32)
 
     @property
     def axe_damage_mod(self):
-        return randrange(156, 189)
+        return randrange(276, 402)
 
 class Mage(NetBowman):
-    health = 1060
+    health = 3167
 
     max_steps = 5
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = 2
+    bow_distance_mod = 3
     spear_distance_mod = 0
 
-    axe_defense = 3
-    bow_defense = 5
-    spear_defense = 4
+    axe_defense = 2
+    bow_defense = 3
+    spear_defense = 3
 
     @property
     def bow_damage_mod(self):
-        return randrange(-50, 120)
+        return randrange(-50, 150)
 
     @property
     def spear_damage_mod(self):
-        return randrange(-80, 160)
+        return randrange(-80, 200)
 
     @property
     def axe_damage_mod(self):
-        return randrange(-120, 290)
+        return randrange(-120, 300)
