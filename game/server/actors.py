@@ -17,17 +17,6 @@ class Ranger(NetBowman):
 
     @property
     def bow_damage_mod(self):
-<<<<<<< Updated upstream
-        return randrange(32, 56)
-
-    @property
-    def spear_damage_mod(self):
-        return randrange(145, 169)
-
-    @property
-    def axe_damage_mod(self):
-        return randrange(190, 230)
-=======
         return randrange(25, 39)
 
     @property
@@ -37,7 +26,6 @@ class Ranger(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(101, 143)
->>>>>>> Stashed changes
 
 class Damager(NetBowman):
     health = 800
@@ -55,17 +43,6 @@ class Damager(NetBowman):
 
     @property
     def bow_damage_mod(self):
-<<<<<<< Updated upstream
-        return randrange(114, 211)
-
-    @property
-    def spear_damage_mod(self):
-        return randrange(99, 145)
-
-    @property
-    def axe_damage_mod(self):
-        return randrange(198, 199)
-=======
         return randrange(65, 103)
 
     @property
@@ -75,7 +52,6 @@ class Damager(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(120, 130)
->>>>>>> Stashed changes
 
 class Tank(NetBowman):
     health = 2400
@@ -93,17 +69,6 @@ class Tank(NetBowman):
 
     @property
     def bow_damage_mod(self):
-<<<<<<< Updated upstream
-        return randrange(13, 54)
-
-    @property
-    def spear_damage_mod(self):
-        return randrange(45, 87)
-
-    @property
-    def axe_damage_mod(self):
-        return randrange(237, 331)
-=======
         return randrange(14, 41)
 
     @property
@@ -113,7 +78,6 @@ class Tank(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(156, 189)
->>>>>>> Stashed changes
 
 class Mage(NetBowman):
     health = 1060
@@ -131,17 +95,6 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
-<<<<<<< Updated upstream
-        return randrange(-10, 20)
-
-    @property
-    def spear_damage_mod(self):
-        return randrange(-20, 100)
-
-    @property
-    def axe_damage_mod(self):
-        return randrange(0, 301, 300)
-=======
         return randrange(-20, 80, 99)
 
     @property
@@ -151,4 +104,3 @@ class Mage(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(-50, 210, 259)
->>>>>>> Stashed changes
