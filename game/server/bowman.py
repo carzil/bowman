@@ -9,6 +9,8 @@ from game.server.regen import Regen
 class Bowman():
     health = 250
 
+    regen_mod = 0
+
     axe_damage_mod = 0
     bow_damage_mod = 0
     spear_damage_mod = 0
@@ -33,6 +35,7 @@ class Bowman():
         self.bow = Bow(self.bow_damage_mod, self.bow_distance_mod)
         self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
         self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
+        self.regen = Regen(self.regen_mod)
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
@@ -145,6 +148,12 @@ class Bowman():
         game_log.info("bowman %d moved by diagonal down right on %d m", self.n, m)
         return True
 
+    def regenerate(self):
+        r = self.regen.count_regen()
+        if self.health + r <= self.__class__.health:
+            self.health += r
+            game_log.info("bowman %d regenerated %d lives", self.n, r)
+
     def damage(self, damage):
         self.health -= damage
         if self.health < 0:
@@ -213,7 +222,6 @@ class Bowman():
             self.handle_move(first_letter, splited_string)
         else:
             raise Retry
-        self.health += Regen().regen()
 
     def update(self):
         while True:
@@ -223,6 +231,7 @@ class Bowman():
                 pass
             else:
                 break
+        self.regenerate()
 
     def handle_move(self, first_letter, splited_string):
         meters = int(splited_string[1])
