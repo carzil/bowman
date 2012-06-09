@@ -5,9 +5,9 @@ class Spell():
         pass
 
 class FireBall(Spell):
-    mana = 100
+    mana = 600
 
     def count_damage(self, player, opponent, r):
         if player.mana < self.mana:
-            return False, 500
+            return False, 200
         return True, 0
