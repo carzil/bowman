@@ -2,7 +2,6 @@ import os
 from random import choice
 from socket import socket, error
 import sys
-from game.server.const import maxx, maxy
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World

@@ -1,12 +1,12 @@
 from math import sqrt
 from random import randrange
 from game.server.bowman import NetBowman
-from game.server.exceptions import Restart
+from game.server.exceptions import Restart, Retry
 from game.server.log import game_log
 from game.server.regen import ManaRegen
 
 class Ranger(NetBowman):
-    health = 3800
+    health = 3150
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -15,25 +15,25 @@ class Ranger(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 1
 
-    axe_defense = 7
-    bow_defense = 5
-    spear_defense = 8
+    axe_defense = 4
+    bow_defense = 3
+    spear_defense = 4
 
     @property
     def bow_damage_mod(self):
 
-        return randrange(69, 73)
+        return randrange(89, 98)
 
     @property
     def spear_damage_mod(self):
-        return randrange(149, 201)
+        return randrange(143, 187)
 
     @property
     def axe_damage_mod(self):
-        return randrange(218, 243)
+        return randrange(206, 247)
 
 class Damager(NetBowman):
-    health = 2500
+    health = 2340
 
     max_steps = 6
     max_diagonal_steps = 3
@@ -42,24 +42,24 @@ class Damager(NetBowman):
     bow_distance_mod = 2
     spear_distance_mod = 0
 
-    axe_defense = 4
-    bow_defense = 9
-    spear_defense = 5
+    axe_defense = 3
+    bow_defense = 7
+    spear_defense = 4
 
     @property
     def bow_damage_mod(self):
-        return randrange(79, 132)
+        return randrange(102, 133)
 
     @property
     def spear_damage_mod(self):
-        return randrange(133, 134)
+        return randrange(119, 156)
 
     @property
     def axe_damage_mod(self):
-        return randrange(183, 197)
+        return randrange(193, 203)
 
 class Tank(NetBowman):
-    health = 8000
+    health = 5870
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -68,24 +68,25 @@ class Tank(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 0
 
-    axe_defense = 14
-    bow_defense = 8
-    spear_defense = 7
+    axe_defense = 4
+    bow_defense = 7
+    spear_defense = 6
 
     @property
     def bow_damage_mod(self):
-        return randrange(34, 49)
+        return randrange(45, 63)
 
     @property
     def spear_damage_mod(self):
-        return randrange(50, 57)
+        return randrange(61, 63)
 
     @property
     def axe_damage_mod(self):
-        return randrange(276, 402)
+        return randrange(213, 402)
 
 class Mage(NetBowman):
-    health = 3167
+    health = 1790
+    mana = 500
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -94,11 +95,9 @@ class Mage(NetBowman):
     bow_distance_mod = 3
     spear_distance_mod = 0
 
-    axe_defense = 2
-    bow_defense = 3
-    spear_defense = 3
-
-    mana = 200
+    axe_defense = 13
+    bow_defense = 17
+    spear_defense = 15
 
     def __init__(self, *args, **kwargs):
         super(Mage, self).__init__(*args, **kwargs)
@@ -106,25 +105,27 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return randrange(-50, 150)
+        return randrange(0, 80)
 
     @property
     def spear_damage_mod(self):
-        return randrange(-80, 200)
+        return randrange(0, 120)
 
     @property
     def axe_damage_mod(self):
-        return randrange(-120, 300)
+        return randrange(0, 300)
 
     def spell(self, opponent, spell):
         game_log.info("bowman %d make a spell", self.n)
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
         is_miss, damage = spell.count_damage(self, opponent, r)
-        self.mana -= spell.mana
         if is_miss:
             game_log.info("bowman %d missed", self.n)
         else:
+            if not damage:
+                game_log.info("bowman %d have not enough mana", self.n)
+                raise Retry
             res = opponent.damage(damage)
             game_log.info("bowman")
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
@@ -133,6 +134,7 @@ class Mage(NetBowman):
                 self.win()
                 opponent.lose()
                 raise Restart
+        self.mana -= spell.mana
 
     def regenerate_mana(self):
         r = self.mana_regen.count_regen()
