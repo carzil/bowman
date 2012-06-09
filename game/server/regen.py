@@ -8,7 +8,7 @@ class Regen():
         return self.regen
 
 class ManaRegen():
-    def __init__(self, regen=13):
+    def __init__(self, regen=25):
         self.regen = regen
 
     def count_regen(self):
