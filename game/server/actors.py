@@ -86,8 +86,8 @@ class Mage(NetBowman):
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = -2
-    spear_distance_mod = -1
+    bow_distance_mod = 100
+    spear_distance_mod = 0
 
     axe_defense = 3
     bow_defense = 5
@@ -95,12 +95,12 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return randrange(-67, 113, 179)
+        return randrange(-10, 20)
 
     @property
     def spear_damage_mod(self):
-        return randrange(-78, 154, 231)
+        return randrange(-20, 100)
 
     @property
     def axe_damage_mod(self):
-        return randrange(-211, 456, 666)
+        return randrange(0, 301, 300)

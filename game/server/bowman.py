@@ -28,7 +28,6 @@ class Bowman():
         self.y = y
         self.n = n
         self.world = world
-        self.miss_chance = [True]
         self.set_position(self.x, self.y)
         self.bow = Bow(self.bow_damage_mod)
         self.axe = Axe(self.axe_damage_mod)
@@ -176,14 +175,24 @@ class Bowman():
                 try:
                     weapon_type = splited_string[1]
                 except IndexError:
-                    weapon_type = "b"
+                    weapon_type = ""
                 if weapon_type == "a":
                     weapon = self.axe
                 elif weapon_type == "s":
                     weapon = self.spear
-                else:
+                elif weapon_type == "b":
                     weapon = self.bow
+                else:
+                    weapon = None
                 if i is not self:
+                    if not weapon:
+                        r = round(sqrt((i.x - self.x) ** 2 + (i.y - self.y) ** 2))
+                        if r - self.axe_distance_mod < 2:
+                            weapon = self.axe
+                        elif r - self.spear_distance_mod < 8:
+                            weapon = self.spear
+                        else:
+                            weapon = self.bow
                     self.fire(i, weapon)
                     break
         else:

@@ -2,9 +2,9 @@ from socket import *
 from pickle import loads
 import sys
 
-def setup_socket(remote_ip):
+def setup_socket(remote_ip, remote_port=9999):
     sock = socket(AF_INET, SOCK_STREAM)
-    sock.connect((remote_ip, 9999))
+    sock.connect((remote_ip, remote_port))
     data = sock.recv(5)
     if data == b"hello":
         return sock
@@ -30,7 +30,10 @@ def choice_unit_type():
 
 def main(argv):
     if len(argv) >= 2:
-        sock = setup_socket(argv[1])
+        if len(argv) == 3:
+            sock = setup_socket(argv[1], int(argv[2]))
+        else:
+           sock = setup_socket(argv[1])
         unit_type = choice_unit_type()
         sock.send(unit_type)
         while True:

@@ -19,23 +19,34 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
-    global matrix, op_number
+    global matrix, op_number, u_namber
     matrix = matrix.split("\n")
     op_number = matrix[1][7]
+    u_namer = matrix[0][-2]
     matrix = matrix[3:]
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
     matrix = wmatrix
-    return matrix, op_namber
+    return matrix, op_namber, u_namber
 
-def do():
+def u_matrix():
     for i in range(len(matrix)):
         for j in range(len(i)):
-            if matrix[i][j] == op_number:
-                r = round(sqrt((op_number - self.x) ** 2 + (opponent.y - self.y) ** 2))
-    return "f"
-    
+            if matrix[i][j] == u_namber:
+                return i, j
+
+def op_matrix():
+    for i in range(len(matrix)):
+        for j in range(len(i)):
+            if matrix[i][j] == op_namber:
+                return i, j
+
+def do():
+    y_u, x_u = u_matrix()
+    y_op, x_op = op_matrix()
+    r = round(sqrt((y_u - y_op) ** 2 + (x_y - x_op) ** 2))
+
 def main(argv):
     global matrix
     if len(argv) >= 2:

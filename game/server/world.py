@@ -23,7 +23,7 @@ class World():
             i().register(entities_dict)
 
         for i in range(self.y):
-            string = file_obj.readline().split(" ")
+            string = file_obj.readline().strip().split(" ")
             cnt = 0
             for j in string:
                 obj = entities_dict.get(j, Grass())
