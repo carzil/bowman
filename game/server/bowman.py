@@ -4,6 +4,7 @@ import socket
 from game.server.log import game_log, net_log
 from game.server.exceptions import Restart, Exit, Retry
 from game.server.weapon import Spear, Axe, Bow
+from game.server.regen import Regen
 
 class Bowman():
     health = 250
@@ -209,6 +210,7 @@ class Bowman():
             self.handle_move(first_letter, splited_string)
         else:
             raise Retry
+        self.health += Regen().regen()
 
     def update(self):
         while True:
