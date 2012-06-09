@@ -6,3 +6,10 @@ class Regen():
 
     def count_regen(self):
         return randint(0, 15) + self.regen
+
+class ManaRegen():
+    def __init__(self, regen=0):
+        self.regen = regen
+
+    def count_regen(self):
+        return randint(0, 50) + self.regen

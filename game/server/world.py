@@ -1,6 +1,5 @@
 from math import sqrt
 from game.server.bowman import NetBowman
-from game.server.const import maxx, maxy
 from game.server.entity import Grass, Entity, HealthPack
 from game.server.exceptions import Restart
 from game.server.log import game_log

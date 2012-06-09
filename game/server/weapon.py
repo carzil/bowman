@@ -1,4 +1,5 @@
 from random import randrange, randint
+from game.server.const import BASE_BOW_DISTANCE, BASE_SPEAR_DISTANCE, BASE_AXE_DISTANCE
 
 class Weapon():
     name = "weapon"
@@ -18,7 +19,7 @@ class Bow(Weapon):
     name = "bow"
 
     def count_damage(self, player, opponent, distance):
-        if distance - self.distance_mod > 16:
+        if distance - self.distance_mod > BASE_BOW_DISTANCE:
             return True, 0
         else:
             damage = randrange(10, 20) + self.damage_mod
@@ -33,7 +34,7 @@ class Axe(Weapon):
     name = "axe"
 
     def count_damage(self, player, opponent, distance):
-        if distance - self.distance_mod > 2:
+        if distance - self.distance_mod > BASE_AXE_DISTANCE:
             return True, 0
         else:
             damage = randrange(20, 60) + self.damage_mod
@@ -48,7 +49,7 @@ class Spear(Weapon):
     name = "spear"
 
     def count_damage(self, player, opponent, distance):
-        if distance - self.distance_mod > 8:
+        if distance - self.distance_mod > BASE_SPEAR_DISTANCE:
             return True, 0
         else:
             damage = randrange(25, 35) + self.damage_mod

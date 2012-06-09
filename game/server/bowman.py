@@ -3,6 +3,7 @@ from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
 from game.server.exceptions import Restart, Exit, Retry
+from game.server.spells import FireBall
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
 
@@ -26,15 +27,21 @@ class Bowman():
     max_steps = 5
     max_diagonal_steps = 5
 
+    mana = 0
+
     def __init__(self, x, y, n, world):
         self.x = x
         self.y = y
         self.n = n
         self.world = world
         self.set_position(self.x, self.y)
+
         self.bow = Bow(self.bow_damage_mod, self.bow_distance_mod)
         self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
         self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
+
+        self.fireball = FireBall()
+
         self.regen = Regen(self.regen_mod)
 
     def _set(self):
@@ -180,14 +187,20 @@ class Bowman():
                 opponent.lose()
                 raise Restart
 
+    def spell(self, opponent, spell):
+        raise Retry
+
+    def regenerate_mana(self):
+        pass
+
     def prompt(self):
         return input(">> ")
 
     def _update(self):
         string = self.prompt()
         first_letter = string[0]
+        splited_string = string.split(" ")
         if first_letter == "f":
-            splited_string = string.split(" ")
             try:
                 player = self.world.get_player(int(splited_string[1]))
             except IndexError:
@@ -220,6 +233,17 @@ class Bowman():
             splited_string = string.split(" ")
             first_letter = string[0]
             self.handle_move(first_letter, splited_string)
+        elif first_letter == "p":
+            pass
+        elif first_letter == "m":
+            try:
+                player = self.world.get_player(int(splited_string[1]))
+            except IndexError:
+                player = self.world.get_closest_player(self)
+            if not player or player.n == self.n:
+                player = self.world.get_closest_player(self)
+            self.spell(player, self.fireball)
+            player.check_heal()
         else:
             raise Retry
 
@@ -227,11 +251,12 @@ class Bowman():
         while True:
             try:
                 self._update()
-            except (IndexError, Retry):
+            except (IndexError, ValueError, Retry):
                 pass
             else:
                 break
         self.regenerate()
+        self.regenerate_mana()
 
     def handle_move(self, first_letter, splited_string):
         meters = int(splited_string[1])
