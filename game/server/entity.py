@@ -54,4 +54,8 @@ class HealthPack(Entity):
             game_log.info("health pack rest is %d", self.lives)
             return False
 
+class SpawnPoint(Entity):
+    symbol = "&"
+    name = "spawn point"
+
 

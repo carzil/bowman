@@ -29,12 +29,9 @@ class Bowman():
 
     mana = 0
 
-    def __init__(self, x, y, n, world):
-        self.x = x
-        self.y = y
+    def __init__(self, n, world):
         self.n = n
         self.world = world
-        self.set_position(self.x, self.y)
 
         self.bow = Bow(self.bow_damage_mod, self.bow_distance_mod)
         self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
@@ -326,8 +323,8 @@ class Bowman():
         return str(self.n)
 
 class NetBowman(Bowman):
-    def __init__(self, maxx, maxy, n, world, socket, ci):
-        super(NetBowman, self).__init__(maxx, maxy, n, world)
+    def __init__(self, socket, ci, *args, **kwargs):
+        super(NetBowman, self).__init__(*args, **kwargs)
         self.socket = socket
         self.client_info = ci
 

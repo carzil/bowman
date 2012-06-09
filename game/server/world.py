@@ -1,17 +1,24 @@
 from math import sqrt
+import os
+from random import choice
 from game.server.bowman import NetBowman
-from game.server.entity import Grass, Entity, HealthPack
+from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
 from game.server.exceptions import Restart
 from game.server.log import game_log
 
 class World():
     def __init__(self, file_obj):
+        self.spawn_points = []
         self.load_map(file_obj)
         self.players = []
         game_log.info("world created")
-        game_log.info("map is '%s'", file_obj.name)
+
+    def game_start(self):
+        for player in self.get_players():
+            player._set()
 
     def load_map(self, file_obj):
+        #XXX: handle broken maps
         x, y = map(int, file_obj.readline().split())
         self.x = x
         self.y = y
@@ -27,12 +34,25 @@ class World():
             cnt = 0
             for j in string:
                 obj = entities_dict.get(j, Grass())
+                if isinstance(obj, SpawnPoint):
+                    self.spawn_points.append((i, cnt, SpawnPoint))
+                    obj = Grass()
                 self.world_map[i][cnt] = obj
                 self.world_map_copy[i][cnt] = obj
                 cnt += 1
+        self.max_players = len(self.spawn_points)
+        self.map_name = os.path.basename(file_obj.name)
+
+    def get_random_spawn_point(self):
+        obj = choice(self.spawn_points)
+        self.spawn_points.remove(obj)
+        return obj
 
     def add_player(self, bowman):
         self.players.append(bowman)
+        spawn_point = self.get_random_spawn_point()
+        bowman.x = spawn_point[0]
+        bowman.y = spawn_point[1]
 
     def set_cell(self, x, y, value):
         self.world_map[x][y] = value
