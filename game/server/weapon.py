@@ -1,4 +1,5 @@
 from random import randrange, randint
+from game.server.log import game_log
 
 class Weapon():
     name = "weapon"

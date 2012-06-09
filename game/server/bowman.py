@@ -29,9 +29,9 @@ class Bowman():
         self.n = n
         self.world = world
         self.set_position(self.x, self.y)
-        self.bow = Bow(self.bow_damage_mod)
-        self.axe = Axe(self.axe_damage_mod)
-        self.spear = Spear(self.spear_damage_mod)
+        self.bow = Bow(self.bow_damage_mod, self.bow_distance_mod)
+        self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
+        self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
