@@ -73,7 +73,7 @@ class Tank(NetBowman):
 
     @property
     def spear_damage_mod(self):
-        return randrange(50, 32)
+        return randrange(50, 57)
 
     @property
     def axe_damage_mod(self):

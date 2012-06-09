@@ -54,17 +54,20 @@ def u_helf():
     
 def op_helf():
     a = ""
-    for i in up_matrix[1][10:]:
+    for i in up_matrix[1][10:-4]:
         if i in mass:
             a += i
     op_health = int(a)
     return op_health
-
-def search(sym='+'):
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            if matrix[i][j] == sym:
-                return True, i, j
+class sear():
+    def __init__(self, sym='+'):
+        self.sym = sym
+        
+    def search(self):
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                if matrix[i][j] == self.sym:
+                    return True, i, j
 
 def sqrt_mi(y1, y2, x1, x2):
     if y1 >= y2 and x1 >= x2:
@@ -76,8 +79,8 @@ def sqrt_mi(y1, y2, x1, x2):
     elif y2 >= y1 and x2 >= x1:
         return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
 
-def search_health():
-    tf, y_plus, x_plus = search()
+def search_health(x_u, y_u):
+    tf, y_plus, x_plus = sear('+').search()
     if tf:
         if x_u > x_plus:
             res = x_u - x_plus
@@ -99,19 +102,10 @@ def do():
     y_op, x_op = op_matrix()
     r = sqrt_mi(y_u, y_op, x_u, x_op)
     u_health, op_health = u_helf(), op_helf()
-    if u_health > 800:
+    if u_health > 3000:
         return "f"
-    elif u_health > op_health:
-        if r < 16:
-            return "f"
-        else:
-            plus = search_health()
-            if plus != "!":
-                return plus
-            else:
-                return "f"
     else:
-        plus = search_health()
+        plus = search_health(x_u, y_u)
         if plus != "!":
             return plus
         else:
