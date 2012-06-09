@@ -19,16 +19,17 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
-    global matrix, op_number, u_namber
+    global matrix, is_matrix, op_number, u_namber, u_health, op_health
     matrix = matrix.split("\n")
+    is_matrix = matrix
     op_number = matrix[1][7]
-    u_namer = matrix[0][-2]
+    u_number = matrix[0][-2]
     matrix = matrix[3:]
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
     matrix = wmatrix
-    return matrix, op_namber, u_namber
+    return matrix, op_number, u_number
 
 def u_matrix():
     for i in range(len(matrix)):
@@ -42,6 +43,20 @@ def op_matrix():
             if matrix[i][j] == op_namber:
                 return i, j
 
+def u_helf():
+    a = ""
+    for i in is_matrix[0][9:14]:
+        if i.is_digit():
+            a += i
+    u_health = int(a)
+    
+def op_helf():
+    a = ""
+    for i in is_matrix[1][14:19]:
+        if i.is_digit():
+            a += i
+    u_health = int(a)
+    
 def do():
     y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()
