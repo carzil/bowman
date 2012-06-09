@@ -18,14 +18,37 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
+<<<<<<< Updated upstream
     global matrix
     matrix = matrix.split("\n")
     matrix = matrix[2:]
+=======
+    global matrix, is_matrix, op_number, u_namber, u_health, op_health
+    matrix = matrix.split("\n")
+    is_matrix = matrix
+    op_number = matrix[1][7]
+    u_namer = matrix[0][-2]
+    matrix = matrix[3:]
+>>>>>>> Stashed changes
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
     matrix = wmatrix
 
+def u_helf():
+    a = ""
+    for i in is_matrix[0][9:14]:
+        if i.is_digit():
+            a += i
+    u_health = int(a)
+    
+def op_helf():
+    a = ""
+    for i in is_matrix[1][14:19]:
+        if i.is_digit():
+            a += i
+    u_health = int(a)
+    
 def do():
     return "f"
     

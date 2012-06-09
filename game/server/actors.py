@@ -4,11 +4,11 @@ from game.server.bowman import NetBowman
 class Ranger(NetBowman):
     health = 1150
 
-    max_steps = 6
+    max_steps = 5
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = 1
+    bow_distance_mod = 0
     spear_distance_mod = 1
 
     axe_defense = 16
@@ -17,6 +17,7 @@ class Ranger(NetBowman):
 
     @property
     def bow_damage_mod(self):
+<<<<<<< Updated upstream
         return randrange(32, 56)
 
     @property
@@ -26,12 +27,23 @@ class Ranger(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(190, 230)
+=======
+        return randrange(25, 39)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(79, 113)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(101, 143)
+>>>>>>> Stashed changes
 
 class Damager(NetBowman):
     health = 800
 
-    max_steps = 8
-    max_diagonal_steps = 4
+    max_steps = 6
+    max_diagonal_steps = 3
 
     axe_distance_mod = 0
     bow_distance_mod = 2
@@ -43,6 +55,7 @@ class Damager(NetBowman):
 
     @property
     def bow_damage_mod(self):
+<<<<<<< Updated upstream
         return randrange(114, 211)
 
     @property
@@ -52,11 +65,22 @@ class Damager(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(198, 199)
+=======
+        return randrange(65, 103)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(69, 111)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(120, 130)
+>>>>>>> Stashed changes
 
 class Tank(NetBowman):
     health = 2400
 
-    max_steps = 6
+    max_steps = 5
     max_diagonal_steps = 3
 
     axe_distance_mod = 1
@@ -69,6 +93,7 @@ class Tank(NetBowman):
 
     @property
     def bow_damage_mod(self):
+<<<<<<< Updated upstream
         return randrange(13, 54)
 
     @property
@@ -78,11 +103,22 @@ class Tank(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(237, 331)
+=======
+        return randrange(14, 41)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(22, 56)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(156, 189)
+>>>>>>> Stashed changes
 
 class Mage(NetBowman):
     health = 1060
 
-    max_steps = 6
+    max_steps = 5
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
@@ -95,6 +131,7 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
+<<<<<<< Updated upstream
         return randrange(-10, 20)
 
     @property
@@ -104,3 +141,14 @@ class Mage(NetBowman):
     @property
     def axe_damage_mod(self):
         return randrange(0, 301, 300)
+=======
+        return randrange(-20, 80, 99)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(-40, 160, 199)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(-50, 210, 259)
+>>>>>>> Stashed changes
