@@ -26,7 +26,7 @@ class Bow(Weapon):
 
     def count_defense(self, player, opponent, distance):
         a = randrange(7, 21)
-        a = a / 10
+        a /= 10
         return opponent.bow_defense * a
 
 class Axe(Weapon):
@@ -41,7 +41,7 @@ class Axe(Weapon):
 
     def count_defense(self, player, opponent, distance):
         a = randrange(15, 28)
-        a = a / 10
+        a /= 10
         return opponent.axe_defense * a
 
 class Spear(Weapon):
@@ -56,5 +56,5 @@ class Spear(Weapon):
 
     def count_defense(self, player, opponent, distance):
         a = randrange(9, 24)
-        a = a / 10
+        a /= 10
         return opponent.spear_defense * a
