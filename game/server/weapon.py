@@ -25,7 +25,9 @@ class Bow(Weapon):
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        return opponent.bow_defense * randint(1, 3)
+        a = randrange(7, 21)
+        a = a / 10
+        return opponent.bow_defense * a
 
 class Axe(Weapon):
     name = "axe"
@@ -38,7 +40,9 @@ class Axe(Weapon):
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        return opponent.axe_defense * randint(2, 3)
+        a = randrange(15, 28)
+        a = a / 10
+        return opponent.axe_defense * a
 
 class Spear(Weapon):
     name = "spear"
@@ -51,5 +55,6 @@ class Spear(Weapon):
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        return opponent.spear_defense * randint(1, 2)
-
+        a = randrange(9, 24)
+        a = a / 10
+        return opponent.spear_defense * a
