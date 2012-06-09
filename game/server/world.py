@@ -1,6 +1,6 @@
 from game.server.bowman import NetBowman
 from game.server.const import maxx, maxy
-from game.server.entity import Grass, Wall, Spikes, Entity
+from game.server.entity import Grass, Entity, HealthPack
 from game.server.exceptions import Restart
 from game.server.log import game_log
 
@@ -43,6 +43,15 @@ class World():
     def clean_position(self, x, y):
         self.set_cell(x, y, self.world_map_copy[x][y])
 
+    def get_cell_copy(self, x, y):
+        return self.world_map_copy[x][y]
+
+    def check_heal(self, player):
+        entity = self.get_cell_copy(player.x, player.y)
+        if isinstance(entity, HealthPack):
+            if entity.apply(player):
+                self.set_cell_copy(player.x, player.y, Grass())
+
     def set_player(self, x, y, player):
         if y < 0 or y > self.y - 1 or x < 0 or x > self.x - 1:
             return False
@@ -71,13 +80,13 @@ class World():
         return True
 
     def update(self):
-        for player in self.get_players():
-            player.send_info()
+        self.send_info()
 
         for player in self.get_players():
             player.update()
-            for player2 in self.get_players():
-                player2.send_info()
+            self.send_info()
+            player.update()
+            self.send_info()
 
         for i in self.get_players():
             game_log.info("bowman %d is in cell (%d, %d)", i.n, i.x, i.y)
@@ -114,3 +123,7 @@ class World():
                 out += str(j) + " "
             out += "\n"
         return out
+
+    def send_info(self):
+        for player in self.get_players():
+            player.send_info()
