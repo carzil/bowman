@@ -1,8 +1,15 @@
+from random import randint
+
 class Regen():
-    name = "regen"
+    def __init__(self, regen=0):
+        self.regen = regen
 
-    def __init__(self, regen_mod=10):
-        self.regen_mod = regen_mod
+    def count_regen(self):
+        return randint(0, 15) + self.regen
 
-    def regen(self):
-        return self.regen_mod
+class ManaRegen():
+    def __init__(self, regen=0):
+        self.regen = regen
+
+    def count_regen(self):
+        return randint(0, 50) + self.regen

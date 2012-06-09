@@ -3,11 +3,14 @@ from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
 from game.server.exceptions import Restart, Exit, Retry
+from game.server.spells import FireBall
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
 
 class Bowman():
     health = 250
+
+    regen_mod = 0
 
     axe_damage_mod = 0
     bow_damage_mod = 0
@@ -24,15 +27,22 @@ class Bowman():
     max_steps = 5
     max_diagonal_steps = 5
 
+    mana = 0
+
     def __init__(self, x, y, n, world):
         self.x = x
         self.y = y
         self.n = n
         self.world = world
         self.set_position(self.x, self.y)
-        self.bow = Bow(self.bow_damage_mod)
-        self.axe = Axe(self.axe_damage_mod)
-        self.spear = Spear(self.spear_damage_mod)
+
+        self.bow = Bow(self.bow_damage_mod, self.bow_distance_mod)
+        self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
+        self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
+
+        self.fireball = FireBall()
+
+        self.regen = Regen(self.regen_mod)
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
@@ -145,6 +155,12 @@ class Bowman():
         game_log.info("bowman %d moved by diagonal down right on %d m", self.n, m)
         return True
 
+    def regenerate(self):
+        r = self.regen.count_regen()
+        if self.health + r <= self.__class__.health:
+            self.health += r
+            game_log.info("bowman %d regenerated %d lives", self.n, r)
+
     def damage(self, damage):
         self.health -= damage
         if self.health < 0:
@@ -171,55 +187,76 @@ class Bowman():
                 opponent.lose()
                 raise Restart
 
+    def spell(self, opponent, spell):
+        raise Retry
+
+    def regenerate_mana(self):
+        pass
+
     def prompt(self):
         return input(">> ")
 
     def _update(self):
         string = self.prompt()
         first_letter = string[0]
+        splited_string = string.split(" ")
         if first_letter == "f":
-            for i in self.world.get_players():
-                splited_string = string.split(" ")
-                try:
-                    weapon_type = splited_string[1]
-                except IndexError:
-                    weapon_type = ""
-                if weapon_type == "a":
+            try:
+                player = self.world.get_player(int(splited_string[1]))
+            except IndexError:
+                player = self.world.get_closest_player(self)
+            if not player or player.n == self.n:
+                player = self.world.get_closest_player(self)
+            try:
+                weapon_type = splited_string[2]
+            except IndexError:
+                weapon_type = ""
+            if weapon_type == "a":
+                weapon = self.axe
+            elif weapon_type == "s":
+                weapon = self.spear
+            elif weapon_type == "b":
+                weapon = self.bow
+            else:
+                weapon = None
+            if not weapon:
+                r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
+                if r - self.axe_distance_mod < 2:
                     weapon = self.axe
-                elif weapon_type == "s":
+                elif r - self.spear_distance_mod < 8:
                     weapon = self.spear
-                elif weapon_type == "b":
-                    weapon = self.bow
                 else:
-                    weapon = None
-                if i is not self:
-                    if not weapon:
-                        r = round(sqrt((i.x - self.x) ** 2 + (i.y - self.y) ** 2))
-                        if r - self.axe_distance_mod < 2:
-                            weapon = self.axe
-                        elif r - self.spear_distance_mod < 8:
-                            weapon = self.spear
-                        else:
-                            weapon = self.bow
-                    self.fire(i, weapon)
-                    i.check_heal()
-                    break
+                    weapon = self.bow
+            self.fire(player, weapon)
+            player.check_heal()
         elif first_letter in ["a", "s", "d", "w", "q", "e", "z", "c"]:
             splited_string = string.split(" ")
             first_letter = string[0]
             self.handle_move(first_letter, splited_string)
+        elif first_letter == "p":
+            pass
+        elif first_letter == "m":
+            try:
+                player = self.world.get_player(int(splited_string[1]))
+            except IndexError:
+                player = self.world.get_closest_player(self)
+            if not player or player.n == self.n:
+                player = self.world.get_closest_player(self)
+            self.spell(player, self.fireball)
+            player.check_heal()
         else:
             raise Retry
-        self.health += Regen().regen()
 
     def update(self):
         while True:
             try:
                 self._update()
-            except (IndexError, Retry):
+            except (IndexError, ValueError, Retry):
                 pass
             else:
                 break
+        self.regenerate()
+        self.regenerate_mana()
 
     def handle_move(self, first_letter, splited_string):
         meters = int(splited_string[1])
