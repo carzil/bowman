@@ -1,3 +1,4 @@
+from math import sqrt
 from game.server.bowman import NetBowman
 from game.server.const import maxx, maxy
 from game.server.entity import Grass, Entity, HealthPack
@@ -90,6 +91,27 @@ class World():
 
         for i in self.get_players():
             game_log.info("bowman %d is in cell (%d, %d)", i.n, i.x, i.y)
+
+    def get_player(self, n):
+        for i in self.get_players():
+            if i.n == n:
+                return i
+        return None
+
+    def get_closest_player(self, player):
+        i = 1
+        m_p = self.get_player(i)
+        m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
+        while not m_r:
+            m_p = self.get_player(i)
+            m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
+            i += 1
+
+        for i in self.get_players():
+            m_r_ = round(sqrt((i.x - player.x) ** 2 + (i.y - player.y) ** 2))
+            if m_r_ < m_r and m_r_:
+                m_p, m_r = i, m_r_
+        return m_p
 
     def get_players(self):
         return self.players

@@ -1,5 +1,4 @@
 from random import randrange, randint
-from game.server.log import game_log
 
 class Weapon():
     name = "weapon"
@@ -53,3 +52,4 @@ class Spear(Weapon):
 
     def count_defense(self, player, opponent, distance):
         return opponent.spear_defense * randint(1, 2)
+

@@ -177,32 +177,35 @@ class Bowman():
         string = self.prompt()
         first_letter = string[0]
         if first_letter == "f":
-            for i in self.world.get_players():
-                splited_string = string.split(" ")
-                try:
-                    weapon_type = splited_string[1]
-                except IndexError:
-                    weapon_type = ""
-                if weapon_type == "a":
+            splited_string = string.split(" ")
+            try:
+                player = self.world.get_player(int(splited_string[1]))
+            except IndexError:
+                player = self.world.get_closest_player(self)
+            if not player or player.n == self.n:
+                player = self.world.get_closest_player(self)
+            try:
+                weapon_type = splited_string[2]
+            except IndexError:
+                weapon_type = ""
+            if weapon_type == "a":
+                weapon = self.axe
+            elif weapon_type == "s":
+                weapon = self.spear
+            elif weapon_type == "b":
+                weapon = self.bow
+            else:
+                weapon = None
+            if not weapon:
+                r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
+                if r - self.axe_distance_mod < 2:
                     weapon = self.axe
-                elif weapon_type == "s":
+                elif r - self.spear_distance_mod < 8:
                     weapon = self.spear
-                elif weapon_type == "b":
-                    weapon = self.bow
                 else:
-                    weapon = None
-                if i is not self:
-                    if not weapon:
-                        r = round(sqrt((i.x - self.x) ** 2 + (i.y - self.y) ** 2))
-                        if r - self.axe_distance_mod < 2:
-                            weapon = self.axe
-                        elif r - self.spear_distance_mod < 8:
-                            weapon = self.spear
-                        else:
-                            weapon = self.bow
-                    self.fire(i, weapon)
-                    i.check_heal()
-                    break
+                    weapon = self.bow
+            self.fire(player, weapon)
+            player.check_heal()
         elif first_letter in ["a", "s", "d", "w", "q", "e", "z", "c"]:
             splited_string = string.split(" ")
             first_letter = string[0]
