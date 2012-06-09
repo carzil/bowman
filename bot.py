@@ -19,49 +19,104 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
-    global matrix, is_matrix, op_number, u_namber, u_health, op_health
+    global matrix, up_matrix, op_number, u_number, u_health, op_health, mass
     matrix = matrix.split("\n")
-    is_matrix = matrix
+    mass = ["0","1","2","3","4","5","6","7","8","9"]
+    up_matrix = matrix
     op_number = matrix[1][7]
     u_number = matrix[0][-2]
     matrix = matrix[3:]
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
-    matrix = wmatrix
-    return matrix, op_number, u_number
+       matrix = wmatrix
+    return matrix
 
 def u_matrix():
-    for i in range(len(matrix)):
-        for j in range(len(i)):
-            if matrix[i][j] == u_namber:
+    for i in range(0, len(matrix)):
+        for j in range(0, len(matrix[i])):
+            if matrix[i][j] == u_number:
                 return i, j
 
 def op_matrix():
-    for i in range(len(matrix)):
-        for j in range(len(i)):
-            if matrix[i][j] == op_namber:
+    for i in range(0, len(matrix)):
+        for j in range(0, len(matrix[i])):
+            if matrix[i][j] == op_number:
                 return i, j
 
 def u_helf():
     a = ""
-    for i in is_matrix[0][9:14]:
-        if i.is_digit():
+    for i in up_matrix[0][:-3]:
+        if i in mass:
             a += i
     u_health = int(a)
+    return u_health
     
 def op_helf():
     a = ""
-    for i in is_matrix[1][14:19]:
-        if i.is_digit():
+    for i in up_matrix[1][10:]:
+        if i in mass:
             a += i
-    u_health = int(a)
-    
+    op_health = int(a)
+    return op_health
+
+def search(sym='+'):
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] == sym:
+                return True, i, j
+
+def sqrt_mi(y1, y2, x1, x2):
+    if y1 >= y2 and x1 >= x2:
+        return round(sqrt((y1 - y2) ** 2 + (x1 - x2) ** 2))
+    elif y1 >= y2 and x2 >= x1:
+        return round(sqrt((y1 - y2) ** 2 + (x2 - x1) ** 2))
+    elif y2 >= y1 and x1 >= x2:
+        return round(sqrt((y2 - y1) ** 2 + (x1 - x2) ** 2))
+    elif y2 >= y1 and x2 >= x1:
+        return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
+
+def search_health():
+    tf, y_plus, x_plus = search()
+    if tf:
+        if x_u > x_plus:
+            res = x_u - x_plus
+            return "a " + str(res)
+        elif x_u < x_plus:
+            res = x_plus - x_u
+            return "d " + str(res)
+        elif y_u > y_plus:
+            res = y_u - y_plus
+            return "w " + str(res)
+        elif y_u < y_plus:
+            res = y_plus - y_u
+            return "s " + str(res)
+    else:
+        return "!"
+
 def do():
     y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()
-    r = round(sqrt((y_u - y_op) ** 2 + (x_y - x_op) ** 2))
-
+    r = sqrt_mi(y_u, y_op, x_u, x_op)
+    u_health, op_health = u_helf(), op_helf()
+    if u_health > 800:
+        return "f"
+    elif u_health > op_health:
+        if r < 16:
+            return "f"
+        else:
+            plus = search_health()
+            if plus != "!":
+                return plus
+            else:
+                return "f"
+    else:
+        plus = search_health()
+        if plus != "!":
+            return plus
+        else:
+            return "f"
+    
 def main(argv):
     global matrix
     if len(argv) >= 2:
