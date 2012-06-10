@@ -160,18 +160,20 @@ class World():
         return self.world_map[x][y]
 
     def end_game(self):
-        for player in self.get_players():
+        for player in self.players:
             try:
                 player.end_game()
             except:
                 pass
+        game_log.info("game ended")
 
     def abort_game(self):
-        for player in self.get_players():
+        for player in self.players:
             try:
                 player.abort_game()
             except:
                 pass
+        game_log.info("game aborted")
 
     def render_matrix(self):
         out = ""
