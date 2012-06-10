@@ -46,7 +46,7 @@ def op_matrix():
 
 def u_helf():
     a = ""
-    for i in up_matrix[0][:-3]:
+    for i in up_matrix[0][:-7]:
         if i in mass:
             a += i
     u_health = int(a)
@@ -60,20 +60,42 @@ def op_helf():
     op_health = int(a)
     return op_health
 
-class sear():
+class search():
     def __init__(self, sym='+'):
         self.sym = sym
         
     def search(self):
-        a = []
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
+        a, b = [], []
+        for i in range(0, len(matrix)):
+            for j in range(0, len(matrix[i])):
                 if matrix[i][j] == self.sym:
-                a.append([i, j])
-        if a == []:
-            return Folse, 0, 0
-        else:
-            return True, a
+                    a.append(i)
+                    b.append(j)
+        return a, b
+
+    def search_colvo(self):
+        q = 0
+        for i in range(0, len(matrix)):
+            for j in range(0, len(matrix[i])):
+                if matrix[i][j] == self.sym:
+                    q += 1
+        return q
+
+def search_min(x_u, y_u):
+    min_mi = [1000, 0, 0]
+    colvo = search().search_colvo()
+    if colvo != 0:
+        mas_y_plus, mas_x_plus = search().search()
+        for i in range(0, colvo):
+            y_plus, x_plus = mas_y_plus[i], mas_x_plus[i]
+            r = sqrt_mi(y_u, y_plus, x_u, x_plus)
+            if r < min_mi[0]:
+                min_mi[0] = r
+                min_mi[1] = y_plus
+                min_mi[2] = x_plus
+        return True, min_mi[1], min_mi[2]
+    else:
+        return False, 0, 0
 
 def sqrt_mi(y1, y2, x1, x2):
     if y1 >= y2 and x1 >= x2:
@@ -86,20 +108,8 @@ def sqrt_mi(y1, y2, x1, x2):
         return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
 
 def take_health(x_u, y_u):
-    tf, pluss = sear('+').search()
+    tf, y_plus, x_plus = search_min(x_u, y_u)
     if tf:
-        for i in pluss:
-            i = list(map(int,i.split()))
-            x, y = i[0], i[1]
-            a = sqrt_mi(y_u, y, x_u, x)
-            sqr += [a]
-        m = min(sqr)
-        for i in sqr:
-            sem += 1
-            if i == m:
-                break
-        pluss = pluss[sem].split()
-        y_plus, x_plus = int(pluss[0]), int(pluss[1])
         if x_u > x_plus:
             res = x_u - x_plus
             return "a " + str(res)
@@ -135,7 +145,37 @@ class go():
         elif self.y_u < self.y_op:
             res = self.y_op - self.y_u
             return "s " + str(res)
-
+def test():
+    if op_health < 250:
+        if r > 15:
+            return go(x_u, y_u, x_op, x_op).go_enemy()
+        else:
+            return "f"
+    elif u_health > 800:
+        if r > 15:
+            return go(x_u, y_u, x_op, x_op).go_enemy()
+        else:
+            return "f"
+    elif u_health > op_health + 100:
+        if r > 15:
+            plus = take_health(x_u, y_u)
+            if plus != "!":
+                return plus
+            else:
+                return go(x_u, y_u, x_op, x_op).go_enemy()
+        else:
+            return "f"
+    elif u_health < op_health:
+        plus = take_health(x_u, y_u)
+        if plus != "!":
+            return plus
+        else:
+            return "f"
+    elif r < 8:
+        return "f"
+    else:
+        return go(x_u, y_u, x_op, x_op).go_enemy()
+    
 def do():
     y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()

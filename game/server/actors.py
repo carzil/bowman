@@ -85,13 +85,10 @@ class Tank(NetBowman):
         return randrange(213, 402)
 
 class Mage(NetBowman):
-<<<<<<< HEAD
+
     health = 2810
     mana = 200
-=======
-    health = 1790
-    mana = 500
->>>>>>> 3736e45cffa82c47511c09b98381221069050346
+
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -114,7 +111,7 @@ class Mage(NetBowman):
 
     @property
     def spear_damage_mod(self):
-        return randrange(0, 140]
+        return randrange(0, 140)
 
     @property
     def axe_damage_mod(self):
