@@ -85,6 +85,7 @@ class Tank(NetBowman):
         return randrange(213, 402)
 
 class Mage(NetBowman):
+
     health = 2810
     mana = 200
 
