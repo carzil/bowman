@@ -79,10 +79,9 @@ class World():
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):
             if entity is not player:
-                game_log.info("bowman %d was killed by bowman %d in a collision")
+                game_log.info("bowman %d was killed by bowman %d in a collision", player.n, entity.n)
                 player.lose()
-                entity.win()
-                raise Restart
+                raise Kill(player)
         elif entity and not entity.collidable and not entity.pickable:
             res = player.damage(entity.damage(player))
             if not res:
