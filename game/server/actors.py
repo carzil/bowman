@@ -1,7 +1,7 @@
 from math import sqrt
 from random import randrange
 from game.server.bowman import NetBowman
-from game.server.exceptions import Restart
+from game.server.exceptions import Restart, Retry
 from game.server.log import game_log
 from game.server.regen import ManaRegen
 
@@ -85,8 +85,13 @@ class Tank(NetBowman):
         return randrange(213, 402)
 
 class Mage(NetBowman):
+<<<<<<< HEAD
     health = 2810
     mana = 200
+=======
+    health = 1790
+    mana = 500
+>>>>>>> 3736e45cffa82c47511c09b98381221069050346
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -120,10 +125,12 @@ class Mage(NetBowman):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
         is_miss, damage = spell.count_damage(self, opponent, r)
-        self.mana -= spell.mana
         if is_miss:
             game_log.info("bowman %d missed", self.n)
         else:
+            if not damage:
+                game_log.info("bowman %d have not enough mana", self.n)
+                raise Retry
             res = opponent.damage(damage)
             game_log.info("bowman")
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
@@ -132,6 +139,7 @@ class Mage(NetBowman):
                 self.win()
                 opponent.lose()
                 raise Restart
+        self.mana -= spell.mana
 
     def regenerate_mana(self):
         r = self.mana_regen.count_regen()
