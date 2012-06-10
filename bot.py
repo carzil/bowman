@@ -69,9 +69,9 @@ class sear():
         for i in range(len(matrix)):
             for j in range(len(matrix[i])):
                 if matrix[i][j] == self.sym:
-                a.append([i, j])
-        if a == []:
-            return Folse, 0, 0
+                    a.append([i, j])
+        if not a:
+            return False, 0, 0
         else:
             return True, a
 
