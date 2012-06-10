@@ -1,3 +1,4 @@
+from game.server.exceptions import Exit, Restart
 from game.server.log import game_log
 from game.server.main import start, setup_socket
 from argparse import ArgumentParser
@@ -14,4 +15,7 @@ if __name__ == "__main__":
 
     server_socket = setup_socket(args.host, args.port)
     while True:
-        start(args.map, args.players, server_socket)
+        try:
+            start(args.map, args.players, server_socket)
+        except (Exit, Restart):
+            pass
