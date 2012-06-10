@@ -1,6 +1,7 @@
 import os
 from random import choice
 from socket import socket, error
+import select
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
@@ -14,11 +15,13 @@ def setup_socket(host, port):
     sock.listen(10)
     return sock
 
-def accept_client(n, world, server_sock):
+def accept_client(server_sock):
     sock, client = server_sock.accept()
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
     sock.send(b"hello")
-    unit_type = sock.recv(1)
+    return sock, client
+
+def get_unit_type(unit_type, sock, n, world, client):
     if unit_type == b"t":
         cls = Tank
         game_log.info("bowman %d is a tank", n)
@@ -37,15 +40,55 @@ def random_map(directory):
     files = os.listdir(directory)
     return open(os.path.join(directory, choice(files)))
 
+class PlayerInfo():
+    def __init__(self, client, n):
+        self.client = client
+        self.n = n
+
+    def __iter__(self):
+        yield self.client
+        yield self.n
+
 def accept_all_clients(n, world, server_sock):
-    clients = []
-    for i in range(n):
-        player = accept_client(i + 1, world, server_sock)
-        clients.append(player)
-        world.add_player(player)
+    players = []
+    track = [server_sock]
+    socks_info = {}
+    i = 0
+    clients_missed = 0
+    while True:
+        if len(players) + clients_missed == n and len(players) > 0:
+            break
+        elif clients_missed == n:
+            game_log.critical("all players disconnected")
+            game_log.critical("restart")
+            raise Restart
+        r, w, e = select.select(track, [], [])
+        for sock in r:
+            if sock is server_sock:
+                i += 1
+                client_sock, client = accept_client(server_sock)
+                socks_info[client_sock] = PlayerInfo(client, i)
+                track.append(client_sock)
+            else:
+                client, c_n = socks_info.get(sock)
+                try:
+                    unit_type = sock.recv(1)
+                except error:
+                    track.remove(sock)
+                    del socks_info[sock]
+                    game_log.warning("client '%s:%d' disconnected", client[0], client[1])
+                    clients_missed += 1
+                else:
+                    player = get_unit_type(unit_type, sock, c_n, world, client)
+                    world.add_player(player)
+                    players.append(player)
+    if len(players) == 1:
+        game_log.critical("game with 1 player")
+        game_log.critical("restart")
+        world.abort_game()
+        raise Restart
 
 def start(map_path, players_num, sock):
-
     if os.path.isdir(map_path):
         is_map_dir = True
         map_file = random_map(map_path)
@@ -63,13 +106,8 @@ def start(map_path, players_num, sock):
             game_log.critical("abort")
             exit(1)
 
-    try:
-        game_log.info("waiting for %d players", players_num)
-        players = accept_all_clients(players_num, world, sock)
-    except error:
-        game_log.critical("client disconnected")
-        game_log.critical("restart")
-        return
+    game_log.info("waiting for %d players", players_num)
+    accept_all_clients(players_num, world, sock)
 
     game_log.info("server started")
     game_log.info("game started")
