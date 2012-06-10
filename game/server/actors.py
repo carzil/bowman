@@ -1,7 +1,7 @@
 from math import sqrt
 from random import randrange
 from game.server.bowman import NetBowman
-from game.server.exceptions import Restart, Retry, Kill
+from game.server.exceptions import Retry, Kill
 from game.server.log import game_log
 from game.server.regen import ManaRegen
 
@@ -85,8 +85,8 @@ class Tank(NetBowman):
         return randrange(213, 402)
 
 class Mage(NetBowman):
-    health = 1790
-    mana = 500
+    health = 2810
+    mana = 200
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -105,15 +105,15 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return randrange(0, 80)
+        return randrange(0, 100)
 
     @property
     def spear_damage_mod(self):
-        return randrange(0, 120)
+        return randrange(0, 140)
 
     @property
     def axe_damage_mod(self):
-        return randrange(0, 300)
+        return randrange(0, 320)
 
     def spell(self, opponent, spell):
         game_log.info("bowman %d make a spell", self.n)
