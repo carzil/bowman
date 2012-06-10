@@ -54,11 +54,14 @@ def start(map_path, players_num, sock):
         map_file = open(map_path)
 
     world = World(map_file)
-    if world.max_players > players_num:
+    if world.max_players < players_num:
         if is_map_dir:
             return
         else:
+            game_log.info("%d spawn points", world.max_players)
             game_log.critical("there isn't enough spawn points on map '%s'", world.map_name)
+            game_log.critical("abort")
+            exit(1)
 
     try:
         game_log.info("waiting for %d players", players_num)
@@ -71,7 +74,6 @@ def start(map_path, players_num, sock):
     game_log.info("server started")
     game_log.info("game started")
     game_log.info("game with %d players", players_num)
-    game_log.info("map is '%s'", world.map_name)
 
     world.game_start()
 
