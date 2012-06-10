@@ -1,7 +1,7 @@
 from math import sqrt
 from random import randrange
 from game.server.bowman import NetBowman
-from game.server.exceptions import Restart, Retry
+from game.server.exceptions import Restart, Retry, Kill
 from game.server.log import game_log
 from game.server.regen import ManaRegen
 
@@ -131,9 +131,8 @@ class Mage(NetBowman):
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
-                self.win()
                 opponent.lose()
-                raise Restart
+                raise Kill(opponent)
         self.mana -= spell.mana
 
     def regenerate_mana(self):
@@ -143,7 +142,10 @@ class Mage(NetBowman):
             game_log.info("bowman %d regenerated %d mana", self.n, r)
 
     def get_info(self):
-        out = "You have %d lives and %d mana, your marker is '%d'\n" % (self.health, self.mana, self.n)
+        if not self.killed:
+            out = "You have %d lives and %d mana, your marker is '%d'\n" % (self.health, self.mana, self.n)
+        else:
+            out = "You have killed\n"
         for i in self.world.get_players():
             if i is not self:
                 out += "Bowman %d have %d lives\n" % (i.n, i.health)

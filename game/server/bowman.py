@@ -2,7 +2,7 @@ from math import sqrt
 from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
-from game.server.exceptions import Restart, Exit, Retry
+from game.server.exceptions import Restart, Exit, Retry, Kill
 from game.server.spells import FireBall
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
@@ -40,6 +40,8 @@ class Bowman():
         self.fireball = FireBall()
 
         self.regen = Regen(self.regen_mod)
+
+        self.killed = False
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
@@ -180,9 +182,8 @@ class Bowman():
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
-                self.win()
                 opponent.lose()
-                raise Restart
+                raise Kill(opponent)
 
     def spell(self, opponent, spell):
         raise Retry
@@ -310,8 +311,15 @@ class Bowman():
     def send_info(self):
         pass
 
+    def kill(self):
+        self.killed = True
+
     def get_info(self):
-        out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
+        #XXX: this function have to be moved to class World
+        if not self.killed:
+            out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
+        else:
+            out = "You have killed"
         for i in self.world.get_players():
             if i is not self:
                 out += "Bowman %d have %d lives\n" % (i.n, i.health)
@@ -348,11 +356,9 @@ class NetBowman(Bowman):
 
     def lose(self):
         self.socket.send(b"lo")
-        self.end_game()
 
     def win(self):
         self.socket.send(b"wi")
-        self.end_game()
 
     def near_border(self):
         self.socket.send(b"nb")

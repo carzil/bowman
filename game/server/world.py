@@ -3,7 +3,7 @@ import os
 from random import choice
 from game.server.bowman import NetBowman
 from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
-from game.server.exceptions import Restart
+from game.server.exceptions import Restart, Kill
 from game.server.log import game_log
 
 class World():
@@ -12,6 +12,7 @@ class World():
         self.load_map(file_obj)
         self.players = []
         game_log.info("world created")
+        game_log.info("map is '%s'", self.map_name)
 
     def game_start(self):
         for player in self.get_players():
@@ -86,10 +87,7 @@ class World():
             res = player.damage(entity.damage(player))
             if not res:
                 player.lose()
-                for i in self.get_players():
-                    if i is not player:
-                        i.win()
-                raise Restart
+                raise Kill(player)
         elif entity and not entity.collidable and entity.pickable:
             if entity.apply(player):
                 self.set_cell_copy(x, y, Grass())
@@ -99,13 +97,28 @@ class World():
         self.set_cell(x, y, player)
         return True
 
+    def check_win(self):
+        players = self.get_players()
+        if len(players) == 1:
+            players[0].win()
+            self.end_game()
+            raise Restart
+
+    def update_player(self, player):
+        if not player.killed:
+            try:
+                player.update()
+            except Kill as instance:
+                self.clean_position(instance.player.x, instance.player.y)
+                instance.player.kill()
+                self.check_win()
+
     def update(self):
         self.send_info()
-
-        for player in self.get_players():
-            player.update()
+        for player in self.players:
+            self.update_player(player)
             self.send_info()
-            player.update()
+            self.update_player(player)
             self.send_info()
 
         for i in self.get_players():
@@ -119,12 +132,16 @@ class World():
 
     def get_closest_player(self, player):
         i = 1
+        m_r = 0
         m_p = self.get_player(i)
-        m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
-        while not m_r:
-            m_p = self.get_player(i)
-            m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
-            i += 1
+        for i in self.get_players():
+            m_p = i
+            try:
+                m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
+            except AttributeError: #m_p may be NoneType
+                pass
+            if m_r:
+                break
 
         for i in self.get_players():
             m_r_ = round(sqrt((i.x - player.x) ** 2 + (i.y - player.y) ** 2))
@@ -133,7 +150,7 @@ class World():
         return m_p
 
     def get_players(self):
-        return self.players
+        return list(filter(lambda x: not x.killed, self.players))
 
     def clean_matrix(self):
         for i in range(maxx):
@@ -166,5 +183,5 @@ class World():
         return out
 
     def send_info(self):
-        for player in self.get_players():
+        for player in self.players:
             player.send_info()
