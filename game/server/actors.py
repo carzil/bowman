@@ -161,10 +161,12 @@ class Mage(NetBowman):
             out = "You have %d lives and %d mana, your marker is '%d'\n" % (self.health, self.mana, self.n)
         else:
             out = "You have killed\n"
-        if self.team_nums:
-            out += "Your team is %s" % (self.team_nums,)
-        else:
-            out += "Your team is %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
+        if self.team:
+            if self.team_nums:
+                out += "Your team is %s" % (self.team_nums,)
+            else:
+                out += "Your team is %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
+            out += "\n"
         out += "\n"
         for i in self.world.get_players():
             if i is not self:
