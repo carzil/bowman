@@ -26,9 +26,11 @@ def parse_matrix():
     mass = ["0","1","2","3","4","5","6","7","8","9"]
     up_matrix = matrix
     op_number = matrix[1][7]
+    u_number = ''
     for i in matrix[0][-7:]:
         if i in mass:
-            u_number = i
+            u_number += i
+    u_number = int(u_number)
     matrix = matrix[3:]
     wmatrix = []
     for i in matrix:
@@ -64,7 +66,7 @@ def op_helf():
     op_health = int(a)
     return op_health
 
-class search(): #class poisk
+class search():
     def __init__(self, sym='+'):
         self.sym = sym
         
