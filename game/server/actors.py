@@ -136,7 +136,6 @@ class Mage(NetBowman):
                 game_log.info("bowman %d have not enough mana", self.n)
                 raise Retry
             res = opponent.damage(damage)
-            game_log.info("bowman")
             game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
             if not res:
                 game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
