@@ -25,15 +25,6 @@ def parse_matrix():
     matrix = matrix.split("\n")
     mass = ["0","1","2","3","4","5","6","7","8","9"]
     up_matrix = matrix
-<<<<<<< Updated upstream
-    op_number = matrix[1][7]
-    u_number = ''
-    for i in matrix[0][-7:]:
-        if i in mass:
-            u_number += i
-    u_number = int(u_number)
-    matrix = matrix[3:]
-=======
     op_number = []
     u_number = ''
     mas_op = 0
@@ -48,7 +39,6 @@ def parse_matrix():
                 mas_op += 1
                 a += 1
     matrix = matrix[a:]
->>>>>>> Stashed changes
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
