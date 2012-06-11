@@ -21,10 +21,11 @@ def choice_unit_type():
     return unit_type
     
 def parse_matrix():
-    global matrix, up_matrix, op_number, u_number, u_health, op_health, mass
+    global matrix, up_matrix, op_number, u_number, u_health, op_health, mass, mas_op
     matrix = matrix.split("\n")
     mass = ["0","1","2","3","4","5","6","7","8","9"]
     up_matrix = matrix
+<<<<<<< Updated upstream
     op_number = matrix[1][7]
     u_number = ''
     for i in matrix[0][-7:]:
@@ -32,6 +33,22 @@ def parse_matrix():
             u_number += i
     u_number = int(u_number)
     matrix = matrix[3:]
+=======
+    op_number = []
+    u_number = ''
+    mas_op = 0
+    for i in matrix[0][-7:]:
+        if i in mass:
+            u_number += i
+        a = 1
+    for i in matrix:
+        if i != '':
+            if i[0] == 'P':
+                op_number.append(i[7])
+                mas_op += 1
+                a += 1
+    matrix = matrix[a:]
+>>>>>>> Stashed changes
     wmatrix = []
     for i in matrix:
        wmatrix.append(i.split())
@@ -47,8 +64,10 @@ def u_matrix():
 def op_matrix():
     for i in range(0, len(matrix)):
         for j in range(0, len(matrix[i])):
-            if matrix[i][j] == op_number:
-                return i, j
+            for x in range(0, mas_op):
+                if matrix[i][j] == op_number[x]:
+                    if op_number[x] != '':
+                        return i, j
 
 def u_helf():
     a = ""
@@ -151,37 +170,7 @@ class go():
         elif self.y_u < self.y_op:
             res = self.y_op - self.y_u
             return "s " + str(res)
-def test():
-    if op_health < 250:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > 800:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > op_health + 100:
-        if r > 15:
-            plus = take_health(x_u, y_u)
-            if plus != "!":
-                return plus
-            else:
-                return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health < op_health:
-        plus = take_health(x_u, y_u)
-        if plus != "!":
-            return plus
-        else:
-            return "f"
-    elif r < 8:
-        return "f"
-    else:
-        return go(x_u, y_u, x_op, x_op).go_enemy()
-    
+
 def do():
     y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()
