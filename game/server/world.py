@@ -15,6 +15,8 @@ class World():
         game_log.info("map is '%s'", self.map_name)
 
     def game_start(self):
+        self.players.sort(key=lambda x: x.n)
+
         for player in self.get_players():
             player._set()
 
