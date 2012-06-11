@@ -92,8 +92,8 @@ class Tank(NetBowman):
 
 class Mage(NetBowman):
 
-    health = 2154
-    mana = 200
+    health = 2050
+    mana = 600
 
     regen_mod = 27
 

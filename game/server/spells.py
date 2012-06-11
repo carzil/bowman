@@ -5,17 +5,17 @@ class Spell():
         pass
 
 class FireBall(Spell):
-    mana = 140
+    mana = 150
     
     def count_damage(self, player, opponent, r):
         if player.mana < self.mana:
             return False, 0
-        return False, 240
+        return False, 210
 
 class HealthBreak(Spell):
-    mana = 200
+    mana = 520
 
     def count_damage(self, player, opponent, r):
         if player.mana < self.mana:
             return False, 0
-        return False, opponent.health // 5
+        return False, opponent.health // 4
