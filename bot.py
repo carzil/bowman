@@ -145,37 +145,7 @@ class go():
         elif self.y_u < self.y_op:
             res = self.y_op - self.y_u
             return "s " + str(res)
-def test():
-    if op_health < 250:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > 800:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > op_health + 100:
-        if r > 15:
-            plus = take_health(x_u, y_u)
-            if plus != "!":
-                return plus
-            else:
-                return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health < op_health:
-        plus = take_health(x_u, y_u)
-        if plus != "!":
-            return plus
-        else:
-            return "f"
-    elif r < 8:
-        return "f"
-    else:
-        return go(x_u, y_u, x_op, x_op).go_enemy()
-    
+
 def do():
     y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()
