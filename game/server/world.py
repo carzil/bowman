@@ -192,9 +192,9 @@ class World():
             for j in i:
                 s = str(j)
                 if len(s) == 2:
-                    out += str(s) + " "
+                    out += str(s)
                 else:
-                    out += str(s) + "  "
+                    out += str(s) + " "
 
             out += "\n"
         return out
