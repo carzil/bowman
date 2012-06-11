@@ -5,11 +5,11 @@ class Regen():
         self.regen = regen
 
     def count_regen(self):
-        return self.regen
+        return self.regen * randint(0, 5)
 
 class ManaRegen():
     def __init__(self, regen=43):
         self.regen = regen
 
     def count_regen(self):
-        return self.regen
+        return self.regen * randint(0, 5)
