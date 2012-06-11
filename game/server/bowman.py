@@ -168,6 +168,9 @@ class Bowman():
         self.health -= damage
         if self.health < 0:
             return False
+        if self.health > self.__class__.health:
+            # it looks strange, but sometimes damage may be negative (Damager's life steal)
+            self.health = self.__class__.health
         return True
 
     def fire(self, opponent, weapon):
@@ -188,6 +191,7 @@ class Bowman():
                 game_log.info("player %d killed player %d", self.n, opponent.n)
                 opponent.lose()
                 raise Kill(opponent)
+        return damage
 
     def spell(self, opponent, spell):
         raise Retry
