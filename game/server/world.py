@@ -6,14 +6,19 @@ from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
 from game.server.exceptions import Restart, Kill
 from game.server.log import game_log
 import socket
+from game.server.team import Team
 
 class World():
-    def __init__(self, file_obj):
+    def __init__(self, file_obj, is_team_battle):
         self.spawn_points = []
         self.load_map(file_obj)
         self.players = []
         game_log.info("world created")
         game_log.info("map is '%s'", self.map_name)
+        self.itb = is_team_battle
+        if is_team_battle:
+            self.team_red = Team()
+            self.team_blue = Team()
 
     def game_start(self):
         self.players.sort(key=lambda x: x.n)
@@ -58,6 +63,15 @@ class World():
         spawn_point = self.get_random_spawn_point()
         bowman.x = spawn_point[0]
         bowman.y = spawn_point[1]
+        if self.itb:
+            tr_num = self.team_red.get_players_num()
+            tb_num = self.team_blue.get_players_num()
+            if tr_num > tb_num:
+                self.team_blue.add_player(bowman)
+                bowman.team = self.team_blue
+            else:
+                self.team_red.add_player(bowman)
+                bowman.team = self.team_red
 
     def set_cell(self, x, y, value):
         self.world_map[x][y] = value
@@ -100,13 +114,33 @@ class World():
         self.set_cell(x, y, player)
         return True
 
+    def team_game_end(self, winners, losers):
+        for i in winners.get_players():
+            i.team_win()
+        for i in losers.get_players():
+            i.team_lose()
+        self.end_game()
+
+
     def check_win(self):
-        players = self.get_players()
-        if len(players) == 1:
-            players[0].win()
-            game_log.info("player %d is winner", players[0].n)
-            self.end_game()
-            raise Restart
+        if not self.itb:
+            players = self.get_players()
+            if len(players) == 1:
+                players[0].win()
+                game_log.info("player %d is winner", players[0].n)
+                self.end_game()
+                raise Restart
+        else:
+            tr_num = self.team_red.get_alive_players_num()
+            tb_num = self.team_blue.get_alive_players_num()
+            if not tr_num:
+                game_log.info("blue team win")
+                self.team_game_end(self.team_blue, self.team_red)
+                raise Restart
+            elif not tb_num:
+                game_log.info("red team win")
+                self.team_game_end(self.team_red, self.team_blue)
+                raise Restart
 
     def update_player(self, player):
         if not player.killed:

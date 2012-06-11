@@ -88,7 +88,7 @@ def accept_all_clients(n, world, server_sock):
         world.abort_game()
         raise Restart
 
-def start(map_path, players_num, sock):
+def start(map_path, players_num, sock, itb):
     if os.path.isdir(map_path):
         is_map_dir = True
         map_file = random_map(map_path)
@@ -96,7 +96,7 @@ def start(map_path, players_num, sock):
         is_map_dir = False
         map_file = open(map_path)
 
-    world = World(map_file)
+    world = World(map_file, itb)
     game_log.info("%d spawn points", world.max_players)
     if world.max_players < players_num:
         if is_map_dir:
@@ -111,7 +111,10 @@ def start(map_path, players_num, sock):
 
     game_log.info("server started")
     game_log.info("game started")
-    game_log.info("game with %d players", players_num)
+    if not itb:
+        game_log.info("game with %d players", players_num)
+    else:
+        game_log.info("team game with %d players", players_num)
 
     world.game_start()
 

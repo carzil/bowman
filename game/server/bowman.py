@@ -2,7 +2,7 @@ from math import sqrt
 from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
-from game.server.exceptions import Restart, Exit, Retry, Kill
+from game.server.exceptions import Retry, Kill
 from game.server.spells import FireBall, HealthBreak
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
@@ -29,7 +29,7 @@ class Bowman():
 
     mana = 0
 
-    def __init__(self, n, world):
+    def __init__(self, n, world, team=None):
         self.n = n
         self.world = world
 
@@ -43,6 +43,9 @@ class Bowman():
         self.regen = Regen(self.regen_mod)
 
         self.killed = False
+
+        self.team = team
+        self.team_nums = ""
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
@@ -201,29 +204,40 @@ class Bowman():
         else:
             return self.fireball
 
+    def get_closest_player(self, splited_string):
+        try:
+            player = self.world.get_player(int(splited_string[1]))
+        except IndexError:
+            player = self.world.get_closest_player(self)
+        if not player or player.n == self.n:
+            player = self.world.get_closest_player(self)
+        return player
+
+    def get_weapon(self, splited_string):
+        try:
+            weapon_type = splited_string[2]
+        except IndexError:
+            weapon_type = ""
+        if weapon_type == "a":
+            weapon = self.axe
+        elif weapon_type == "s":
+            weapon = self.spear
+        elif weapon_type == "b":
+            weapon = self.bow
+        else:
+            weapon = None
+        return weapon
+
     def _update(self):
         string = self.prompt()
         first_letter = string[0]
         splited_string = string.split(" ")
         if first_letter == "f":
-            try:
-                player = self.world.get_player(int(splited_string[1]))
-            except IndexError:
-                player = self.world.get_closest_player(self)
-            if not player or player.n == self.n:
-                player = self.world.get_closest_player(self)
-            try:
-                weapon_type = splited_string[2]
-            except IndexError:
-                weapon_type = ""
-            if weapon_type == "a":
-                weapon = self.axe
-            elif weapon_type == "s":
-                weapon = self.spear
-            elif weapon_type == "b":
-                weapon = self.bow
-            else:
-                weapon = None
+            player = self.get_closest_player(splited_string)
+            if self.team and player in self.team:
+                self.ally_fire()
+                raise Retry
+            weapon = self.get_weapon(splited_string)
             if not weapon:
                 r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
                 if r - self.axe_distance_mod < 2:
@@ -241,16 +255,15 @@ class Bowman():
         elif first_letter == "p":
             pass
         elif first_letter == "m":
-            try:
-                player = self.world.get_player(int(splited_string[2]))
-            except IndexError:
-                player = self.world.get_closest_player(self)
-            if not player or player.n == self.n:
-                player = self.world.get_closest_player(self)
+            player = self.get_closest_player(splited_string)
+            if self.team and player in self.team:
+                self.ally_fire()
+                raise Retry
             try:
                 spell = self.get_spell(splited_string[1])
             except IndexError:
                 spell = self.fireball
+
             self.spell(player, spell)
             player.check_heal()
         else:
@@ -325,12 +338,25 @@ class Bowman():
     def kill(self):
         self.killed = True
 
+    def ally_fire(self):
+        pass
+
+    def team_win(self):
+        pass
+
+    def team_lose(self):
+        pass
+
     def get_info(self):
-        #XXX: this function have to be moved to class World
         if not self.killed:
             out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
         else:
             out = "You have killed\n"
+        if self.team_nums:
+            out += "Your team is %s" % (self.team_nums,)
+        else:
+            out += "Your team is %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
+        out += "\n"
         for i in self.world.get_players():
             if i is not self:
                 out += "Player %d have %d lives\n" % (i.n, i.health)
@@ -412,6 +438,24 @@ class NetBowman(Bowman):
     def abort_game(self):
         try:
             self.socket.send(b"ag")
+        except socket.error:
+            pass
+
+    def ally_fire(self):
+        try:
+            self.socket.send(b"af")
+        except socket.error:
+            pass
+
+    def team_win(self):
+        try:
+            self.socket.send(b"tw")
+        except socket.error:
+            pass
+
+    def team_lose(self):
+        try:
+            self.socket.send(b"tl")
         except socket.error:
             pass
 

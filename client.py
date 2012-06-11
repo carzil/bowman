@@ -64,6 +64,15 @@ class Client():
         print("Game aborted, because fatal error has been raised on the server!")
         self.sock.close()
 
+    def ally_fire(self):
+        print("This player is your ally!")
+
+    def team_lose(self):
+        print("Your team lose!")
+
+    def team_win(self):
+        print("Your team win!")
+
     def prompt(self):
         return input(">> ").strip()[:10]
 
@@ -87,6 +96,12 @@ class Client():
                 self.nb()
             elif data == b"mx":
                 self.receive_matrix()
+            elif data == b"af":
+                self.ally_fire()
+            elif data == b"tw":
+                self.team_win()
+            elif data == b"tl":
+                self.team_lose()
             elif data == b"eg":
                 self.end_game()
                 break
