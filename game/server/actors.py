@@ -125,20 +125,20 @@ class Mage(NetBowman):
         return randrange(0, 320)
 
     def spell(self, opponent, spell):
-        game_log.info("bowman %d make a spell", self.n)
+        game_log.info("player %d make a spell", self.n)
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
-        game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
+        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
         is_miss, damage = spell.count_damage(self, opponent, r)
         if is_miss:
-            game_log.info("bowman %d missed", self.n)
+            game_log.info("player %d missed", self.n)
         else:
             if not damage:
-                game_log.info("bowman %d have not enough mana", self.n)
+                game_log.info("player %d have not enough mana", self.n)
                 raise Retry
             res = opponent.damage(damage)
-            game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
+            game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
             if not res:
-                game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
+                game_log.info("player %d killed player %d", self.n, opponent.n)
                 opponent.lose()
                 raise Kill(opponent)
         self.mana -= spell.mana
@@ -147,7 +147,7 @@ class Mage(NetBowman):
         r = self.mana_regen.count_regen()
         if self.mana + r <= self.__class__.mana:
             self.mana += r
-            game_log.info("bowman %d regenerated %d mana", self.n, r)
+            game_log.info("player %d regenerated %d mana", self.n, r)
 
     def get_info(self):
         if not self.killed:
@@ -156,7 +156,7 @@ class Mage(NetBowman):
             out = "You have killed\n"
         for i in self.world.get_players():
             if i is not self:
-                out += "Bowman %d have %d lives\n" % (i.n, i.health)
+                out += "Player %d have %d lives\n" % (i.n, i.health)
         out += "\n"
         out += self.world.render_matrix()
         return out

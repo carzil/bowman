@@ -67,7 +67,7 @@ class Bowman():
                 self.x -= 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved down on %d m", self.n, m)
+        game_log.info("player %d moved down on %d m", self.n, m)
         return True
 
     def move_up(self, m):
@@ -78,7 +78,7 @@ class Bowman():
                 self.x += 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved up on %d m", self.n, m)
+        game_log.info("player %d moved up on %d m", self.n, m)
         return True
 
     def move_left(self, m):
@@ -89,7 +89,7 @@ class Bowman():
                 self.y += 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved left on %d m", self.n, m)
+        game_log.info("player %d moved left on %d m", self.n, m)
         return True
 
     def move_right(self, m):
@@ -100,7 +100,7 @@ class Bowman():
                 self.y -= 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved right on %d m", self.n, m)
+        game_log.info("player %d moved right on %d m", self.n, m)
         return True
 
     def move_up_left(self, m):
@@ -113,7 +113,7 @@ class Bowman():
                 self.x += 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved by diagonal up left on %d m", self.n, m)
+        game_log.info("player %d moved by diagonal up left on %d m", self.n, m)
         return True
 
     def move_up_right(self, m):
@@ -126,7 +126,7 @@ class Bowman():
                 self.x += 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved by diagonal up right on %d m", self.n, m)
+        game_log.info("player %d moved by diagonal up right on %d m", self.n, m)
         return True
 
     def move_down_left(self, m):
@@ -139,7 +139,7 @@ class Bowman():
                 self.x -= 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved by diagonal down left on %d m", self.n, m)
+        game_log.info("player %d moved by diagonal down left on %d m", self.n, m)
         return True
 
     def move_down_right(self, m):
@@ -152,14 +152,14 @@ class Bowman():
                 self.x -= 1
                 break
             self.clean_position(ox, oy)
-        game_log.info("bowman %d moved by diagonal down right on %d m", self.n, m)
+        game_log.info("player %d moved by diagonal down right on %d m", self.n, m)
         return True
 
     def regenerate(self):
         r = self.regen.count_regen()
         if self.health + r <= self.__class__.health:
             self.health += r
-            game_log.info("bowman %d regenerated %d lives", self.n, r)
+            game_log.info("player %d regenerated %d lives", self.n, r)
 
     def damage(self, damage):
         self.health -= damage
@@ -169,20 +169,20 @@ class Bowman():
 
     def fire(self, opponent, weapon):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
-        game_log.info("bowman %d fire bowman %d with %s", self.n, opponent.n, weapon.name)
-        game_log.info("distance from bowman %d to bowman %d is %d", self.n, opponent.n, r)
+        game_log.info("player %d fire player %d with %s", self.n, opponent.n, weapon.name)
+        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
         is_miss, damage = weapon.count_damage(self, opponent, r)
         defense = weapon.count_defense(self, opponent, r)
         if is_miss:
             self.miss()
-            game_log.info("bowman %d missed", self.n)
+            game_log.info("player %d missed", self.n)
         else:
             damage -= defense
             res = opponent.damage(damage)
-            game_log.info("bowman %d %s defense is %d", opponent.n, weapon.name, defense)
-            game_log.info("bowman %d caused damage (%d) to bowman %d", self.n, damage, opponent.n)
+            game_log.info("player %d %s defense is %d", opponent.n, weapon.name, defense)
+            game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
             if not res:
-                game_log.info("bowman %d killed bowman %d", self.n, opponent.n)
+                game_log.info("player %d killed player %d", self.n, opponent.n)
                 opponent.lose()
                 raise Kill(opponent)
 
@@ -333,7 +333,7 @@ class Bowman():
             out = "You have killed"
         for i in self.world.get_players():
             if i is not self:
-                out += "Bowman %d have %d lives\n" % (i.n, i.health)
+                out += "Player %d have %d lives\n" % (i.n, i.health)
         out += "\n"
         out += self.world.render_matrix()
         return out
@@ -350,7 +350,7 @@ class NetBowman(Bowman):
     def prompt(self):
         self.socket.send(b"go")
         try:
-            string = self.socket.recv(5)
+            string = self.socket.recv(10)
             string = str(string, "utf-8")
         except socket.error:
             net_log.fatal("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])

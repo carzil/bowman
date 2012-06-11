@@ -65,7 +65,7 @@ class Client():
         self.sock.close()
 
     def prompt(self):
-        return input(">> ").strip()[:5]
+        return input(">> ").strip()[:10]
 
     def main(self):
         self.sock.send(self.unit_type)

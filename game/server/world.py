@@ -81,7 +81,7 @@ class World():
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):
             if entity is not player:
-                game_log.info("bowman %d was killed by bowman %d in a collision", player.n, entity.n)
+                game_log.info("player %d was killed by player %d in a collision", player.n, entity.n)
                 player.lose()
                 raise Kill(player)
         elif entity and not entity.collidable and not entity.pickable:
@@ -93,7 +93,7 @@ class World():
             if entity.apply(player):
                 self.set_cell_copy(x, y, Grass())
         elif entity.collidable:
-            game_log.info("bowman %d collided with %s in (%d, %d)", player.n, entity.name, x, y)
+            game_log.info("player %d collided with %s in (%d, %d)", player.n, entity.name, x, y)
             return False
         self.set_cell(x, y, player)
         return True
@@ -102,6 +102,7 @@ class World():
         players = self.get_players()
         if len(players) == 1:
             players[0].win()
+            game_log.info("player %d is winner", players[0].n)
             self.end_game()
             raise Restart
 
@@ -123,7 +124,7 @@ class World():
             self.send_info()
 
         for i in self.get_players():
-            game_log.info("bowman %d is in cell (%d, %d)", i.n, i.x, i.y)
+            game_log.info("player %d is in cell (%d, %d)", i.n, i.x, i.y)
 
     def get_player(self, n):
         for i in self.get_players():

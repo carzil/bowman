@@ -24,16 +24,16 @@ def accept_client(server_sock):
 def get_unit_type(unit_type, sock, n, world, client):
     if unit_type == b"t":
         cls = Tank
-        game_log.info("bowman %d is a tank", n)
+        game_log.info("player %d is a tank", n)
     elif unit_type == b"d":
         cls = Damager
-        game_log.info("bowman %d is a damager", n)
+        game_log.info("player %d is a damager", n)
     elif unit_type == b"m":
         cls = Mage
-        game_log.info("bowman %d is a mage", n)
+        game_log.info("player %d is a mage", n)
     else:
         cls = Ranger
-        game_log.info("bowman %d is a ranger", n)
+        game_log.info("player %d is a ranger", n)
     return cls(sock, client, n, world)
 
 def random_map(directory):
@@ -76,7 +76,7 @@ def accept_all_clients(n, world, server_sock):
                 except error:
                     track.remove(sock)
                     del socks_info[sock]
-                    game_log.warning("client '%s:%d' disconnected", client[0], client[1])
+                    net_log.warning("client '%s:%d' disconnected", client[0], client[1])
                     clients_missed += 1
                 else:
                     player = get_unit_type(unit_type, sock, c_n, world, client)
@@ -97,11 +97,11 @@ def start(map_path, players_num, sock):
         map_file = open(map_path)
 
     world = World(map_file)
+    game_log.info("%d spawn points", world.max_players)
     if world.max_players < players_num:
         if is_map_dir:
             return
         else:
-            game_log.info("%d spawn points", world.max_players)
             game_log.critical("there isn't enough spawn points on map '%s'", world.map_name)
             game_log.critical("abort")
             exit(1)
