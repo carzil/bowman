@@ -60,7 +60,7 @@ def op_helf():
     op_health = int(a)
     return op_health
 
-class search():
+class search(): #class poisk
     def __init__(self, sym='+'):
         self.sym = sym
         
