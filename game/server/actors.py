@@ -8,6 +8,8 @@ from game.server.regen import ManaRegen
 class Ranger(NetBowman):
     health = 3150
 
+    regen_mod = 13
+
     max_steps = 5
     max_diagonal_steps = 3
 
@@ -35,6 +37,8 @@ class Ranger(NetBowman):
 class Damager(NetBowman):
     health = 2340
 
+    regen_mod = 9
+
     max_steps = 6
     max_diagonal_steps = 3
 
@@ -61,6 +65,8 @@ class Damager(NetBowman):
 class Tank(NetBowman):
     health = 5870
 
+    regen_mod = 19
+
     max_steps = 5
     max_diagonal_steps = 3
 
@@ -86,8 +92,10 @@ class Tank(NetBowman):
 
 class Mage(NetBowman):
 
-    health = 2810
+    health = 2154
     mana = 200
+
+    regen_mod = 27
 
     max_steps = 5
     max_diagonal_steps = 3
