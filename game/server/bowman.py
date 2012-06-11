@@ -3,7 +3,7 @@ from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
 from game.server.exceptions import Restart, Exit, Retry, Kill
-from game.server.spells import FireBall
+from game.server.spells import FireBall, HealthBreak
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
 
@@ -38,6 +38,7 @@ class Bowman():
         self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
 
         self.fireball = FireBall()
+        self.health_break = HealthBreak()
 
         self.regen = Regen(self.regen_mod)
 
@@ -194,6 +195,12 @@ class Bowman():
     def prompt(self):
         return input(">> ")
 
+    def get_spell(self, symbol):
+        if symbol == "hb":
+            return self.health_break
+        else:
+            return self.fireball
+
     def _update(self):
         string = self.prompt()
         first_letter = string[0]
@@ -235,12 +242,16 @@ class Bowman():
             pass
         elif first_letter == "m":
             try:
-                player = self.world.get_player(int(splited_string[1]))
+                player = self.world.get_player(int(splited_string[2]))
             except IndexError:
                 player = self.world.get_closest_player(self)
             if not player or player.n == self.n:
                 player = self.world.get_closest_player(self)
-            self.spell(player, self.fireball)
+            try:
+                spell = self.get_spell(splited_string[1])
+            except IndexError:
+                spell = self.fireball
+            self.spell(player, spell)
             player.check_heal()
         else:
             raise Retry
