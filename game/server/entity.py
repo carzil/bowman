@@ -36,7 +36,7 @@ class Spikes(Entity):
         return randrange(20, 100)
 
 class HealthPack(Entity):
-    lives = 100
+    lives = 250
     symbol = "+"
     name = "heal"
     pickable = True
