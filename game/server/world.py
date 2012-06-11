@@ -5,6 +5,7 @@ from game.server.bowman import NetBowman
 from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
 from game.server.exceptions import Restart, Kill
 from game.server.log import game_log
+import socket
 
 class World():
     def __init__(self, file_obj):
@@ -16,6 +17,7 @@ class World():
 
     def game_start(self):
         self.players.sort(key=lambda x: x.n)
+        self.players_num = len(self.players)
 
         for player in self.get_players():
             player._set()
@@ -178,11 +180,22 @@ class World():
                 pass
         game_log.info("game aborted")
 
+    def get_margin(self):
+        if self.players_num < 10:
+            return " "
+        else:
+            return "  "
+
     def render_matrix(self):
         out = ""
         for i in self.world_map:
             for j in i:
-                out += str(j) + " "
+                s = str(j)
+                if len(s) == 2:
+                    out += str(s) + " "
+                else:
+                    out += str(s) + "  "
+
             out += "\n"
         return out
 

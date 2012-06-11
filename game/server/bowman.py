@@ -330,7 +330,7 @@ class Bowman():
         if not self.killed:
             out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
         else:
-            out = "You have killed"
+            out = "You have killed\n"
         for i in self.world.get_players():
             if i is not self:
                 out += "Player %d have %d lives\n" % (i.n, i.health)
@@ -352,36 +352,68 @@ class NetBowman(Bowman):
         try:
             string = self.socket.recv(10)
             string = str(string, "utf-8")
+            if string:
+                net_log.debug("client '%s:%s' sent '%s'", self.client_info[0], self.client_info[1], string)
+            else:
+                net_log.warning("client '%s:%d' disconnected (player %d)",
+                    self.client_info[0], self.client_info[1], self.n)
+                raise Kill(self)
+            return string
         except socket.error:
-            net_log.fatal("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
-            self.world.end_game()
-            game_log.fatal("abort")
-            raise Exit
-        net_log.debug("client '%s:%s' sent '%s'", self.client_info[0], self.client_info[1], string)
-        return string
+            net_log.warning("client '%s:%d' disconnected (player %d)",
+                self.client_info[0], self.client_info[1], self.n)
+            raise Kill(self)
+
+    def update(self):
+        try:
+            super(NetBowman, self).update()
+        except socket.error:
+            net_log.warning("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
+            raise Kill(self)
 
     def send_info(self):
-        self.socket.send(b"mx")
-        self.socket.send(dumps(self.get_info()))
-        self.socket.send(b"\xff")
+        try:
+            self.socket.send(b"mx")
+            self.socket.send(dumps(self.get_info()))
+            self.socket.send(b"\xff")
+        except socket.error:
+            pass
 
     def lose(self):
-        self.socket.send(b"lo")
+        try:
+            self.socket.send(b"lo")
+        except socket.error:
+            pass
 
     def win(self):
-        self.socket.send(b"wi")
+        try:
+            self.socket.send(b"wi")
+        except socket.error:
+            pass
 
     def near_border(self):
-        self.socket.send(b"nb")
+        try:
+            self.socket.send(b"nb")
+        except socket.error:
+            pass
 
     def miss(self):
-        self.socket.send(b"mi")
+        try:
+            self.socket.send(b"mi")
+        except socket.error:
+            pass
 
     def end_game(self):
-        self.socket.send(b"eg")
+        try:
+            self.socket.send(b"eg")
+        except socket.error:
+            pass
 
     def abort_game(self):
-        self.socket.send(b"ag")
+        try:
+            self.socket.send(b"ag")
+        except socket.error:
+            pass
 
     def __str__(self):
         return str(self.n)
