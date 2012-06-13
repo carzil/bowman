@@ -28,6 +28,10 @@ def parse_matrix():
     op_number = []
     u_number = ''
     mas_op = 0
+    if matrix[1][3] == 'r':
+        a = 2
+    else:
+        a = 1
     for i in matrix[0][-7:]:
         if i in mass:
             u_number += i
@@ -67,7 +71,7 @@ def u_helf():
     
 def op_helf():
     a = ""
-    for i in up_matrix[1][10:-4]:
+    for i in up_matrix[2][10:-4]:
         if i in mass:
             a += i
     op_health = int(a)
