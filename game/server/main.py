@@ -49,6 +49,12 @@ class PlayerInfo():
         yield self.client
         yield self.n
 
+def number_to_str(n):
+    n = str(n)
+    if len(n) < 2:
+        return "0" + n
+    return n
+
 def accept_all_clients(n, world, server_sock):
     players = []
     track = [server_sock]
@@ -73,6 +79,7 @@ def accept_all_clients(n, world, server_sock):
                 client, c_n = socks_info.get(sock)
                 try:
                     unit_type = sock.recv(1)
+                    sock.send(bytes(number_to_str(c_n), "utf-8"))
                 except error:
                     track.remove(sock)
                     del socks_info[sock]

@@ -3,9 +3,12 @@ from pickle import loads
 from argparse import ArgumentParser
 
 def is_matrix(bs):
-    if bs[-1] == 255:
-        return True
-    return False
+    try:
+        if bs[-4:] == b"\xff\xff\xff\xff":
+            return True
+        return False
+    except IndexError:
+        return False
 
 class Client():
     def __init__(self, remote_ip, remote_port):
@@ -49,12 +52,38 @@ class Client():
     def nb(self):
         print("You have been stopped by wall!")
 
+    def get_info_header(self, info):
+        players = info.players
+        player = None
+        for i in players:
+            if i.n == self.n:
+                player = i
+                break
+        if not player:
+            out = "You have killed"
+        else:
+            if player.klass == "m":
+                out = "You have %d lives and %d mana" % (player.health, player.mana)
+            else:
+                out = "You have %d lives" % (player.health,)
+        out += "\n"
+        for i in players:
+            if i.n != self.n:
+                if player.klass == "m":
+                    out += "Player %d has %d lives and %d mana" % (i.n, i.health, i.mana)
+                else:
+                    out += "Player %d has %d lives" % (i.n, i.health)
+                out += "\n"
+        return out
+
+
     def receive_matrix(self):
         d = self.sock.recv(1)
         while not is_matrix(d):
             d += self.sock.recv(1)
         matrix = loads(d)
-        print(matrix)
+        print(self.get_info_header(matrix))
+        print(matrix.world_s)
 
     def end_game(self):
         print("Game finished!")
@@ -78,6 +107,9 @@ class Client():
 
     def main(self):
         self.sock.send(self.unit_type)
+        n = self.sock.recv(2)
+        n = int(n)
+        self.n = n
         while True:
             data = self.sock.recv(2)
             if data == b"go":

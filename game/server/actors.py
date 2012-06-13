@@ -21,6 +21,8 @@ class Ranger(NetBowman):
     bow_defense = 3
     spear_defense = 4
 
+    klass = "r"
+
     @property
     def bow_damage_mod(self):
 
@@ -49,6 +51,8 @@ class Damager(NetBowman):
     axe_defense = 3
     bow_defense = 7
     spear_defense = 4
+
+    klass = "d"
 
     @property
     def bow_damage_mod(self):
@@ -85,6 +89,8 @@ class Tank(NetBowman):
     bow_defense = 7
     spear_defense = 6
 
+    klass = "t"
+
     @property
     def bow_damage_mod(self):
         return randrange(45, 63)
@@ -114,6 +120,8 @@ class Mage(NetBowman):
     axe_defense = 13
     bow_defense = 17
     spear_defense = 15
+
+    klass = "m"
 
     def __init__(self, *args, **kwargs):
         super(Mage, self).__init__(*args, **kwargs)

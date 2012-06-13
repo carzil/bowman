@@ -1,11 +1,11 @@
 from math import sqrt
 import os
 from random import choice
-from game.server.bowman import NetBowman
+from game.server.bowman import NetBowman, Bowman
 from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
 from game.server.exceptions import Restart, Kill
 from game.server.log import game_log
-import socket
+from game.info import WorldInfo, PlayerInfo, EntityInfo
 from game.server.team import Team
 
 class World():
@@ -233,6 +233,31 @@ class World():
             out += "\n"
         return out
 
+    def get_player_info(self, player):
+        return PlayerInfo(
+            player.klass,
+            player.n,
+            player.health,
+            player.mana,
+        )
+
+    def get_info(self):
+        p_info = []
+        matrix = [[None for j in range(self.x)] for i in range(self.y)]
+        for i in range(self.x):
+            for j in range(self.y):
+                e = self.world_map[i][j]
+                if isinstance(e, Bowman):
+                    obj = self.get_player_info(e)
+                    p_info.append(obj)
+                elif isinstance(e, Entity):
+                    obj = EntityInfo(e.symbol, e.name)
+                else:
+                    obj = None
+                matrix[i][j] = obj
+        return WorldInfo(matrix, p_info, self.render_matrix())
+
     def send_info(self):
+        info = self.get_info()
         for player in self.players:
-            player.send_info()
+            player.send_info(info)

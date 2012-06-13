@@ -29,6 +29,8 @@ class Bowman():
 
     mana = 0
 
+    klass = "s"
+
     def __init__(self, n, world, team=None):
         self.n = n
         self.world = world
@@ -208,18 +210,18 @@ class Bowman():
         else:
             return self.fireball
 
-    def get_closest_player(self, splited_string):
+    def get_closest_player(self, splited_string, i):
         try:
-            player = self.world.get_player(int(splited_string[1]))
+            player = self.world.get_player(int(splited_string[i]))
         except IndexError:
             player = self.world.get_closest_player(self)
         if not player or player.n == self.n:
             player = self.world.get_closest_player(self)
         return player
 
-    def get_weapon(self, splited_string):
+    def get_weapon(self, splited_string, i):
         try:
-            weapon_type = splited_string[2]
+            weapon_type = splited_string[i]
         except IndexError:
             weapon_type = ""
         if weapon_type == "a":
@@ -237,11 +239,11 @@ class Bowman():
         first_letter = string[0]
         splited_string = string.split(" ")
         if first_letter == "f":
-            player = self.get_closest_player(splited_string)
+            player = self.get_closest_player(splited_string, 1)
             if self.team and player in self.team:
                 self.ally_fire()
                 raise Retry
-            weapon = self.get_weapon(splited_string)
+            weapon = self.get_weapon(splited_string, 2)
             if not weapon:
                 r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
                 if r - self.axe_distance_mod < 2:
@@ -259,7 +261,7 @@ class Bowman():
         elif first_letter == "p":
             pass
         elif first_letter == "m":
-            player = self.get_closest_player(splited_string)
+            player = self.get_closest_player(splited_string, 2)
             if self.team and player in self.team:
                 self.ally_fire()
                 raise Retry
@@ -336,7 +338,7 @@ class Bowman():
     def end_game(self):
         pass
 
-    def send_info(self):
+    def send_info(self, info):
         pass
 
     def kill(self):
@@ -402,11 +404,12 @@ class NetBowman(Bowman):
             net_log.warning("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
             raise Kill(self)
 
-    def send_info(self):
+    def send_info(self, info):
         try:
+            i = dumps(info)
             self.socket.send(b"mx")
-            self.socket.send(dumps(self.get_info()))
-            self.socket.send(b"\xff")
+            self.socket.send(i)
+            self.socket.send(b"\xff\xff\xff\xff")
         except socket.error:
             pass
 
