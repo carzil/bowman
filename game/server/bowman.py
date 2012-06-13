@@ -2,8 +2,8 @@ from math import sqrt
 from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
-from game.server.exceptions import Retry, Kill
-from game.server.spells import FireBall, HealthBreak
+from game.server.exceptions import Retry, Kill, MoveInterrupt
+from game.server.spells import FireBall, HealthBreak, Froze
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
 
@@ -41,6 +41,7 @@ class Bowman():
 
         self.fireball = FireBall()
         self.health_break = HealthBreak()
+        self.froze = Froze()
 
         self.regen = Regen(self.regen_mod)
 
@@ -48,6 +49,8 @@ class Bowman():
 
         self.team = team
         self.team_nums = ""
+
+        self.applied_spells = []
 
     def _set(self):
         return self.world.set_player(self.x, self.y, self)
@@ -201,12 +204,22 @@ class Bowman():
     def regenerate_mana(self):
         pass
 
+    def check_spells(self):
+        print(self.applied_spells)
+        for spell in self.applied_spells:
+            is_active = spell.check()
+            print(spell, is_active)
+            if not is_active:
+                self.applied_spells.remove(spell)
+
     def prompt(self):
         return input(">> ")
 
     def get_spell(self, symbol):
         if symbol == "hb":
             return self.health_break
+        elif symbol == "fz":
+            return self.froze
         else:
             return self.fireball
 
@@ -276,15 +289,21 @@ class Bowman():
             raise Retry
 
     def update(self):
-        while True:
-            try:
-                self._update()
-            except (IndexError, ValueError, Retry):
-                pass
-            else:
-                break
-        self.regenerate()
-        self.regenerate_mana()
+        for i in range(2):
+            while True:
+                try:
+                    self.check_spells()
+                    self._update()
+                except (IndexError, ValueError, Retry):
+                    pass
+                except MoveInterrupt:
+                    game_log.info("player %d's move was interrupted", self.n)
+                    break
+                else:
+                    break
+            self.regenerate()
+            self.regenerate_mana()
+            self.world.send_info()
 
     def handle_move(self, first_letter, splited_string):
         meters = int(splited_string[1])

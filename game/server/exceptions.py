@@ -11,3 +11,6 @@ class Kill(Exception):
     def __init__(self, p, *args, **kwargs):
         super(Exception, self).__init__(*args, **kwargs)
         self.player = p
+
+class MoveInterrupt(Exception):
+    pass
