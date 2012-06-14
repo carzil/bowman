@@ -143,13 +143,13 @@ class Mage(NetBowman):
         game_log.info("player %d make a spell", self.n)
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
+        if spell.mana > self.mana:
+            game_log.info("player %d have not enough mana", self.n)
+            raise Retry
         is_miss, damage = spell.count_damage(self, opponent, r)
         if is_miss:
             game_log.info("player %d missed", self.n)
         else:
-            if not damage:
-                game_log.info("player %d have not enough mana", self.n)
-                raise Retry
             res = opponent.damage(damage)
             game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
             if not res:

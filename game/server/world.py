@@ -176,7 +176,7 @@ class World():
             m_p = i
             try:
                 m_r = round(sqrt((m_p.x - player.x) ** 2 + (m_p.y - player.y) ** 2))
-            except AttributeError: #m_p may be NoneType
+            except AttributeError: # m_p is NoneType when first player was killed
                 pass
             if m_r:
                 break
@@ -255,6 +255,7 @@ class World():
                 else:
                     obj = None
                 matrix[i][j] = obj
+        p_info.sort(key=lambda x: x.n)
         return WorldInfo(matrix, p_info, self.render_matrix())
 
     def send_info(self):
