@@ -65,6 +65,13 @@ class Bowman():
         self._set()
 
     def move_down(self, m):
+        """
+        This function move the player down on m cells
+         . P .        . P .        . . .
+         . . .   ->   . P .   ->   . P .
+         . . .        . . .        . . .
+        (before)     (check)      (clean)
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             self.x += 1
@@ -171,7 +178,7 @@ class Bowman():
         if self.health < 0:
             return False
         if self.health > self.__class__.health:
-            # it looks strange, but sometimes damage may be negative (Damager's life steal)
+            # it looks strange, but sometimes damage may be negative (for example, Damager's life steal)
             self.health = self.__class__.health
         return True
 
@@ -235,6 +242,7 @@ class Bowman():
         return weapon
 
     def _update(self):
+        #XXX: we have to rewrite this function
         string = self.prompt()
         first_letter = string[0]
         splited_string = string.split(" ")
