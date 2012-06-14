@@ -155,6 +155,9 @@ class World():
         self.send_info()
         for player in self.players:
             self.update_player(player)
+            self.send_info()
+            self.update_player(player)
+            self.send_info()
 
         for i in self.get_players():
             game_log.info("player %d is in cell (%d, %d)", i.n, i.x, i.y)
