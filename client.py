@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 def is_matrix(bs):
     try:
-        if bs[-4:] == b"\xff\xff\xff\xff":
+        if bs[-20:] == b"\xff" * 20:
             return True
         return False
     except IndexError:

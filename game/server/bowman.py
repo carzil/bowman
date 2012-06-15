@@ -440,7 +440,7 @@ class NetBowman(Bowman):
             i = dumps(info)
             self.socket.send(b"mx")
             self.socket.send(i)
-            self.socket.send(b"\xff\xff\xff\xff")
+            self.socket.send(b"\xff" * 20)
         except socket.error:
             pass
 
