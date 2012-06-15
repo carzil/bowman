@@ -7,7 +7,7 @@ class Regen():
     def count_regen(self):
         a = randrange(8, 27)
         a /= 10
-        return self.regen * a
+        return round(self.regen * a)
 
 class ManaRegen():
     def __init__(self, regen=59):
@@ -16,4 +16,4 @@ class ManaRegen():
     def count_regen(self):
         a = randrange(6, 21)
         a /= 10
-        return self.regen * a
+        return round(self.regen * a)

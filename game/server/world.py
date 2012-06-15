@@ -141,14 +141,17 @@ class World():
                 self.team_game_end(self.team_red, self.team_blue)
                 raise Restart
 
+    def kill_player(self, player):
+        self.clean_position(player.x, player.y)
+        player.kill()
+        self.check_win()
+
     def update_player(self, player):
         if not player.killed:
             try:
                 player.update()
             except Kill as instance:
-                self.clean_position(instance.player.x, instance.player.y)
-                instance.player.kill()
-                self.check_win()
+                self.kill_player(instance.player)
 
     def update(self):
         self.send_info()

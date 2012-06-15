@@ -12,11 +12,12 @@ if __name__ == "__main__":
     arg_parser.add_argument("--host", default="")
     arg_parser.add_argument("--players", default=2, type=int)
     arg_parser.add_argument("--team", action="store_true")
+    arg_parser.add_argument("password")
     args = arg_parser.parse_args()
 
     server_socket = setup_socket(args.host, args.port)
     while True:
         try:
-            start(args.map, args.players, server_socket, args.team)
+            start(args.map, args.players, server_socket, args.team, args.password)
         except (Exit, Restart):
             pass
