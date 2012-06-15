@@ -1,7 +1,9 @@
+from multiprocessing.process import Process
 import os
 from random import choice
 from socket import socket, error
 import select
+from threading import Thread
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
@@ -95,6 +97,21 @@ def accept_all_clients(n, world, server_sock):
         world.abort_game()
         raise Restart
 
+def updater(world, sock):
+    world.game_start()
+
+    while True:
+        try:
+            world.update()
+        except (Exit, Restart):
+            return
+        except:
+            game_log.fatal("unhandled exception have been raised")
+            game_log.fatal("abort")
+            world.abort_game()
+            sock.close()
+            raise
+
 def start(map_path, players_num, sock, itb):
     if os.path.isdir(map_path):
         is_map_dir = True
@@ -124,15 +141,6 @@ def start(map_path, players_num, sock, itb):
         game_log.info("team game with %d players", players_num)
 
     world.game_start()
-
-    while True:
-        try:
-            world.update()
-        except (Exit, Restart):
-            return
-        except:
-            game_log.fatal("unhandled exception have been raised")
-            world.abort_game()
-            sock.close()
-            game_log.fatal("abort")
-            raise
+    updater_process = Thread(target=updater, args=(world, sock))
+    updater_process.daemon = True
+    updater_process.start()
