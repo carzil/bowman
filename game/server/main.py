@@ -3,6 +3,7 @@ from random import choice
 from socket import socket, error
 import select
 from threading import Thread
+from game.server.admin import Admin
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
@@ -111,7 +112,7 @@ def updater(world, sock):
             sock.close()
             raise
 
-def start(map_path, players_num, sock, itb):
+def start(map_path, players_num, sock, itb, passwd):
     if os.path.isdir(map_path):
         is_map_dir = True
         map_file = random_map(map_path)
@@ -142,3 +143,5 @@ def start(map_path, players_num, sock, itb):
     updater_process = Thread(target=updater, args=(world, sock))
     updater_process.daemon = True
     updater_process.start()
+
+#    admin = Admin()

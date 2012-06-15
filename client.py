@@ -69,7 +69,7 @@ class Client():
         out += "\n"
         for i in players:
             if i.n != self.n:
-                if player.klass == "m":
+                if i.klass == "m":
                     out += "Player %d has %d lives and %d mana" % (i.n, i.health, i.mana)
                 else:
                     out += "Player %d has %d lives" % (i.n, i.health)
