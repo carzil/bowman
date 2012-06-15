@@ -151,7 +151,10 @@ class Mage(NetBowman):
             game_log.info("player %d missed", self.n)
         else:
             res = opponent.damage(damage)
-            game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+            if damage > 0:
+                game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+            else:
+                game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
             if not res:
                 game_log.info("player %d killed player %d", self.n, opponent.n)
                 opponent.lose()
