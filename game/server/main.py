@@ -109,7 +109,6 @@ def updater(world, sock):
             game_log.fatal("unhandled exception have been raised")
             game_log.fatal("abort")
             world.abort_game()
-            sock.close()
             raise
 
 def start(map_path, players_num, sock, itb, config):
