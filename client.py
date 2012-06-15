@@ -29,7 +29,6 @@ class Client():
         else:
             os.system("clear")
 
-
     def connect(self):
         self.sock = socket(AF_INET, SOCK_STREAM)
         self.sock.connect((self.remote_ip, self.remote_port))
@@ -112,7 +111,7 @@ class Client():
             d += self.sock.recv(1)
         matrix = loads(d)
         self.world_info = matrix
-        os.system("cls")
+        self.clear_screen()
         print(self.get_info_header(matrix))
         print(matrix.world_s)
 
