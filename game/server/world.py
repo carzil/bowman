@@ -5,7 +5,7 @@ from game.server.bowman import NetBowman, Bowman
 from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
 from game.server.exceptions import Restart, Kill
 from game.server.log import game_log
-from game.info import WorldInfo, PlayerInfo, EntityInfo
+from game.info import WorldInfo, PlayerInfo, EntityInfo, TeamInfo
 from game.server.team import Team
 
 class World():
@@ -250,7 +250,11 @@ class World():
                     obj = None
                 matrix[i][j] = obj
         p_info.sort(key=lambda x: x.n)
-        return WorldInfo(matrix, p_info, self.render_matrix())
+        rt, bt = None, None
+        if self.itb:
+            rt = TeamInfo(self.team_red)
+            bt = TeamInfo(self.team_blue)
+        return WorldInfo(matrix, p_info, self.render_matrix(), rt, bt)
 
     def send_info(self):
         info = self.get_info()
