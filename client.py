@@ -1,6 +1,7 @@
 from socket import *
 from pickle import loads
 from argparse import ArgumentParser
+import os, sys
 
 def is_matrix(bs):
     try:
@@ -21,6 +22,13 @@ class Client():
         self.tb_nums = None
         self.team = None
         self.main()
+
+    def clear_screen(self):
+        if sys.platform == "win32":
+            os.system("cls")
+        else:
+            os.system("clear")
+
 
     def connect(self):
         self.sock = socket(AF_INET, SOCK_STREAM)
@@ -104,6 +112,7 @@ class Client():
             d += self.sock.recv(1)
         matrix = loads(d)
         self.world_info = matrix
+        os.system("cls")
         print(self.get_info_header(matrix))
         print(matrix.world_s)
 
