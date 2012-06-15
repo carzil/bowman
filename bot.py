@@ -1,240 +1,361 @@
 from socket import *
 from pickle import loads
-from random import choice
+from argparse import ArgumentParser
 from math import sqrt
-import sys
-def setup_socket(remote_ip):
-    sock = socket(AF_INET, SOCK_STREAM)
-    sock.connect((remote_ip, 9999))
-    data = sock.recv(5)
-    if data == b"hello":
-        return sock
-    raise Exception("Oops! There is an server error")
-
+import game.info
 def is_matrix(bs):
-    if bs[-1] == 255:
-        return True
-    return False
-
-def choice_unit_type():
-    unit_type = b"r"
-    return unit_type
-    
-def parse_matrix():
-    global matrix, up_matrix, op_number, u_number, u_health, op_health, mass, mas_op
-    matrix = matrix.split("\n")
-    mass = ["0","1","2","3","4","5","6","7","8","9"]
-    up_matrix = matrix
-    op_number = []
-    u_number = ''
-    mas_op = 0
-    if matrix[1][3] == 'r':
-        a = 2
-    else:
-        a = 1
-    for i in matrix[0][-7:]:
-        if i in mass:
-            u_number += i
-    for i in matrix:
-        if i != '':
-            if i[0] == 'P':
-                op_number.append(i[7])
-                mas_op += 1
-    matrix = matrix[a:]
-    wmatrix = []
-    for i in matrix:
-       wmatrix.append(i.split())
-       matrix = wmatrix
-    return matrix
-
-def u_matrix():
-    for i in range(0, len(matrix)):
-        for j in range(0, len(matrix[i])):
-            if matrix[i][j] == u_number:
-                return True, i, j
-
-def op_matrix():
-    for i in range(0, len(matrix)):
-        for j in range(0, len(matrix[i])):
-            for x in range(0, mas_op):
-                if matrix[i][j] == op_number[x]:
-                    if op_number[x] != '':
-                        return i, j
-
-def u_helf():
-    a = ""
-    for i in up_matrix[0][:-7]:
-        if i in mass:
-            a += i
-    u_health = int(a)
-    return u_health
-    
-def op_helf():
-    a = ""
-    for i in up_matrix[2][10:-4]:
-        if i in mass:
-            a += i
-    op_health = int(a)
-    return op_health
-
-class search():
-    def __init__(self, sym='+'):
-        self.sym = sym
-        
-    def search(self):
-        a, b = [], []
-        for i in range(0, len(matrix)):
-            for j in range(0, len(matrix[i])):
-                if matrix[i][j] == self.sym:
-                    a.append(i)
-                    b.append(j)
-        return a, b
-
-    def search_colvo(self):
-        q = 0
-        for i in range(0, len(matrix)):
-            for j in range(0, len(matrix[i])):
-                if matrix[i][j] == self.sym:
-                    q += 1
-        return q
-
-def search_min(x_u, y_u):
-    min_mi = [1000, 0, 0]
-    colvo = search().search_colvo()
-    if colvo != 0:
-        mas_y_plus, mas_x_plus = search().search()
-        for i in range(0, colvo):
-            y_plus, x_plus = mas_y_plus[i], mas_x_plus[i]
-            r = sqrt_mi(y_u, y_plus, x_u, x_plus)
+    try:
+        if bs[-20:] == b"\xff" * 20:
+            return True
+        return False
+    except IndexError:
+        return False
+class Bot():
+    def __init__(self, remote_ip, remote_port):
+        self.remote_ip = remote_ip
+        self.remote_port = remote_port
+        self.connect()
+        self.unit_type = self.choice_unit_type()
+        self.main()
+        self.world_info = None
+    def connect(self):
+        self.sock = socket(AF_INET, SOCK_STREAM)
+        self.sock.connect((self.remote_ip, self.remote_port))
+        data = self.sock.recv(5)
+        if data == b"hello":
+            return
+        raise Exception("Oops! There is an server error")
+    def choice_unit_type(self):
+        unit_type = b"r"
+        string = input("Enter unit type, which you prefer (t, d, r, m): ")
+        while not string:
+            string = input("Enter unit type, which you prefer (t, d, r, m): ")
+        if string == "t":
+            unit_type = b"t"
+        elif string == "d":
+            unit_type = b"d"
+        elif string == "m":
+            unit_type = b"m"
+        return unit_type
+    def lose(self):
+        print("You lose!")
+    def win(self):
+        print("You win!")
+    def miss(self):
+        print("You missed!")
+    def nb(self):
+        print("You have been stopped by wall!")
+    def get_info_header(self, info):
+        players = info.players
+        player = None
+        for i in players:
+            if i.n == self.n:
+                player = i
+                break
+        if not player:
+            out = "You have killed"
+        else:
+            if player.klass == "m":
+                out = "You have %d lives and %d mana" % (player.health, player.mana)
+            else:
+                out = "You have %d lives" % (player.health,)
+        out += "\n"
+        for i in players:
+            if i.n != self.n:
+                if player.klass == "m":
+                    out += "Player %d has %d lives and %d mana" % (i.n, i.health, i.mana)
+                else:
+                    out += "Player %d has %d lives" % (i.n, i.health)
+                out += "\n"
+        return out
+    def receive_matrix(self):
+        d = self.sock.recv(1)
+        while not is_matrix(d):
+            d += self.sock.recv(1)
+        matrix = loads(d)
+        self.world_info = matrix
+        print(self.get_info_header(matrix))
+        print(matrix.world_s)
+    def end_game(self):
+        print("Game finished!")
+        self.sock.close()
+    def abort_game(self):
+        print("Game aborted, because fatal error has been raised on the server!")
+        self.sock.close()
+    def ally_fire(self):
+        print("This player is your ally!")
+    def team_lose(self):
+        print("Your team lose!")
+    def team_win(self):
+        print("Your team win!")
+    def get_me(self):
+        player = None
+        for i in self.world_info.players:
+            if i.n == self.n:
+                player = i
+                break
+        if not player:
+            return None
+        else:
+            return player
+    def sqrt_mi(self, y1, y2, x1, x2):
+        if y1 >= y2 and x1 >= x2:
+            return round(sqrt((y1 - y2) ** 2 + (x1 - x2) ** 2))
+        elif y1 >= y2 and x2 >= x1:
+            return round(sqrt((y1 - y2) ** 2 + (x2 - x1) ** 2))
+        elif y2 >= y1 and x1 >= x2:
+            return round(sqrt((y2 - y1) ** 2 + (x1 - x2) ** 2))
+        elif y2 >= y1 and x2 >= x1:
+            return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
+    def search_plus(self):
+        res_x, res_y = [], []
+        for i in range(len(self.world_info.world)):
+            for j in range(len(self.world_info.world[i])):
+                if isinstance(self.world_info.world[i][j], game.info.EntityInfo):
+                    if self.world_info.world[i][j].symbol == "+":
+                        res_y += [i]
+                        res_x += [j]
+        if res_x != [] and res_y != []:
+            return res_y, res_x
+        else:
+            return None, None
+    def search_min_plus(self):
+        ig_y, ig_x = self.koor(self.n)
+        plus_y, plus_x = self.search_plus()
+        min_mi = [10000, 0, 0]
+        if not plus_y and not plus_x:
+            return None, None
+        for i in range(0, len(plus_x)):
+            y, x = plus_y[i], plus_x[i]
+            r = self.sqrt_mi(ig_y, y, ig_x, x)
             if r < min_mi[0]:
                 min_mi[0] = r
-                min_mi[1] = y_plus
-                min_mi[2] = x_plus
-        return True, min_mi[1], min_mi[2]
-    else:
-        return False, 0, 0
-
-def sqrt_mi(y1, y2, x1, x2):
-    if y1 >= y2 and x1 >= x2:
-        return round(sqrt((y1 - y2) ** 2 + (x1 - x2) ** 2))
-    elif y1 >= y2 and x2 >= x1:
-        return round(sqrt((y1 - y2) ** 2 + (x2 - x1) ** 2))
-    elif y2 >= y1 and x1 >= x2:
-        return round(sqrt((y2 - y1) ** 2 + (x1 - x2) ** 2))
-    elif y2 >= y1 and x2 >= x1:
-        return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
-
-def take_health(x_u, y_u):
-    tf, y_plus, x_plus = search_min(x_u, y_u)
-    if tf:
-        if x_u > x_plus:
-            res = x_u - x_plus
-            return "a " + str(res)
-        elif x_u < x_plus:
-            res = x_plus - x_u
-            return "d " + str(res)
-        elif y_u > y_plus:
-            res = y_u - y_plus
-            return "w " + str(res)
-        elif y_u < y_plus:
-            res = y_plus - y_u
-            return "s " + str(res)
-    else:
-        return "!"
-
-class go():
-    def __init__(self, x_u, y_u, x_op, y_op):
-        self.x_u = x_u
-        self.y_u = y_u
-        self.x_op = x_op
-        self.y_op = y_op
-        
-    def go_enemy(self):
-        if self.x_u > self.x_op:
-            res = self.x_u - self.x_op
-            return "a " + str(res)
-        elif self.x_u < self.x_op:
-            res = self.x_op - self.x_u
-            return "d " + str(res)
-        elif self.y_u > self.y_op:
-            res = self.y_u - self.y_op
-            return "w " + str(res)
-        elif self.y_u < self.y_op:
-            res = self.y_op - self.y_u
-            return "s " + str(res)
-    
-def do():
-    tf, y_u, x_u = u_matrix()
-    y_op, x_op = op_matrix()
-    r = sqrt_mi(y_u, y_op, x_u, x_op)
-    u_health, op_health = u_helf(), op_helf()
-    if tf:
-        if op_health < 250:
-            if r > 15:
-                    return go(x_u, y_u, x_op, x_op).go_enemy()
-            else:
-                return "f"
-        elif u_health > 800:
-            if r > 15:
-                return go(x_u, y_u, x_op, x_op).go_enemy()
-            else:
-                return "f"
-        elif u_health > op_health + 100:
-            if r > 15:
-                plus = take_health(x_u, y_u)
-                if plus != "!":
-                    return plus
-                else:
-                    return go(x_u, y_u, x_op, x_op).go_enemy()
-            else:
-                return "f"
-        elif u_health < op_health:
-            plus = take_health(x_u, y_u)
-            if plus != "!":
-                return plus
-            else:
-                return "f"
-        elif r < 8:
-            return "f"
+                min_mi[1] = y
+                min_mi[2] = x
+        return min_mi[1], min_mi[2]
+    def get_plus(self):
+        y, x = self.search_min_plus()
+        ig_y, ig_x = self.koor(self.n)
+        if not y and not x:
+            return None
         else:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-    return "f"
-    
-def main(argv):
-    global matrix
-    if len(argv) >= 2:
-        sock = setup_socket(argv[1])
-        unit_type = choice_unit_type()
-        sock.send(unit_type)
+            if ig_x > x and ig_y > y:
+                if ig_x - x > ig_y - y:
+                    res = ig_y - y
+                    if res > 0:
+                        return "q " + str(res)
+                elif ig_x - x < ig_y - y:
+                    res = ig_x - x
+                    if res > 0:
+                        return "q " + str(res)
+            elif ig_x > x and ig_y < y:
+                if ig_x - x > y - ig_y:
+                    res = y - ig_y
+                    if res > 0:
+                        return "z " + str(res)
+                elif ig_x - x < y - ig_y:
+                    res = ig_x - x
+                    if res > 0:
+                        return "z " + str(res)
+            elif ig_x < x and ig_y > y:
+                if x - ig_x > ig_y - y:
+                    res = ig_y - y
+                    if res > 0:
+                        return "e " + str(res)
+                elif x - ig_x < ig_y - y:
+                    res = x - ig_x
+                    if res > 0:
+                        return "e " + str(res)
+            elif ig_x < x and ig_y < y:
+                if x - ig_x > y - ig_y:
+                    res = y - ig_y
+                    if res > 0:
+                        return "c " + str(res)
+                elif x - ig_x < y - ig_y:
+                    res = x - ig_x
+                    if res > 0:
+                        return "c " + str(res)
+            if ig_x > x:
+                res = ig_x - x
+                return "a " + str(res)
+            elif ig_x < x:
+                res = x - ig_x
+                return "d " + str(res)
+            elif ig_y > y:
+                res = ig_y - y
+                return "w " + str(res)
+            elif y > ig_y:
+                res = y - ig_y
+                return "s " + str(res)
+    def players_xy(self):
+        res_y, res_x = [], []
+        for i in range(len(self.world_info.world)):
+            for j in range(len(self.world_info.world[i])):
+                if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
+                    if self.world_info.world[i][j].n != self.n:
+                        res_y.append(i)
+                        res_x.append(j)
+        return res_y, res_x
+    def koor(self, n_igrok):
+        self.n_i = n_igrok
+        for i in range(0, len(self.world_info.world)):
+            for j in range(len(self.world_info.world[i])):
+                if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
+                    if self.world_info.world[i][j].n == self.n_i:
+                        return i, j
+    def go(self):
+        ig_y, ig_x = self.koor(self.n)
+        mas_y, mas_x = self.players_xy()
+        y = mas_y[0]
+        x = mas_x[0]
+        if ig_x > x and ig_y > y:
+            if ig_x - x > ig_y - y:
+                res = ig_y - y
+                if res > 0:
+                    return "q " + str(res)
+            elif ig_x - x < ig_y - y:
+                res = ig_x - x
+                if res > 0:
+                    return "q " + str(res)
+        elif ig_x > x and ig_y < y:
+            if ig_x - x > y - ig_y:
+                res = y - ig_y
+                if res > 0:
+                    return "z " + str(res)
+            elif ig_x - x < y - ig_y:
+                res = ig_x - x
+                if res > 0:
+                    return "z " + str(res)
+        elif ig_x < x and ig_y > y:
+            if x - ig_x > ig_y - y:
+                res = ig_y - y
+                if res > 0:
+                    return "e " + str(res)
+            elif x - ig_x < ig_y - y:
+                res = x - ig_x
+                if res > 0:
+                    return "e " + str(res)
+        elif ig_x < x and ig_y < y:
+            if x - ig_x > y - ig_y:
+                res = y - ig_y
+                if res > 0:
+                    return "c " + str(res)
+            elif x - ig_x < y - ig_y:
+                res = x - ig_x
+                if res > 0:
+                    return "c " + str(res)
+        if ig_x > x:
+            res = ig_x - x
+            return "a " + str(res)
+        elif ig_x < x:
+            res = x - ig_x
+            return "d " + str(res)
+        elif ig_y > y:
+            res = ig_y - y
+            return "w " + str(res)
+        elif y > ig_y:
+            res = y - ig_y
+            return "s " + str(res)
+    def prompt(self):
+        y_u, x_u = self.koor(self.n)
+        if self.world_info.players[0].n == self.n:
+            y_op, x_op = self.koor(self.world_info.players[1].n)
+            op = self.world_info.players[1]
+        else:
+            y_op, x_op = self.koor(self.world_info.players[0].n)
+            op = self.world_info.players[0]
+        r = self.sqrt_mi(y_u, y_op, x_u, x_op)
+        u = self.get_me()
+        u_health, op_health = u.health, op.health
+        if u_health > 1000:
+            if r < 15:
+                return "f"
+            else:
+                return self.go()
+        elif u_health > op_health:
+            if r < 15:
+                return "f"
+            else:
+                return self.go()
+        elif u_health < 800:
+            if op_health < 500:
+                if r < 15:
+                    return "f"
+                else:
+                    return self.go()
+            elif op_health < 800:
+                if r < 15:
+                    return "f"
+                else:
+                    plus = self.get_plus()
+                    if not plus:
+                        return "f"
+                    else:
+                        return plus
+            else:
+                plus = self.get_plus()
+                if not plus:
+                    if r < 15:
+                        return "f"
+                    else:
+                        return self.go()
+                else:
+                    return plus
+        elif op_health > u_health:
+            plus = self.get_plus()
+            if not plus:
+                if r < 15:
+                    return "f"
+                else:
+                    return self.go()
+            else:
+                return plus
+        else:
+            if r < 15:
+                return "f"
+            else:
+                return self.go()
+    def main(self):
+        self.sock.send(self.unit_type)
+        n = self.sock.recv(2)
+        n = int(n)
+        self.n = n
         while True:
-            data = sock.recv(2)
+            data = self.sock.recv(2)
             if data == b"go":
-                parse_matrix()
-                string = do()
-                string = bytes(string.encode("utf-8"))
-                sock.send(string)
+                string = self.prompt()
+                while not string:
+                    string = self.prompt()
+                data = bytes(string.encode("utf-8"))
+                self.sock.send(data)
             elif data == b"lo":
-                print("You lose!")
+                self.lose()
             elif data == b"wi":
-                print("You win!")
+                self.win()
             elif data == b"mi":
-                print("You have missed!")
+                self.miss()
             elif data == b"nb":
-                print("You have been stopped by wall!")
+                self.nb()
             elif data == b"mx":
-                d = sock.recv(1)
-                while not is_matrix(d):
-                    d += sock.recv(1)
-                matrix = loads(d)
-                print(matrix)
+                self.receive_matrix()
+            elif data == b"af":
+                self.ally_fire()
+            elif data == b"tw":
+                self.team_win()
+            elif data == b"tl":
+                self.team_lose()
             elif data == b"eg":
-                print("Game finished!")
-                sock.close()
+                self.end_game()
                 break
             elif data == b"ag":
-                print("Game aborted, because fatal error has been raised on the server!")
-                sock.close()
+                self.abort_game()
                 break
+def main():
+    arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
+                                            "See more: https://github.com/carzil/bowman")
+    arg_parser.add_argument("ip", help="server IP address")
+    arg_parser.add_argument("--port", default=9999, type=int, help="server port")
+    args = arg_parser.parse_args()
+    Bot(args.ip, args.port)
 if __name__ == "__main__":
-    matrix = ""
-    main(sys.argv)
+    main()
