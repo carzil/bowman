@@ -341,6 +341,8 @@ class Bowman():
                 pass
             else:
                 break
+
+    def update_regen(self):
         self.regenerate()
         self.regenerate_mana()
 
