@@ -50,8 +50,8 @@ class Bowman():
         self.team = team
         self.team_nums = ""
 
-    def _set(self):
-        return self.world.set_player(self.x, self.y, self)
+    def _set(self, x, y):
+        return self.world.set_player(x, y, self)
 
     def check_heal(self):
         self.world.check_heal(self)
@@ -63,7 +63,7 @@ class Bowman():
         self.clean_position(self.x, self.y)
         self.x = x
         self.y = y
-        self._set()
+        self._set(x, y)
 
     def move_down(self, m):
         """
@@ -75,96 +75,124 @@ class Bowman():
         """
         for i in range(m):
             ox, oy = self.x, self.y
-            self.x += 1
-            if not self._set():
-                self.x -= 1
+            x, y = self.x + 1, self.y
+            if not self._set(x, y):
+                x -= 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved down on %d m", self.n, m)
         return True
 
     def move_up(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.x -= 1
-            if not self._set():
-                self.x += 1
+            x, y = self.x - 1, self.y
+            if not self._set(x, y):
+                x += 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved up on %d m", self.n, m)
         return True
 
     def move_left(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y -= 1
-            if not self._set():
-                self.y += 1
+            x, y = self.x, self.y - 1
+            if not self._set(x, y):
+                y += 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved left on %d m", self.n, m)
         return True
 
     def move_right(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y += 1
-            if not self._set():
-                self.y -= 1
+            x, y = self.x, self.y + 1
+            if not self._set(x, y):
+                y -= 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved right on %d m", self.n, m)
         return True
 
     def move_up_left(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y -= 1
-            self.x -= 1
-            if not self._set():
-                self.y += 1
-                self.x += 1
+            x, y = self.x - 1, self.y - 1
+            if not self._set(x, y):
+                y += 1
+                x += 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved by diagonal up left on %d m", self.n, m)
         return True
 
     def move_up_right(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y += 1
-            self.x -= 1
-            if not self._set():
-                self.y -= 1
-                self.x += 1
+            x, y = self.x - 1, self.y + 1
+            if not self._set(x, y):
+                y -= 1
+                x += 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved by diagonal up right on %d m", self.n, m)
         return True
 
     def move_down_left(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y -= 1
-            self.x += 1
-            if not self._set():
-                self.y += 1
-                self.x -= 1
+            x, y = self.x + 1, self.y - 1
+            if not self._set(x, y):
+                y += 1
+                x -= 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved by diagonal down left on %d m", self.n, m)
         return True
 
     def move_down_right(self, m):
         for i in range(m):
             ox, oy = self.x, self.y
-            self.y += 1
-            self.x += 1
-            if not self._set():
-                self.y -= 1
-                self.x -= 1
+            x, y = self.x + 1, self.y + 1
+            if not self._set(x, y):
+                y -= 1
+                x -= 1
+                self.x = x
+                self.y = y
                 break
             self.clean_position(ox, oy)
+            self.x = x
+            self.y = y
         game_log.info("player %d moved by diagonal down right on %d m", self.n, m)
         return True
 

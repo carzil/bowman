@@ -3,7 +3,7 @@ import os
 from random import choice
 from game.server.bowman import NetBowman, Bowman
 from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
-from game.server.exceptions import Restart, Kill
+from game.server.exceptions import Restart, Kill, Retry
 from game.server.log import game_log
 from game.info import WorldInfo, PlayerInfo, EntityInfo, TeamInfo
 from game.server.team import Team
@@ -25,22 +25,31 @@ class World():
         self.players_num = len(self.players)
 
         for player in self.get_players():
-            player._set()
+            player._set(player.x, player.y)
 
     def load_map(self, file_obj):
-        #XXX: handle broken maps
         x, y = map(int, file_obj.readline().split())
         self.x = x
         self.y = y
         self.world_map = [[None for j in range(x)] for i in range(y)]
         self.world_map_copy = [[None for j in range(x)] for i in range(y)]
+        self.map_name = os.path.basename(file_obj.name)
 
         entities_dict = {}
         for i in Entity.__subclasses__():
             i().register(entities_dict)
 
         for i in range(self.y):
-            string = file_obj.readline().strip().split(" ")
+            string = file_obj.readline().strip()
+            if not string:
+                game_log.fatal("invalid map '%s'", self.map_name)
+                game_log.fatal("expected %d y-cells, found %d", self.y, i)
+                raise Retry
+            string = string.split()
+            if len(string) < self.x:
+                game_log.fatal("invalid map '%s'", self.map_name)
+                game_log.fatal("expected %d x-cells, found %d", self.x, len(string))
+                raise Retry
             cnt = 0
             for j in string:
                 obj = entities_dict.get(j, Grass())
@@ -51,7 +60,6 @@ class World():
                 self.world_map_copy[i][cnt] = obj
                 cnt += 1
         self.max_players = len(self.spawn_points)
-        self.map_name = os.path.basename(file_obj.name)
 
     def get_random_spawn_point(self):
         obj = choice(self.spawn_points)
@@ -92,12 +100,13 @@ class World():
                 self.set_cell_copy(player.x, player.y, Grass())
 
     def set_player(self, x, y, player):
-        if y < 0 or y > self.y - 1 or x < 0 or x > self.x - 1:
+        if y < 0 or y > self.x - 1 or x < 0 or x > self.y - 1:
             return False
         entity = self.get_cell(x, y)
         if isinstance(entity, NetBowman):
             if entity is not player:
-                game_log.info("player %d was killed by player %d in a collision", player.n, entity.n)
+                game_log.info("player %d was killed by player %d in a collision at (%d, %d)",
+                    player.n, entity.n, x, y)
                 player.lose()
                 raise Kill(player)
         elif entity and not entity.collidable and not entity.pickable:
@@ -219,9 +228,9 @@ class World():
 
     def render_matrix(self):
         out = ""
-        for i in self.world_map:
-            for j in i:
-                s = str(j)
+        for i in range(self.y):
+            for j in range(self.x):
+                s = str(self.world_map[i][j])
                 if len(s) == 2:
                     out += str(s)
                 else:
@@ -241,8 +250,8 @@ class World():
     def get_info(self):
         p_info = []
         matrix = [[None for j in range(self.x)] for i in range(self.y)]
-        for i in range(self.x):
-            for j in range(self.y):
+        for i in range(self.y):
+            for j in range(self.x):
                 e = self.world_map[i][j]
                 if isinstance(e, Bowman):
                     obj = self.get_player_info(e)

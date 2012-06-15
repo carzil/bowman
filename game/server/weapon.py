@@ -56,6 +56,6 @@ class Spear(Weapon):
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        return opponent.spear_defense * a
+        a = randrange(9, 24)
         a /= 10
         return round(opponent.spear_defense * a)
