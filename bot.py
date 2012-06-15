@@ -26,17 +26,7 @@ class Bot():
             return
         raise Exception("Oops! There is an server error")
     def choice_unit_type(self):
-        unit_type = b"r"
-        string = input("Enter unit type, which you prefer (t, d, r, m): ")
-        while not string:
-            string = input("Enter unit type, which you prefer (t, d, r, m): ")
-        if string == "t":
-            unit_type = b"t"
-        elif string == "d":
-            unit_type = b"d"
-        elif string == "m":
-            unit_type = b"m"
-        return unit_type
+        return b"r"
     def lose(self):
         print("You lose!")
     def win(self):
@@ -187,15 +177,32 @@ class Bot():
             elif y > ig_y:
                 res = y - ig_y
                 return "s " + str(res)
+    def team_enemy(self):
+        for i in self.world_info.blue_team.players:
+            if i.n == self.n:
+                return "r"
+        for i in self.world_info.red_team.players:
+            if i.n == self.n:
+                return "b"
     def players_xy(self):
-        res_y, res_x = [], []
+        res_y, res_x, res_n = [], [], []
+        enemy = self.team_enemy()
         for i in range(len(self.world_info.world)):
             for j in range(len(self.world_info.world[i])):
                 if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
-                    if self.world_info.world[i][j].n != self.n:
-                        res_y.append(i)
-                        res_x.append(j)
-        return res_y, res_x
+                    if enemy == "b":
+                        for x in self.world_info.blue_team.players:
+                            if self.world_info.world[i][j].n == x.n:
+                                res_y.append(i)
+                                res_x.append(j)
+                                res_n.append(x.n)
+                    elif enemy == "r":
+                        for x in self.world_info.red_team.players:
+                            if self.world_info.world[i][j].n == x.n:
+                                res_y.append(i)
+                                res_x.append(j)
+                                res_n.append(x.n)
+        return res_y, res_x, res_n
     def koor(self, n_igrok):
         self.n_i = n_igrok
         for i in range(0, len(self.world_info.world)):
@@ -205,7 +212,7 @@ class Bot():
                         return i, j
     def go(self):
         ig_y, ig_x = self.koor(self.n)
-        mas_y, mas_x = self.players_xy()
+        mas_y, mas_x, n = self.players_xy()
         y = mas_y[0]
         x = mas_x[0]
         if ig_x > x and ig_y > y:
@@ -258,45 +265,43 @@ class Bot():
             return "s " + str(res)
     def prompt(self):
         y_u, x_u = self.koor(self.n)
-        if self.world_info.players[0].n == self.n:
-            y_op, x_op = self.koor(self.world_info.players[1].n)
-            op = self.world_info.players[1]
-        else:
-            y_op, x_op = self.koor(self.world_info.players[0].n)
-            op = self.world_info.players[0]
+        y_op_m, x_op_m, n_m = self.players_xy()
+        op_op = self.world_info.players[0]
+        op = n_m[0]
+        y_op, x_op = y_op_m[0], x_op_m[0]
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
         u = self.get_me()
-        u_health, op_health = u.health, op.health
+        u_health, op_health = u.health, op_op.health
         if u_health > 1000:
             if r < 15:
-                return "f"
+                return "f " + str(op)
             else:
                 return self.go()
         elif u_health > op_health:
             if r < 15:
-                return "f"
+                return "f " + str(op)
             else:
                 return self.go()
         elif u_health < 800:
             if op_health < 500:
                 if r < 15:
-                    return "f"
+                    return "f " + str(op)
                 else:
                     return self.go()
             elif op_health < 800:
                 if r < 15:
-                    return "f"
+                    return "f " + str(op)
                 else:
                     plus = self.get_plus()
                     if not plus:
-                        return "f"
+                        return "f " + str(op)
                     else:
                         return plus
             else:
                 plus = self.get_plus()
                 if not plus:
                     if r < 15:
-                        return "f"
+                        return "f " + str(op)
                     else:
                         return self.go()
                 else:
@@ -305,14 +310,14 @@ class Bot():
             plus = self.get_plus()
             if not plus:
                 if r < 15:
-                    return "f"
+                    return "f " + str(op)
                 else:
                     return self.go()
             else:
                 return plus
         else:
             if r < 15:
-                return "f"
+                return "f " + str(op)
             else:
                 return self.go()
     def main(self):
