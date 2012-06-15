@@ -28,16 +28,18 @@ def parse_matrix():
     op_number = []
     u_number = ''
     mas_op = 0
+    if matrix[1][3] == 'r':
+        a = 2
+    else:
+        a = 1
     for i in matrix[0][-7:]:
         if i in mass:
             u_number += i
-        a = 1
     for i in matrix:
         if i != '':
             if i[0] == 'P':
                 op_number.append(i[7])
                 mas_op += 1
-                a += 1
     matrix = matrix[a:]
     wmatrix = []
     for i in matrix:
@@ -49,7 +51,7 @@ def u_matrix():
     for i in range(0, len(matrix)):
         for j in range(0, len(matrix[i])):
             if matrix[i][j] == u_number:
-                return i, j
+                return True, i, j
 
 def op_matrix():
     for i in range(0, len(matrix)):
@@ -69,7 +71,7 @@ def u_helf():
     
 def op_helf():
     a = ""
-    for i in up_matrix[1][10:-4]:
+    for i in up_matrix[2][10:-4]:
         if i in mass:
             a += i
     op_health = int(a)
@@ -160,41 +162,43 @@ class go():
         elif self.y_u < self.y_op:
             res = self.y_op - self.y_u
             return "s " + str(res)
-
+    
 def do():
-    y_u, x_u = u_matrix()
+    tf, y_u, x_u = u_matrix()
     y_op, x_op = op_matrix()
     r = sqrt_mi(y_u, y_op, x_u, x_op)
     u_health, op_health = u_helf(), op_helf()
-    if op_health < 250:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > 800:
-        if r > 15:
-            return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
-            return "f"
-    elif u_health > op_health + 100:
-        if r > 15:
+    if tf:
+        if op_health < 250:
+            if r > 15:
+                    return go(x_u, y_u, x_op, x_op).go_enemy()
+            else:
+                return "f"
+        elif u_health > 800:
+            if r > 15:
+                return go(x_u, y_u, x_op, x_op).go_enemy()
+            else:
+                return "f"
+        elif u_health > op_health + 100:
+            if r > 15:
+                plus = take_health(x_u, y_u)
+                if plus != "!":
+                    return plus
+                else:
+                    return go(x_u, y_u, x_op, x_op).go_enemy()
+            else:
+                return "f"
+        elif u_health < op_health:
             plus = take_health(x_u, y_u)
             if plus != "!":
                 return plus
             else:
-                return go(x_u, y_u, x_op, x_op).go_enemy()
-        else:
+                return "f"
+        elif r < 8:
             return "f"
-    elif u_health < op_health:
-        plus = take_health(x_u, y_u)
-        if plus != "!":
-            return plus
         else:
-            return "f"
-    elif r < 8:
-        return "f"
-    else:
-        return go(x_u, y_u, x_op, x_op).go_enemy()
+            return go(x_u, y_u, x_op, x_op).go_enemy()
+    return "f"
     
 def main(argv):
     global matrix
