@@ -15,7 +15,11 @@ class Client():
         self.remote_ip = remote_ip
         self.remote_port = remote_port
         self.connect()
+        self.world_info = None
         self.unit_type = self.choice_unit_type()
+        self.tr_nums = None
+        self.tb_nums = None
+        self.team = None
         self.main()
 
     def connect(self):
@@ -74,14 +78,32 @@ class Client():
                 else:
                     out += "Player %d has %d lives" % (i.n, i.health)
                 out += "\n"
-        return out
+        if self.world_info.blue_team and self.world_info.red_team:
+            if not self.tr_nums:
+                self.tr_nums = ", ".join([str(i.n) for i in self.world_info.red_team.players])
+            if not self.tb_nums:
+                self.tb_nums = ", ".join([str(i.n) for i in self.world_info.blue_team.players])
+            if not self.team:
+                for i in self.world_info.blue_team.players:
+                    if i.n == self.n:
+                        self.team = "b"
+                if not self.team:
+                    self.team = "r"
+            if self.team == "r":
+                print("Your team is %s" % (self.tr_nums,))
+                print("Blue team is %s" % (self.tb_nums,))
+            else:
+                print("Your team is %s" % (self.tb_nums,))
+                print("Red team is %s" % (self.tr_nums,))
 
+        return out
 
     def receive_matrix(self):
         d = self.sock.recv(1)
         while not is_matrix(d):
             d += self.sock.recv(1)
         matrix = loads(d)
+        self.world_info = matrix
         print(self.get_info_header(matrix))
         print(matrix.world_s)
 

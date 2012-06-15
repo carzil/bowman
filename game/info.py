@@ -19,5 +19,5 @@ class EntityInfo():
         self.name = n
 
 class TeamInfo():
-    def __init__(self, players):
-        self.players = players
+    def __init__(self, team):
+        self.players = team.players
