@@ -121,7 +121,6 @@ class World():
             i.team_lose()
         self.end_game()
 
-
     def check_win(self):
         if not self.itb:
             players = self.get_players()
@@ -189,11 +188,6 @@ class World():
 
     def get_players(self):
         return list(filter(lambda x: not x.killed, self.players))
-
-    def clean_matrix(self):
-        for i in range(maxx):
-            for j in range(maxy):
-                self.world_map[i][j] = None
 
     def get_cell(self, x, y):
         return self.world_map[x][y]
