@@ -128,7 +128,6 @@ def start(map_path, players_num, sock, itb):
             game_log.critical("there isn't enough spawn points on map '%s'", world.map_name)
             game_log.critical("abort")
             exit(1)
-
     game_log.info("waiting for %d players", players_num)
     accept_all_clients(players_num, world, sock)
 
