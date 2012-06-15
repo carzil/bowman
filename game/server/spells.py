@@ -1,5 +1,6 @@
 class Spell():
     mana = 0
+    allow_ally_fire = False
 
     def count_damage(self, player, opponent, r):
         pass
@@ -18,6 +19,7 @@ class HealthBreak(Spell):
 
 class Heal(Spell):
     mana = 300
+    allow_ally_fire = True
 
     def count_damage(self, player, opponent, r):
         return False, -(player.health // 4)

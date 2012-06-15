@@ -293,14 +293,13 @@ class Bowman():
             pass
         elif first_letter == "m":
             player = self.get_closest_player(splited_string, 2)
-            if self.team and player in self.team:
-                self.ally_fire()
-                raise Retry
             try:
                 spell = self.get_spell(splited_string[1])
             except IndexError:
                 spell = self.fireball
-
+            if self.team and not spell.allow_ally_fire and player in self.team:
+                self.ally_fire()
+                raise Retry
             self.spell(player, spell)
             player.check_heal()
         else:
