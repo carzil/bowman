@@ -2,6 +2,7 @@ import os
 from random import choice
 from socket import socket, error
 import select
+from threading import Thread
 from game.server.exceptions import Restart, Exit
 from game.server.log import net_log, game_log
 from game.server.world import World
@@ -12,6 +13,7 @@ def setup_socket(host, port):
     net_log.info("socket has created")
     sock.bind((host, port))
     net_log.info("socket has binded")
+    net_log.info("server is listening at %s:%d", host or "*", port)
     sock.listen(10)
     return sock
 
@@ -24,16 +26,16 @@ def accept_client(server_sock):
 def get_unit_type(unit_type, sock, n, world, client):
     if unit_type == b"t":
         cls = Tank
-        game_log.info("bowman %d is a tank", n)
+        game_log.info("player %d is a tank", n)
     elif unit_type == b"d":
         cls = Damager
-        game_log.info("bowman %d is a damager", n)
+        game_log.info("player %d is a damager", n)
     elif unit_type == b"m":
         cls = Mage
-        game_log.info("bowman %d is a mage", n)
+        game_log.info("player %d is a mage", n)
     else:
         cls = Ranger
-        game_log.info("bowman %d is a ranger", n)
+        game_log.info("player %d is a ranger", n)
     return cls(sock, client, n, world)
 
 def random_map(directory):
@@ -48,6 +50,12 @@ class PlayerInfo():
     def __iter__(self):
         yield self.client
         yield self.n
+
+def number_to_str(n):
+    n = str(n)
+    if len(n) < 2:
+        return "0" + n
+    return n
 
 def accept_all_clients(n, world, server_sock):
     players = []
@@ -73,10 +81,11 @@ def accept_all_clients(n, world, server_sock):
                 client, c_n = socks_info.get(sock)
                 try:
                     unit_type = sock.recv(1)
+                    sock.send(bytes(number_to_str(c_n), "utf-8"))
                 except error:
                     track.remove(sock)
                     del socks_info[sock]
-                    game_log.warning("client '%s:%d' disconnected", client[0], client[1])
+                    net_log.warning("client '%s:%d' disconnected", client[0], client[1])
                     clients_missed += 1
                 else:
                     player = get_unit_type(unit_type, sock, c_n, world, client)
@@ -88,31 +97,7 @@ def accept_all_clients(n, world, server_sock):
         world.abort_game()
         raise Restart
 
-def start(map_path, players_num, sock):
-    if os.path.isdir(map_path):
-        is_map_dir = True
-        map_file = random_map(map_path)
-    else:
-        is_map_dir = False
-        map_file = open(map_path)
-
-    world = World(map_file)
-    if world.max_players < players_num:
-        if is_map_dir:
-            return
-        else:
-            game_log.info("%d spawn points", world.max_players)
-            game_log.critical("there isn't enough spawn points on map '%s'", world.map_name)
-            game_log.critical("abort")
-            exit(1)
-
-    game_log.info("waiting for %d players", players_num)
-    accept_all_clients(players_num, world, sock)
-
-    game_log.info("server started")
-    game_log.info("game started")
-    game_log.info("game with %d players", players_num)
-
+def updater(world, sock):
     world.game_start()
 
     while True:
@@ -122,7 +107,41 @@ def start(map_path, players_num, sock):
             return
         except:
             game_log.fatal("unhandled exception have been raised")
-            world.abort_game()
-            sock.close()
             game_log.fatal("abort")
+            world.abort_game()
             raise
+
+def start(map_path, players_num, sock, itb, config):
+    if os.path.isdir(map_path):
+        is_map_dir = True
+        map_file = random_map(map_path)
+    else:
+        is_map_dir = False
+        map_file = open(map_path)
+
+    world = World(map_file, itb)
+    game_log.info("%d spawn points", world.max_players)
+    if world.max_players < players_num:
+        if is_map_dir:
+            return
+        else:
+            game_log.critical("there isn't enough spawn points on map '%s'", world.map_name)
+            game_log.critical("abort")
+            exit(1)
+    game_log.info("waiting for %d players", players_num)
+    accept_all_clients(players_num, world, sock)
+
+    game_log.info("server started")
+    game_log.info("game started")
+    if not itb:
+        game_log.info("game with %d players", players_num)
+    else:
+        game_log.info("team game with %d players", players_num)
+
+    world.game_start()
+    updater_process = Thread(target=updater, args=(world, sock))
+    updater_process.daemon = True
+    try:
+        updater_process.start()
+    except:
+        raise
