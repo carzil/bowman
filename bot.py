@@ -139,12 +139,14 @@ class Bot():
         y, x = self.search_min_plus()
         ig_y, ig_x = self.koor(self.n)
         sy, sx = self.search_star()
+        my, mx = self.maxxy()
         a = 0
         l = len(sy)
         if not y and not x:
             return None
         else:
             if ig_x > x and ig_y > y:
+                print("1")
                 a = 0
                 if ig_x - x > ig_y - y:
                     res = ig_y - y
@@ -159,6 +161,7 @@ class Bot():
                 if a == l:
                     return "q " + str(res)
             if ig_x > x and ig_y < y:
+                print("2")
                 a = 0
                 if ig_x - x > y - ig_y:
                     res = y - ig_y
@@ -173,6 +176,7 @@ class Bot():
                 if a == l:
                     return "z " + str(res)
             if ig_x < x and ig_y > y:
+                print("3")
                 a = 0
                 if x - ig_x > ig_y - y:
                     res = ig_y - y
@@ -187,6 +191,7 @@ class Bot():
                 if a == l:
                     return "e " + str(res)
             if ig_x < x and ig_y < y:
+                print("4")
                 a = 0
                 if x - ig_x > y - ig_y:
                     res = y - ig_y
@@ -201,6 +206,7 @@ class Bot():
                 if a == l:
                     return "c " + str(res)
             if ig_x > x:
+                print("5")
                 a = 0
                 res = ig_x - x
                 ix, iy = ig_x - 1, ig_y
@@ -210,7 +216,24 @@ class Bot():
                         a -= 1
                 if a == l:
                     return "a " + str(res)
+                else:
+                    a = 0
+                    if ig_y + 1 != my:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x - 1 == sx[i] and ig_y + 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "z 1"
+                    else:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x - 1 == sx[i] and ig_y - 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "q 1"
             if ig_x < x:
+                print("6")
                 a = 0
                 res = x - ig_x
                 ix, iy = ig_x + 1, ig_y
@@ -220,7 +243,24 @@ class Bot():
                         a -= 1
                 if a == l:
                     return "d " + str(res)
+                else:
+                    a = 0
+                    if ig_y + 1 != my:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x + 1 == sx[i] and ig_y + 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "c 1"
+                    else:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x + 1 == sx[i] and ig_y - 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "e 1"
             if ig_y > y:
+                print("7")
                 a = 0
                 res = ig_y - y
                 ix, iy = ig_x, ig_y - 1
@@ -230,7 +270,24 @@ class Bot():
                         a -= 1
                 if a == l:
                     return "w " + str(res)
+                else:
+                    a = 0
+                    if ig_x + 1 != mx:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x + 1 == sx[i] and ig_y + 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "q 1"
+                    else:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x - 1 == sx[i] and ig_y + 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "e 1"
             if ig_y < y:
+                print("8")
                 a = 0
                 res = y - ig_y
                 ix, iy = ig_x, ig_y + 1
@@ -240,7 +297,23 @@ class Bot():
                         a -= 1
                 if a == l:
                     return "s " + str(res)
-        return "f"
+                else:
+                    a = 0
+                    if ig_x + 1 != mx:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x + 1 == sx[i] and ig_y - 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "z 1"
+                    else:
+                        for i in range(0, len(sx)):
+                            a += 1
+                            if ig_x - 1 == sx[i] and ig_y - 1 == sy[i]:
+                                a -= 1
+                        if a == l:
+                            return "c 1"
+        return None
     def team_enemy(self):
         if not self.world_info.blue_team:
             return "n"
@@ -251,6 +324,10 @@ class Bot():
             for i in self.world_info.red_team.players:
                 if i.n == self.n:
                     return "b"
+    def maxxy(self):
+        i = len(self.world_info.world)
+        j = len(self.world_info.world[0])
+        return i, j
     def players_xy(self):
         res_y, res_x, res_n = [], [], []
         enemy = self.team_enemy()
@@ -261,15 +338,17 @@ class Bot():
                         if enemy == "b":
                             for x in self.world_info.blue_team.players:
                                 if self.world_info.world[i][j].n == x.n:
-                                    res_y.append(i)
-                                    res_x.append(j)
-                                    res_n.append(x.n)
+                                    if x.n != self.n:
+                                        res_y.append(i)
+                                        res_x.append(j)
+                                        res_n.append(x.n)
                         elif enemy == "r":
                             for x in self.world_info.red_team.players:
                                 if self.world_info.world[i][j].n == x.n:
-                                    res_y.append(i)
-                                    res_x.append(j)
-                                    res_n.append(x.n)
+                                    if x.n != self.n:
+                                        res_y.append(i)
+                                        res_x.append(j)
+                                        res_n.append(x.n)
         else:
             for i in range(len(self.world_info.world)):
                 for j in range(len(self.world_info.world[i])):
@@ -278,7 +357,8 @@ class Bot():
                             res_y.append(i)
                             res_x.append(j)
             for x in self.world_info.players:
-                res_n.append(x.n)
+                if x.n != self.n:
+                    res_n.append(x.n)
         return res_y, res_x, res_n
     def koor(self, n_igrok):
         self.n_i = n_igrok
@@ -293,9 +373,12 @@ class Bot():
         y = mas_y[0]
         x = mas_x[0]
         a = 0
+        my, mx = self.maxxy()
         sy, sx = self.search_star()
         l = len(sy)
+        print(ig_y, ig_x, "-", y, x)
         if ig_x > x and ig_y > y:
+            print("1")
             a = 0
             if ig_x - x > ig_y - y:
                 res = ig_y - y
@@ -310,6 +393,7 @@ class Bot():
             if a == l:
                 return "q " + str(res)
         if ig_x > x and ig_y < y:
+            print("2")
             a = 0
             if ig_x - x > y - ig_y:
                 res = y - ig_y
@@ -324,6 +408,7 @@ class Bot():
             if a == l:
                 return "z " + str(res)
         if ig_x < x and ig_y > y:
+            print("3")
             a = 0
             if x - ig_x > ig_y - y:
                 res = ig_y - y
@@ -338,6 +423,7 @@ class Bot():
             if a == l:
                 return "e " + str(res)
         if ig_x < x and ig_y < y:
+            print("4")
             a = 0
             if x - ig_x > y - ig_y:
                 res = y - ig_y
@@ -352,6 +438,7 @@ class Bot():
             if a == l:
                 return "c " + str(res)
         if ig_x > x:
+            print("5")
             a = 0
             res = ig_x - x
             ix, iy = ig_x - 1, ig_y
@@ -361,7 +448,24 @@ class Bot():
                     a -= 1
             if a == l:
                 return "a " + str(res)
+            else:
+                a = 0
+                if ig_y + 1 != my:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x - 1 == sx[i] and ig_y + 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "z 1"
+                else:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x - 1 == sx[i] and ig_y - 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "q 1"
         if ig_x < x:
+            print("6")
             a = 0
             res = x - ig_x
             ix, iy = ig_x + 1, ig_y
@@ -371,7 +475,24 @@ class Bot():
                     a -= 1
             if a == l:
                 return "d " + str(res)
+            else:
+                a = 0
+                if ig_y + 1 != my:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x + 1 == sx[i] and ig_y + 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "c 1"
+                else:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x + 1 == sx[i] and ig_y - 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "e 1"
         if ig_y > y:
+            print("7")
             a = 0
             res = ig_y - y
             ix, iy = ig_x, ig_y - 1
@@ -381,7 +502,24 @@ class Bot():
                     a -= 1
             if a == l:
                 return "w " + str(res)
+            else:
+                a = 0
+                if ig_x + 1 != mx:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x + 1 == sx[i] and ig_y + 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "q 1"
+                else:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x - 1 == sx[i] and ig_y + 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "e 1"
         if ig_y < y:
+            print("8")
             a = 0
             res = y - ig_y
             ix, iy = ig_x, ig_y + 1
@@ -391,6 +529,22 @@ class Bot():
                     a -= 1
             if a == l:
                 return "s " + str(res)
+            else:
+                a = 0
+                if ig_x + 1 != mx:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x + 1 == sx[i] and ig_y - 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "z 1"
+                else:
+                    for i in range(0, len(sx)):
+                        a += 1
+                        if ig_x - 1 == sx[i] and ig_y - 1 == sy[i]:
+                            a -= 1
+                    if a == l:
+                        return "c 1"
         return "f"
     def prompt(self):
         y_u, x_u = self.koor(self.n)
@@ -401,6 +555,17 @@ class Bot():
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
         u = self.get_me()
         u_health, op_health = u.health, op_op.health
+        if u_health < 2000:
+            plus = self.get_plus()
+            if not plus:
+                return "f " + str(op)
+            else:
+                return plus
+        else:
+            if r < 15:
+                return "f " + str(op)
+            else:
+                return self.go()
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)
