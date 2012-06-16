@@ -297,7 +297,6 @@ class Bot():
         l = len(sy)
         if ig_x > x and ig_y > y:
             a = 0
-            print("1")
             if ig_x - x > ig_y - y:
                 res = ig_y - y
             else:
@@ -307,14 +306,11 @@ class Bot():
                 for i in range(0, len(sy)):
                     a += 1
                     if iy == sy[i] and ix == sx[i]:
-                        print(iy, sy[i], ix, sx[i])
                         a -= 1
-            print(a)
             if a == l:
                 return "q " + str(res)
         if ig_x > x and ig_y < y:
             a = 0
-            print("2")
             if ig_x - x > y - ig_y:
                 res = y - ig_y
             else:
@@ -324,14 +320,11 @@ class Bot():
                 for i in range(0, len(sy)):
                     a += 1
                     if iy == sy[i] and ix == sx[i]:
-                        print(iy, sy[i], ix, sx[i])
                         a -= 1
-            print(a)
             if a == l:
                 return "z " + str(res)
         if ig_x < x and ig_y > y:
             a = 0
-            print("3")
             if x - ig_x > ig_y - y:
                 res = ig_y - y
             else:
@@ -341,14 +334,11 @@ class Bot():
                 for i in range(0, len(sy)):
                     a += 1
                     if iy == sy[i] and ix == sx[i]:
-                        print(iy, sy[i], ix, sx[i])
                         a -= 1
-            print(a)
             if a == l:
                 return "e " + str(res)
         if ig_x < x and ig_y < y:
             a = 0
-            print("4")
             if x - ig_x > y - ig_y:
                 res = y - ig_y
             else:
@@ -358,61 +348,47 @@ class Bot():
                 for i in range(0, len(sy)):
                     a += 1
                     if iy == sy[i] and ix == sx[i]:
-                        print(iy, sy[i], ix, sx[i])
                         a -= 1
-            print(a)
             if a == l:
                 return "c " + str(res)
         if ig_x > x:
             a = 0
-            print("5")
             res = ig_x - x
             ix, iy = ig_x - 1, ig_y
             for i in range(0, len(sx)):
                 a += 1
                 if ix == sx[i] and iy == sy[i]:
-                    print(iy, sy[i], ix, sx[i])
                     a -= 1
-            print(a)
             if a == l:
                 return "a " + str(res)
         if ig_x < x:
             a = 0
-            print("6")
             res = x - ig_x
             ix, iy = ig_x + 1, ig_y
             for i in range(0, len(sx)):
                 a += 1
                 if ix == sx[i] and iy == sy[i]:
-                    print(iy, sy[i], ix, sx[i])
                     a -= 1
-            print(a)
             if a == l:
                 return "d " + str(res)
         if ig_y > y:
             a = 0
-            print("7")
             res = ig_y - y
             ix, iy = ig_x, ig_y - 1
             for i in range(0, len(sx)):
                 a += 1
                 if ix == sx[i] and iy == sy[i]:
-                    print(iy, sy[i], ix, sx[i])
                     a -= 1
-            print(a)
             if a == l:
                 return "w " + str(res)
         if ig_y < y:
             a = 0
-            print("8")
             res = y - ig_y
             ix, iy = ig_x, ig_y + 1
             for i in range(0, len(sx)):
                 a += 1
                 if ix == sx[i] and iy == sy[i]:
-                    print(iy, sy[i], ix, sx[i])
                     a -= 1
-            print(a)
             if a == l:
                 return "s " + str(res)
         return "f"
@@ -425,7 +401,6 @@ class Bot():
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
         u = self.get_me()
         u_health, op_health = u.health, op_op.health
-        return self.go()
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)
