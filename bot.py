@@ -139,199 +139,146 @@ class Bot():
         y, x = self.search_min_plus()
         ig_y, ig_x = self.koor(self.n)
         sy, sx = self.search_star()
-        a, b = 0, 0
+        a = 0
+        l = len(sy)
         if not y and not x:
             return None
         else:
             if ig_x > x and ig_y > y:
-                b = 0
+                a = 0
                 if ig_x - x > ig_y - y:
                     res = ig_y - y
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y - i, ig_x - i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "q " + str(res)
-                                    else:
-                                        b = 1
-                elif ig_x - x < ig_y - y:
+                else:
                     res = ig_x - x
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y - i, ig_x - i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "q " + str(res)
-                                    else:
-                                        b = 1
-            elif ig_x > x and ig_y < y:
-                b = 0
+                if res > 0:
+                    iy, ix = ig_y - 1, ig_x - 1
+                    for i in range(0, len(sy)):
+                        a += 1
+                        if iy == sy[i] and ix == sx[i]:
+                            a -= 1
+                if a == l:
+                    return "q " + str(res)
+            if ig_x > x and ig_y < y:
+                a = 0
                 if ig_x - x > y - ig_y:
                     res = y - ig_y
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y + i, ig_x - i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "z " + str(res)
-                                    else:
-                                        b = 1
-                elif ig_x - x < y - ig_y:
+                else:
                     res = ig_x - x
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y + i, ig_x - i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "z " + str(res)
-                                    else:
-                                        b = 1
-            elif ig_x < x and ig_y > y:
-                b = 0
+                if res > 0:
+                    iy, ix = ig_y + 1, ig_x - 1
+                    for i in range(0, len(sy)):
+                        a += 1
+                        if iy == sy[i] and ix == sx[i]:
+                            a -= 1
+                if a == l:
+                    return "z " + str(res)
+            if ig_x < x and ig_y > y:
+                a = 0
                 if x - ig_x > ig_y - y:
                     res = ig_y - y
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y - i, ig_x + i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "e " + str(res)
-                                    else:
-                                        b = 1
-                elif x - ig_x < ig_y - y:
+                else:
                     res = x - ig_x
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y - i, ig_x + i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "e " + str(res)
-                                    else:
-                                        b = 1
-            elif ig_x < x and ig_y < y:
-                b = 0
+                if res > 0:
+                    iy, ix = ig_y - 1, ig_x + 1
+                    for i in range(0, len(sy)):
+                        a += 1
+                        if iy == sy[i] and ix == sx[i]:
+                            a -= 1
+                if a == l:
+                    return "e " + str(res)
+            if ig_x < x and ig_y < y:
+                a = 0
                 if x - ig_x > y - ig_y:
                     res = y - ig_y
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y + i, ig_x + i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "c " + str(res)
-                                    else:
-                                        b = 1
-                elif x - ig_x < y - ig_y:
+                else:
                     res = x - ig_x
-                    if res > 0:
-                        for i in range(1, res):
-                            iy, yx = ig_y + i, ig_x + i
-                            a += 1
-                            for j in range(0, len(sy)):
-                                if iy == sy[j] and ix == sx[j] and b == 0:
-                                    a -= 1
-                                    if a != 0
-                                        return "c " + str(res)
-                                    else:
-                                        b = 1
+                if res > 0:
+                    iy, ix = ig_y + 1, ig_x + 1
+                    for i in range(0, len(sy)):
+                        a += 1
+                        if iy == sy[i] and ix == sx[i]:
+                            a -= 1
+                if a == l:
+                    return "c " + str(res)
             if ig_x > x:
-                b = 0
+                a = 0
                 res = ig_x - x
-                for i in range(1, res):
-                    ix = ig_x - i
+                ix, iy = ig_x - 1, ig_y
+                for i in range(0, len(sx)):
                     a += 1
-                    for j in range(0, len(sx)):
-                        if ix == sx[j] and b == 0:
-                            a -= 1
-                            if a != 0:
-                                return "a " + str(res)
-                            else:
-                                b = 1
-            elif ig_x < x:
-                b = 0
+                    if ix == sx[i] and iy == sy[i]:
+                        a -= 1
+                if a == l:
+                    return "a " + str(res)
+            if ig_x < x:
+                a = 0
                 res = x - ig_x
-                for i in range(1, res):
-                    ix = ig_x + i
+                ix, iy = ig_x + 1, ig_y
+                for i in range(0, len(sx)):
                     a += 1
-                    for j in range(0, len(sx)):
-                        if ix == sx[j] and b == 0:
-                            a -= 1
-                            if a != 0:
-                                return "d " + str(res)
-                            else:
-                                b = 1
-            elif ig_y > y:
-                b = 0
+                    if ix == sx[i] and iy == sy[i]:
+                        a -= 1
+                if a == l:
+                    return "d " + str(res)
+            if ig_y > y:
+                a = 0
                 res = ig_y - y
-                for i in range(1, res):
-                    iy = ig_y - i
+                ix, iy = ig_x, ig_y - 1
+                for i in range(0, len(sx)):
                     a += 1
-                    for j in range(0, len(sy)):
-                        if iy == sy[j] and b == 0:
-                            a -= 1
-                            if a != 0:
-                                return "w " + str(res)
-                            else:
-                                b = 1
-            elif y > ig_y:
-                b = 0
+                    if ix == sx[i] and iy == sy[i]:
+                        a -= 1
+                if a == l:
+                    return "w " + str(res)
+            if ig_y < y:
+                a = 0
                 res = y - ig_y
-                for i in range(1, res):
-                    iy = ig_y + i
+                ix, iy = ig_x, ig_y + 1
+                for i in range(0, len(sx)):
                     a += 1
-                    for j in range(0, len(sx)):
-                        if iy == sy[j] and b == 0:
-                            a -= 1
-                            if a != 0:
-                                return "s " + str(res)
-                            else:
-                                b = 1
+                    if ix == sx[i] and iy == sy[i]:
+                        a -= 1
+                if a == l:
+                    return "s " + str(res)
+        return "f"
     def team_enemy(self):
-        for i in self.world_info.blue_team.players:
-            if i.n == self.n:
-                return "r"
-        for i in self.world_info.red_team.players:
-            if i.n == self.n:
-                return "b"
+        if not self.world_info.blue_team:
+            return "n"
+        else:
+            for i in self.world_info.blue_team.players:
+                if i.n == self.n:
+                    return "r"
+            for i in self.world_info.red_team.players:
+                if i.n == self.n:
+                    return "b"
     def players_xy(self):
         res_y, res_x, res_n = [], [], []
         enemy = self.team_enemy()
-        for i in range(len(self.world_info.world)):
-            for j in range(len(self.world_info.world[i])):
-                if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
-                    if enemy == "b":
-                        for x in self.world_info.blue_team.players:
-                            if self.world_info.world[i][j].n == x.n:
-                                res_y.append(i)
-                                res_x.append(j)
-                                res_n.append(x.n)
-                    elif enemy == "r":
-                        for x in self.world_info.red_team.players:
-                            if self.world_info.world[i][j].n == x.n:
-                                res_y.append(i)
-                                res_x.append(j)
-                                res_n.append(x.n)
+        if enemy != "n":
+            for i in range(len(self.world_info.world)):
+                for j in range(len(self.world_info.world[i])):
+                    if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
+                        if enemy == "b":
+                            for x in self.world_info.blue_team.players:
+                                if self.world_info.world[i][j].n == x.n:
+                                    res_y.append(i)
+                                    res_x.append(j)
+                                    res_n.append(x.n)
+                        elif enemy == "r":
+                            for x in self.world_info.red_team.players:
+                                if self.world_info.world[i][j].n == x.n:
+                                    res_y.append(i)
+                                    res_x.append(j)
+                                    res_n.append(x.n)
+        else:
+            for i in range(len(self.world_info.world)):
+                for j in range(len(self.world_info.world[i])):
+                    if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
+                        if self.world_info.world[i][j].n != self.n:
+                            res_y.append(i)
+                            res_x.append(j)
+            for x in self.world_info.players:
+                res_n.append(x.n)
         return res_y, res_x, res_n
     def koor(self, n_igrok):
         self.n_i = n_igrok
@@ -345,172 +292,130 @@ class Bot():
         mas_y, mas_x, n = self.players_xy()
         y = mas_y[0]
         x = mas_x[0]
+        a = 0
         sy, sx = self.search_star()
-        a, b = 0, 0
+        l = len(sy)
         if ig_x > x and ig_y > y:
-            b = 0
+            a = 0
+            print("1")
             if ig_x - x > ig_y - y:
                 res = ig_y - y
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y + i, ig_x + i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "q " + str(res)
-                                else:
-                                        b = 1
-            elif ig_x - x < ig_y - y:
+            else:
                 res = ig_x - x
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y + i, ig_x + i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "q " + str(res)
-                                else:
-                                        b = 1
-        elif ig_x > x and ig_y < y:
-            b = 0
+            if res > 0:
+                iy, ix = ig_y - 1, ig_x - 1
+                for i in range(0, len(sy)):
+                    a += 1
+                    if iy == sy[i] and ix == sx[i]:
+                        print(iy, sy[i], ix, sx[i])
+                        a -= 1
+            print(a)
+            if a == l:
+                return "q " + str(res)
+        if ig_x > x and ig_y < y:
+            a = 0
+            print("2")
             if ig_x - x > y - ig_y:
                 res = y - ig_y
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y - i, ig_x + i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "z " + str(res)
-                                else:
-                                        b = 1
-            elif ig_x - x < y - ig_y:
+            else:
                 res = ig_x - x
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y - i, ig_x + i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "z " + str(res)
-                                else:
-                                        b = 1
-        elif ig_x < x and ig_y > y:
-            b = 0
+            if res > 0:
+                iy, ix = ig_y + 1, ig_x - 1
+                for i in range(0, len(sy)):
+                    a += 1
+                    if iy == sy[i] and ix == sx[i]:
+                        print(iy, sy[i], ix, sx[i])
+                        a -= 1
+            print(a)
+            if a == l:
+                return "z " + str(res)
+        if ig_x < x and ig_y > y:
+            a = 0
+            print("3")
             if x - ig_x > ig_y - y:
                 res = ig_y - y
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y + i, ig_x - i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "e " + str(res)
-                                else:
-                                        b = 1
-            elif x - ig_x < ig_y - y:
+            else:
                 res = x - ig_x
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y + i, ig_x - i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "e " + str(res)
-                                else:
-                                        b = 1
-        elif ig_x < x and ig_y < y:
-            b = 0
+            if res > 0:
+                iy, ix = ig_y - 1, ig_x + 1
+                for i in range(0, len(sy)):
+                    a += 1
+                    if iy == sy[i] and ix == sx[i]:
+                        print(iy, sy[i], ix, sx[i])
+                        a -= 1
+            print(a)
+            if a == l:
+                return "e " + str(res)
+        if ig_x < x and ig_y < y:
+            a = 0
+            print("4")
             if x - ig_x > y - ig_y:
                 res = y - ig_y
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y - i, ig_x - i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "c " + str(res)
-                                else:
-                                        b = 1
-            elif x - ig_x < y - ig_y:
+            else:
                 res = x - ig_x
-                if res > 0:
-                    for i in range(1, res):
-                        iy, yx = ig_y - i, ig_x - i
-                        a += 1
-                        for j in range(0, len(sy)):
-                            if iy == sy[j] and ix == sx[j] and b == 0:
-                                a -= 1
-                                if a != 0
-                                    return "c " + str(res)
-                                else:
-                                        b = 1
+            if res > 0:
+                iy, ix = ig_y + 1, ig_x + 1
+                for i in range(0, len(sy)):
+                    a += 1
+                    if iy == sy[i] and ix == sx[i]:
+                        print(iy, sy[i], ix, sx[i])
+                        a -= 1
+            print(a)
+            if a == l:
+                return "c " + str(res)
         if ig_x > x:
-            b = 0
+            a = 0
+            print("5")
             res = ig_x - x
-            for i in range(1, res):
-                ix = ig_x - i
+            ix, iy = ig_x - 1, ig_y
+            for i in range(0, len(sx)):
                 a += 1
-                for j in range(0, len(sx)):
-                    if ix == sx[j] and b == 0:
-                        a -= 1
-                        if a != 0:
-                            return "a " + str(res)
-                        else:
-                            b = 1
-        elif ig_x < x:
-            b = 0
+                if ix == sx[i] and iy == sy[i]:
+                    print(iy, sy[i], ix, sx[i])
+                    a -= 1
+            print(a)
+            if a == l:
+                return "a " + str(res)
+        if ig_x < x:
+            a = 0
+            print("6")
             res = x - ig_x
-            for i in range(1, res):
-                ix = ig_x + i
+            ix, iy = ig_x + 1, ig_y
+            for i in range(0, len(sx)):
                 a += 1
-                for j in range(0, len(sx)):
-                    if ix == sx[j] and b == 0:
-                        a -= 1
-                        if a != 0:
-                            return "d " + str(res)
-                        else:
-                            b = 1
-        elif ig_y > y:
-            b = 0
+                if ix == sx[i] and iy == sy[i]:
+                    print(iy, sy[i], ix, sx[i])
+                    a -= 1
+            print(a)
+            if a == l:
+                return "d " + str(res)
+        if ig_y > y:
+            a = 0
+            print("7")
             res = ig_y - y
-            for i in range(1, res):
-                iy = ig_y - i
+            ix, iy = ig_x, ig_y - 1
+            for i in range(0, len(sx)):
                 a += 1
-                for j in range(0, len(sy)):
-                    if iy == sy[j] and b == 0:
-                        a -= 1
-                        if a != 0:
-                            return "w " + str(res)
-                        else:
-                            b = 1
-        elif y > ig_y:
-            b = 0
+                if ix == sx[i] and iy == sy[i]:
+                    print(iy, sy[i], ix, sx[i])
+                    a -= 1
+            print(a)
+            if a == l:
+                return "w " + str(res)
+        if ig_y < y:
+            a = 0
+            print("8")
             res = y - ig_y
-            for i in range(1, res):
-                iy = ig_y + i
+            ix, iy = ig_x, ig_y + 1
+            for i in range(0, len(sx)):
                 a += 1
-                for j in range(0, len(sx)):
-                    if iy == sy[j] and b == 0:
-                        a -= 1
-                        if a != 0:
-                            return "s " + str(res)
-                        else:
-                            b = 1
+                if ix == sx[i] and iy == sy[i]:
+                    print(iy, sy[i], ix, sx[i])
+                    a -= 1
+            print(a)
+            if a == l:
+                return "s " + str(res)
+        return "f"
     def prompt(self):
         y_u, x_u = self.koor(self.n)
         y_op_m, x_op_m, n_m = self.players_xy()
@@ -520,6 +425,7 @@ class Bot():
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
         u = self.get_me()
         u_health, op_health = u.health, op_op.health
+        return self.go()
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)
