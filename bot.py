@@ -555,17 +555,6 @@ class Bot():
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
         u = self.get_me()
         u_health, op_health = u.health, op_op.health
-        if u_health < 2000:
-            plus = self.get_plus()
-            if not plus:
-                return "f " + str(op)
-            else:
-                return plus
-        else:
-            if r < 15:
-                return "f " + str(op)
-            else:
-                return self.go()
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)
