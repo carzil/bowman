@@ -6,9 +6,9 @@ from game.server.log import game_log
 from game.server.regen import ManaRegen
 
 class Ranger(NetBowman):
-    health = 3150
+    health = 3500
 
-    regen_mod = 13
+    regen_mod = 7
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -17,66 +17,66 @@ class Ranger(NetBowman):
     bow_distance_mod = 0
     spear_distance_mod = 1
 
-    axe_defense = 4
+    axe_defense = 5
     bow_defense = 3
-    spear_defense = 4
+    spear_defense = 5
 
     klass = "r"
 
     @property
     def bow_damage_mod(self):
 
-        return randrange(89, 98)
+        return randrange(86, 102)
 
     @property
     def spear_damage_mod(self):
-        return randrange(143, 187)
+        return randrange(153, 186)
 
     @property
     def axe_damage_mod(self):
-        return randrange(206, 247)
+        return randrange(211, 229)
 
 class Damager(NetBowman):
-    health = 2340
+    health = 2400
 
-    regen_mod = 9
+    regen_mod = 6
 
     max_steps = 6
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = 2
+    bow_distance_mod = 1
     spear_distance_mod = 0
 
-    axe_defense = 3
-    bow_defense = 7
-    spear_defense = 4
+    axe_defense = 2
+    bow_defense = 5
+    spear_defense = 3
 
     klass = "d"
 
     @property
     def bow_damage_mod(self):
-        return randrange(102, 133)
+        return randrange(111, 133)
 
     @property
     def spear_damage_mod(self):
-        return randrange(119, 156)
+        return randrange(121, 143)
 
     @property
     def axe_damage_mod(self):
-        return randrange(193, 203)
+        return randrange(208, 222)
 
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
-        life_steal = -(damage // 10) # 10%
+        life_steal = -(damage // 6) # 15%
         game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
         self.damage(life_steal)
         return damage
 
 class Tank(NetBowman):
-    health = 5870
+    health = 7500
 
-    regen_mod = 19
+    regen_mod = 11
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -86,40 +86,40 @@ class Tank(NetBowman):
     spear_distance_mod = 0
 
     axe_defense = 4
-    bow_defense = 7
-    spear_defense = 6
+    bow_defense = 6
+    spear_defense = 5
 
     klass = "t"
 
     @property
     def bow_damage_mod(self):
-        return randrange(45, 63)
+        return randrange(47, 62)
 
     @property
     def spear_damage_mod(self):
-        return randrange(61, 63)
+        return randrange(60, 67)
 
     @property
     def axe_damage_mod(self):
-        return randrange(213, 402)
+        return randrange(245, 403)
 
 class Mage(NetBowman):
 
-    health = 2050
-    mana = 600
+    health = 2500
+    mana = 1000
 
-    regen_mod = 27
+    regen_mod = 10
 
     max_steps = 5
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = 3
+    bow_distance_mod = 0
     spear_distance_mod = 0
 
-    axe_defense = 13
-    bow_defense = 17
-    spear_defense = 15
+    axe_defense = 7
+    bow_defense = 7
+    spear_defense = 7
 
     klass = "m"
 
@@ -129,15 +129,15 @@ class Mage(NetBowman):
 
     @property
     def bow_damage_mod(self):
-        return randrange(0, 100)
+        return randrange(10, 110)
 
     @property
     def spear_damage_mod(self):
-        return randrange(0, 140)
+        return randrange(20, 150)
 
     @property
     def axe_damage_mod(self):
-        return randrange(0, 320)
+        return randrange(30, 320)
 
     def spell(self, opponent, spell):
         game_log.info("player %d make a spell", self.n)

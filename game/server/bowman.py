@@ -3,7 +3,7 @@ from pickle import dumps
 import socket
 from game.server.log import game_log, net_log
 from game.server.exceptions import Retry, Kill
-from game.server.spells import FireBall, HealthBreak, Heal
+from game.server.spells import FireBall, HealthBreak, Heal, Razor
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
 
@@ -42,6 +42,7 @@ class Bowman():
         self.fireball = FireBall()
         self.health_break = HealthBreak()
         self.heal = Heal()
+        self.razor = Razor()
 
         self.regen = Regen(self.regen_mod)
 
@@ -259,6 +260,8 @@ class Bowman():
             return self.health_break
         elif symbol == "h":
             return self.heal
+        elif symbol == "r":
+            return self.razor
         else:
             return self.fireball
 

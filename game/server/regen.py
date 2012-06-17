@@ -10,7 +10,7 @@ class Regen():
         return round(self.regen * a)
 
 class ManaRegen():
-    def __init__(self, regen=13):
+    def __init__(self, regen=34):
         self.regen = regen
 
     def count_regen(self):
