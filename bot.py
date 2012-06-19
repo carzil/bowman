@@ -3,6 +3,7 @@ from pickle import loads
 from argparse import ArgumentParser
 from math import sqrt
 import game.info
+
 def is_matrix(bs):
     try:
         if bs[-20:] == b"\xff" * 20:
