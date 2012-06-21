@@ -40,7 +40,7 @@ def get_unit_type(unit_type, sock, n, world, client):
 
 def random_map(directory):
     files = os.listdir(directory)
-    return open(os.path.join(directory, choice(files)))
+    return os.path.join(directory, choice(files))
 
 class PlayerInfo():
     def __init__(self, client, n):
@@ -112,12 +112,17 @@ def updater(world, sock):
             raise
 
 def start(map_path, players_num, sock, itb, config):
+    is_map_dir = False
     if os.path.isdir(map_path):
         is_map_dir = True
-        map_file = random_map(map_path)
-    else:
-        is_map_dir = False
-        map_file = open(map_path)
+        map_path = random_map(map_path)
+
+    try:
+        map_file = open(map_path, encoding="utf-8")
+    except IOError:
+        game_log.critical("map '%s' not found", map_path)
+        game_log.critical("abort")
+        exit(1)
 
     world = World(map_file, itb)
     game_log.info("%d spawn points", world.max_players)
