@@ -40,9 +40,9 @@ class Client():
 
     def choice_unit_type(self):
         unit_type = b"r"
-        string = input("Enter unit type, which you prefer (t, d, r, m): ")
+        string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
         while not string:
-            string = input("Enter unit type, which you prefer (t, d, r, m): ")
+            string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
         if string == "t":
             unit_type = b"t"
         elif string == "d":
