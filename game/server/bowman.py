@@ -10,7 +10,7 @@ from game.server.regen import Regen
 class Bowman():
     health = 250
 
-    regen_mod = 0
+    regen_mod = 1
 
     axe_damage_mod = 0
     bow_damage_mod = 0
@@ -252,10 +252,14 @@ class Bowman():
     def prompt(self):
         return input(">> ")
 
-    def get_spell(self, symbol):
+    def get_spell(self, splited_string, i):
         """
         Return selected spell or fireball
         """
+        try:
+            symbol = splited_string[i]
+        except IndexError:
+            symbol = "f"
         if symbol == "hb":
             return self.health_break
         elif symbol == "h":
@@ -284,7 +288,7 @@ class Bowman():
         try:
             weapon_type = splited_string[i]
         except IndexError:
-            weapon_type = ""
+            weapon_type = "b"
         if weapon_type == "a":
             weapon = self.axe
         elif weapon_type == "s":
@@ -292,7 +296,13 @@ class Bowman():
         elif weapon_type == "b":
             weapon = self.bow
         else:
-            weapon = None
+            r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
+            if r - self.axe_distance_mod < 2:
+                weapon = self.axe
+            elif r - self.spear_distance_mod < 8:
+                weapon = self.spear
+            else:
+                weapon = self.bow
         return weapon
 
     def _update(self):
@@ -306,14 +316,6 @@ class Bowman():
                 self.ally_fire()
                 raise Retry
             weapon = self.get_weapon(splited_string, 2)
-            if not weapon:
-                r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
-                if r - self.axe_distance_mod < 2:
-                    weapon = self.axe
-                elif r - self.spear_distance_mod < 8:
-                    weapon = self.spear
-                else:
-                    weapon = self.bow
             self.fire(player, weapon)
             player.check_heal()
         elif first_letter in ["a", "s", "d", "w", "q", "e", "z", "c"]:
@@ -324,10 +326,7 @@ class Bowman():
             pass
         elif first_letter == "m":
             player = self.get_closest_player(splited_string, 2)
-            try:
-                spell = self.get_spell(splited_string[1])
-            except IndexError:
-                spell = self.fireball
+            spell = self.get_spell(splited_string, 1)
             if self.team and not spell.allow_ally_fire and player in self.team:
                 self.ally_fire()
                 raise Retry

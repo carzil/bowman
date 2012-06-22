@@ -54,7 +54,7 @@ class World():
             for j in string:
                 obj = entities_dict.get(j, Grass())
                 if isinstance(obj, SpawnPoint):
-                    self.spawn_points.append((i, cnt, SpawnPoint))
+                    self.spawn_points.append((i, cnt, obj))
                     obj = Grass()
                 self.world_map[i][cnt] = obj
                 self.world_map_copy[i][cnt] = obj
@@ -103,7 +103,7 @@ class World():
         if y < 0 or y > self.x - 1 or x < 0 or x > self.y - 1:
             return False
         entity = self.get_cell(x, y)
-        if isinstance(entity, NetBowman):
+        if isinstance(entity, Bowman):
             if entity is not player:
                 game_log.info("player %d was killed by player %d in a collision at (%d, %d)",
                     player.n, entity.n, x, y)
