@@ -449,7 +449,7 @@ class NetBowman(Bowman):
             string = self.socket.recv(10)
             string = str(string, "utf-8")
             if string:
-                net_log.debug("client '%s:%s' sent '%s'", self.client_info[0], self.client_info[1], string)
+                net_log.debug("client '%s:%s' (player %d) sent '%s'", self.client_info[0], self.client_info[1], self.n, string)
             else:
                 net_log.warning("client '%s:%d' disconnected (player %d)",
                     self.client_info[0], self.client_info[1], self.n)
