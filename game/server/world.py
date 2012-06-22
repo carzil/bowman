@@ -207,7 +207,10 @@ class World():
         return list(filter(lambda x: not x.killed, self.players))
 
     def get_cell(self, x, y):
-        return self.world_map[x][y]
+        try:
+            return self.world_map[x][y]
+        except IndexError:
+            return None
 
     def end_game(self):
         for player in self.players:
