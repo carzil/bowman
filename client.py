@@ -77,7 +77,7 @@ class Client():
                 out = "You have %d lives and %d mana" % (player.health, player.mana)
             else:
                 out = "You have %d lives" % (player.health,)
-        out += "\n"
+        out += ", your marker is %d\n" % (self.n,)
         for i in players:
             if i.n != self.n:
                 if i.klass == "m":
