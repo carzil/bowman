@@ -225,7 +225,7 @@ class Bowman():
             self.miss()
             game_log.info("player %d missed", self.n)
         else:
-            # if defense > damage, damage shouldn't be negative (heal),
+            # if defense > damage, damage shouldn't be negative,
             # but heal is valid negative damage
             if defense > damage:
                 damage = 0
