@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from configparser import ConfigParser
 from game.server.exceptions import Exit, Restart
 from game.server.log import game_log

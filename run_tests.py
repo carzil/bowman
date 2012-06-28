@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import unittest
 from game.server.world_tests import TestWorld, TestWorldWithOnePlayer
 from game.server.bowman_tests import TestBowman, TestBowmanMovements, TestBowmanAttack
