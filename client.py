@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from socket import *
 from pickle import loads
 from argparse import ArgumentParser
@@ -140,6 +141,7 @@ class Client():
         n = self.sock.recv(2)
         n = int(n)
         self.n = n
+        print("Waiting for game start...")
         while True:
             data = self.sock.recv(2)
             if data == b"go":
