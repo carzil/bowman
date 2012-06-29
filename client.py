@@ -1,9 +1,9 @@
+#!/usr/bin/env python
 # Copyright 2012 Andreev Alexander <carzil@yandex.ru>
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
 
-#!/usr/bin/env python
 from socket import *
 from pickle import loads
 from argparse import ArgumentParser
