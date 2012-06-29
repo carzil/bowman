@@ -1,3 +1,8 @@
+# Copyright 2012 Andreev Alexander <carzil@yandex.ru>
+#
+# This software may be used and distributed according to the terms of the
+# GNU General Public License version 2 or any later version.
+
 from random import randrange, randint
 from game.server.const import BASE_BOW_DISTANCE, BASE_SPEAR_DISTANCE, BASE_AXE_DISTANCE
 

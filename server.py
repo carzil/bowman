@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+# Copyright 2012 Andreev Alexander <carzil@yandex.ru>
+#
+# This software may be used and distributed according to the terms of the
+# GNU General Public License version 2 or any later version.
+
 from configparser import ConfigParser
 from game.server.exceptions import Exit, Restart
 from game.server.log import game_log
@@ -11,6 +16,7 @@ if __name__ == "__main__":
     "See more: https://github.com/carzil/bowman")
     arg_parser.add_argument("-c", "--config", default="config.cfg")
     args = arg_parser.parse_args()
+    
     config = ConfigParser(allow_no_value=True)
     config.read(args.config)
 
