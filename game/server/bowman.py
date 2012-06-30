@@ -11,6 +11,18 @@ from game.server.exceptions import Retry, Kill
 from game.server.spells import FireBall, HealthBreak, Heal, Razor
 from game.server.weapon import Spear, Axe, Bow
 from game.server.regen import Regen
+from functools import wraps
+
+def command(*letters):
+    def decorating_function(func):
+        for letter in letters: commands_dict[letter] = func
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapper
+    return decorating_function
+
+commands_dict = {}
 
 class Bowman():
     health = 250
@@ -34,7 +46,7 @@ class Bowman():
 
     mana = 0
 
-    klass = "s"
+    klass = "s" # for WorldInfo
 
     def __init__(self, n, world, team=None):
         self.n = n
@@ -56,6 +68,7 @@ class Bowman():
         self.team = team
         self.team_nums = ""
 
+
     def _set(self, x, y):
         return self.world.set_player(x, y, self)
 
@@ -73,7 +86,7 @@ class Bowman():
 
     def move_down(self, m):
         """
-        This function move the player down on m cells
+        Moves the player down on `m` cells and returns True if move preforms successful.
          . P .        . P .        . . .
          . . .   ->   . P .   ->   . P .
          . . .        . . .        . . .
@@ -94,6 +107,9 @@ class Bowman():
         return True
 
     def move_up(self, m):
+        """
+        Moves the player up on `m` cells and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x - 1, self.y
@@ -109,6 +125,9 @@ class Bowman():
         return True
 
     def move_left(self, m):
+        """
+        Moves the player left on `m` cells and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x, self.y - 1
@@ -124,6 +143,9 @@ class Bowman():
         return True
 
     def move_right(self, m):
+        """
+        Moves the player right on `m` cells and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x, self.y + 1
@@ -139,6 +161,9 @@ class Bowman():
         return True
 
     def move_up_left(self, m):
+        """
+        Moves the player up and left on `m` cells direction and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x - 1, self.y - 1
@@ -155,6 +180,9 @@ class Bowman():
         return True
 
     def move_up_right(self, m):
+        """
+        Moves the player up and right on `m` cells direction and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x - 1, self.y + 1
@@ -171,6 +199,9 @@ class Bowman():
         return True
 
     def move_down_left(self, m):
+        """
+        Moves the player down and left on `m` cells direction and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x + 1, self.y - 1
@@ -187,6 +218,9 @@ class Bowman():
         return True
 
     def move_down_right(self, m):
+        """
+        Moves the player down and right on `m` cells direction and returns True if move preforms successful.
+        """
         for i in range(m):
             ox, oy = self.x, self.y
             x, y = self.x + 1, self.y + 1
@@ -217,37 +251,6 @@ class Bowman():
             self.health = self.__class__.health
         return True
 
-    def fire(self, opponent, weapon):
-        # Distance from point A to point B in 2d euclid space is:
-        #   _______________________________
-        # \|(A.x - B.x) ** 2 + (A.y - B.y)
-        r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
-        game_log.info("player %d fire player %d with %s", self.n, opponent.n, weapon.name)
-        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
-        is_miss, damage = weapon.count_damage(self, opponent, r)
-        defense = weapon.count_defense(self, opponent, r)
-        if is_miss:
-            self.miss()
-            game_log.info("player %d missed", self.n)
-        else:
-            # if defense > damage, damage shouldn't be negative,
-            # but heal is valid negative damage
-            if defense > damage:
-                damage = 0
-            else:
-                damage -= defense
-            res = opponent.damage(damage)
-            game_log.info("player %d %s defense is %d", opponent.n, weapon.name, defense)
-            if damage > 0:
-                game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
-            else:
-                game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
-            if not res:
-                game_log.info("player %d killed player %d", self.n, opponent.n)
-                opponent.lose()
-                raise Kill(opponent)
-        return damage
-
     def spell(self, opponent, spell):
         raise Retry
 
@@ -259,7 +262,7 @@ class Bowman():
 
     def get_spell(self, splited_string, i):
         """
-        Return selected spell or fireball
+        Return selected spell or fireball.
         """
         try:
             symbol = splited_string[i]
@@ -276,7 +279,7 @@ class Bowman():
 
     def get_closest_player(self, splited_string, i):
         """
-        Return selected player or the closest player
+        Return selected player or the closest player.
         """
         try:
             player = self.world.get_player(int(splited_string[i]))
@@ -288,7 +291,7 @@ class Bowman():
 
     def get_weapon(self, splited_string, i):
         """
-        Return selected weapon or suitable weapon
+        Return selected weapon or suitable weapon.
         """
         try:
             weapon_type = splited_string[i]
@@ -311,34 +314,14 @@ class Bowman():
         return weapon
 
     def _update(self):
-        #XXX: we have to rewrite this function
         string = self.prompt()
         first_letter = string[0]
         splited_string = string.split(" ")
-        if first_letter == "f":
-            player = self.get_closest_player(splited_string, 1)
-            if self.team and player in self.team:
-                self.ally_fire()
-                raise Retry
-            weapon = self.get_weapon(splited_string, 2)
-            self.fire(player, weapon)
-            player.check_heal()
-        elif first_letter in ["a", "s", "d", "w", "q", "e", "z", "c"]:
-            splited_string = string.split(" ")
-            first_letter = string[0]
-            self.handle_move(first_letter, splited_string)
-        elif first_letter == "p":
-            pass
-        elif first_letter == "m":
-            player = self.get_closest_player(splited_string, 2)
-            spell = self.get_spell(splited_string, 1)
-            if self.team and not spell.allow_ally_fire and player in self.team:
-                self.ally_fire()
-                raise Retry
-            self.spell(player, spell)
-            player.check_heal()
-        else:
+        cmd = commands_dict.get(first_letter)
+        if not cmd:
             raise Retry
+
+        return cmd(self, first_letter, splited_string)
 
     def update(self):
         while True:
@@ -353,8 +336,42 @@ class Bowman():
         self.regenerate()
         self.regenerate_mana()
 
+    def fire(self, opponent, weapon):
+        # Distance from point A to point B in 2d euclid space is:
+        #      _______________________________
+        # R = \|(A.x - B.x) ** 2 + (A.y - B.y)
+        r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
+        game_log.info("player %d fire player %d with %s", self.n, opponent.n, weapon.name)
+        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
+        is_miss, damage = weapon.count_damage(self, opponent, r)
+        defense = weapon.count_defense(self, opponent, r)
+        if is_miss:
+            self.miss()
+            game_log.info("player %d missed", self.n)
+        else:
+            # if defense > damage, damage shouldn't be negative
+            if defense > damage:
+                damage = 0
+            else:
+                damage -= defense
+            res = opponent.damage(damage)
+            game_log.info("player %d %s defense is %d", opponent.n, weapon.name, defense)
+            if damage > 0:
+                game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+            else:
+                game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
+            if not res:
+                game_log.info("player %d killed player %d", self.n, opponent.n)
+                opponent.lose()
+                raise Kill(opponent)
+        return damage
+
+    @command("a", "s", "d", "w", "q", "e", "z", "c")
     def handle_move(self, first_letter, splited_string):
-        meters = int(splited_string[1])
+        try:
+            meters = int(splited_string[1])
+        except IndexError:
+            raise Retry
 
         if meters > self.max_steps:
             meters = self.max_steps
@@ -389,6 +406,30 @@ class Bowman():
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
             self.move_down_right(meters)
+    
+    @command("f")
+    def handle_fire(self, first_letter, splited_string):
+        player = self.get_closest_player(splited_string, 1)
+        if self.team and player in self.team:
+            self.ally_fire()
+            raise Retry
+        weapon = self.get_weapon(splited_string, 2)
+        self.fire(player, weapon)
+        player.check_heal()
+
+    @command("m")
+    def handle_spell(self, first_letter, splited_string):
+        player = self.get_closest_player(splited_string, 2)
+        if self.team and not spell.allow_ally_fire and player in self.team:
+            self.ally_fire()
+            raise Retry
+        spell = self.get_spell(splited_string, 1)
+        self.spell(player, spell)
+        player.check_heal()
+
+    @command("p")
+    def handle_pass(self, first_letter, splited_string):
+        pass
 
     def lose(self):
         pass

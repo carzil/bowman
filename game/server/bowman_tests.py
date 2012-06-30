@@ -9,8 +9,8 @@ from game.server.world import World
 from game.server.bowman import Bowman
 from game.server.weapon import Bow, Axe, Spear
 from game.server.spells import FireBall, Razor, HealthBreak, Heal
+from game.server.exceptions import Retry
 import sys
-
 
 class TestBowman(unittest.TestCase):
     def setUp(self):
@@ -43,6 +43,22 @@ class TestBowman(unittest.TestCase):
         self.player1.health = 1
         self.player1.regenerate()
         self.assertGreater(self.player1.health, 1)
+
+    def testUnknownCommand(self):
+        _tmp = sys.stdout
+        sys.stdin = StringIO("k 2\n")
+        sys.stdout = StringIO()
+        with self.assertRaises(Retry):
+            self.player1._update()
+        sys.stdout = _tmp
+
+    def testCommandWithMissingOperand(self):
+        _tmp = sys.stdout
+        sys.stdin = StringIO("a\n")
+        sys.stdout = StringIO()
+        with self.assertRaises(Retry):
+            self.player1._update()
+        sys.stdout = _tmp
 
 
 class TestBowmanMovements(unittest.TestCase):
