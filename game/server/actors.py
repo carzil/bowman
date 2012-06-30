@@ -43,22 +43,23 @@ class Ranger(NetBowman):
     def fire(self, opponent, weapon):
         damage = super(Ranger, self).fire(opponent, weapon)
         splash_damage = damage // 10
-        q = self.world.get_cell(opponent.x - 1, opponent.y - 1)
-        w = self.world.get_cell(opponent.x - 1, opponent.y)
-        s = self.world.get_cell(opponent.x + 1, opponent.y)
-        a = self.world.get_cell(opponent.x, opponent.y - 1)
-        d = self.world.get_cell(opponent.x, opponent.y + 1)
-        e = self.world.get_cell(opponent.x - 1, opponent.y + 1)
-        z = self.world.get_cell(opponent.x + 1, opponent.y - 1)
-        c = self.world.get_cell(opponent.x + 1, opponent.y + 1)
-        cells = list(filter(lambda x: isinstance(x, Bowman), [q, w, s, a, d, e, z, c]))
-        for i in cells:
-            i.damage(splash_damage)
-        if len(cells) > 1:
-            game_log.info("player %d caused splash damage %d to players %s", 
-                          self.n, splash_damage, ", ".join([str(i.n) for i in cells]))
-        else:
-            game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
+        if splash_damage:
+            q = self.world.get_cell(opponent.x - 1, opponent.y - 1)
+            w = self.world.get_cell(opponent.x - 1, opponent.y)
+            s = self.world.get_cell(opponent.x + 1, opponent.y)
+            a = self.world.get_cell(opponent.x, opponent.y - 1)
+            d = self.world.get_cell(opponent.x, opponent.y + 1)
+            e = self.world.get_cell(opponent.x - 1, opponent.y + 1)
+            z = self.world.get_cell(opponent.x + 1, opponent.y - 1)
+            c = self.world.get_cell(opponent.x + 1, opponent.y + 1)
+            cells = list(filter(lambda x: isinstance(x, Bowman), [q, w, s, a, d, e, z, c]))
+            for i in cells:
+                i.damage(splash_damage)
+            if len(cells) > 1:
+                game_log.info("player %d caused splash damage %d to players %s", 
+                              self.n, splash_damage, ", ".join([str(i.n) for i in cells]))
+            else:
+                game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
         return damage
 
 class Damager(NetBowman):
@@ -93,7 +94,7 @@ class Damager(NetBowman):
 
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
-        life_steal = -(damage // 6) # 15%
+        life_steal = -(damage // 6) # ~15%
         game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
         self.damage(life_steal)
         return damage
