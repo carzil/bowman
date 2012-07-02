@@ -6,7 +6,7 @@
 from math import sqrt
 import os
 from random import choice
-from .bowman import NetBowman, Bowman
+from .player import Player, NetPlayer
 from .entity import Grass, Entity, HealthPack, SpawnPoint
 from .exceptions import Restart, Kill, Retry
 from .log import game_log
@@ -71,20 +71,20 @@ class World():
         self.spawn_points.remove(obj)
         return obj
 
-    def add_player(self, bowman):
-        self.players.append(bowman)
+    def add_player(self, Player):
+        self.players.append(Player)
         spawn_point = self.get_random_spawn_point()
-        bowman.x = spawn_point[0]
-        bowman.y = spawn_point[1]
+        Player.x = spawn_point[0]
+        Player.y = spawn_point[1]
         if self.itb:
             tr_num = self.team_red.get_players_num()
             tb_num = self.team_blue.get_players_num()
             if tr_num > tb_num:
-                self.team_blue.add_player(bowman)
-                bowman.team = self.team_blue
+                self.team_blue.add_player(Player)
+                Player.team = self.team_blue
             else:
-                self.team_red.add_player(bowman)
-                bowman.team = self.team_red
+                self.team_red.add_player(Player)
+                Player.team = self.team_red
 
     def set_cell(self, x, y, value):
         self.world_map[x][y] = value
@@ -108,7 +108,7 @@ class World():
         if y < 0 or y > self.x - 1 or x < 0 or x > self.y - 1:
             return False
         entity = self.get_cell(x, y)
-        if isinstance(entity, Bowman):
+        if isinstance(entity, Player):
             if entity is not player:
                 game_log.info("player %d was killed by player %d in a collision at (%d, %d)",
                     player.n, entity.n, x, y)
@@ -266,7 +266,7 @@ class World():
         for i in range(self.y):
             for j in range(self.x):
                 e = self.world_map[i][j]
-                if isinstance(e, Bowman):
+                if isinstance(e, Player):
                     obj = self.get_player_info(e)
                     p_info.append(obj)
                 elif isinstance(e, Entity):

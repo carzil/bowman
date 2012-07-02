@@ -24,7 +24,7 @@ def command(*letters):
 
 commands_dict = {}
 
-class Bowman():
+class Player():
     health = 250
 
     regen_mod = 1
@@ -482,9 +482,9 @@ class Bowman():
     def __str__(self):
         return str(self.n)
 
-class NetBowman(Bowman):
+class NetPlayer(Player):
     def __init__(self, socket, ci, *args, **kwargs):
-        super(NetBowman, self).__init__(*args, **kwargs)
+        super(NetPlayer, self).__init__(*args, **kwargs)
         self.socket = socket
         self.client_info = ci
 
@@ -507,7 +507,7 @@ class NetBowman(Bowman):
 
     def update(self):
         try:
-            super(NetBowman, self).update()
+            super(NetPlayer, self).update()
         except socket.error:
             net_log.warning("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
             raise Kill(self)

@@ -5,7 +5,7 @@
 
 import unittest
 from .entity import Entity, Grass, Wall, Spikes, HealthPack, SpawnPoint
-from .bowman import Bowman
+from .player import Player
 
 def WorldMock():
     def __getattr___(self, name):
@@ -18,7 +18,7 @@ class TestEntity(unittest.TestCase):
         self.spikes = Spikes()
         self.hp = HealthPack()
         self.sp = SpawnPoint()
-        self.player1 = Bowman(1, WorldMock())
+        self.player1 = Player(1, WorldMock())
 
     def testInheritance(self):
         self.assertIsInstance(self.grass, Entity)

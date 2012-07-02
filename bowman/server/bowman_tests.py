@@ -6,19 +6,19 @@
 import unittest
 from io import StringIO
 from .world import World
-from .bowman import Bowman
+from .player import Player
 from .weapon import Bow, Axe, Spear
 from .spells import FireBall, Razor, HealthBreak, Heal
 from .entity import Grass
 from .exceptions import Retry
 import sys
 
-class TestBowman(unittest.TestCase):
+class TestPlayer(unittest.TestCase):
     def setUp(self):
         map_content = StringIO("3 3\n# . .\n. & .\n. . .")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
-        self.player1 = Bowman(1, self.world)
+        self.player1 = Player(1, self.world)
         self.world.add_player(self.player1)
         self.world.game_start()
 
@@ -75,14 +75,14 @@ class TestBowman(unittest.TestCase):
     def testSetPosition(self):
         self.player1.set_position(0, 0)
         self.assertIsInstance(self.world.get_cell(1, 1), Grass)
-        self.assertIsInstance(self.world.get_cell(0, 0), Bowman)
+        self.assertIsInstance(self.world.get_cell(0, 0), Player)
 
-class TestBowmanMovements(unittest.TestCase):
+class TestPlayerMovements(unittest.TestCase):
     def setUp(self):
         map_content = StringIO("3 3\n. . .\n. & .\n. . .")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
-        self.player1 = Bowman(1, self.world)
+        self.player1 = Player(1, self.world)
         self.world.add_player(self.player1)
         self.world.game_start()
 
@@ -203,7 +203,7 @@ class TestBowmanMovements(unittest.TestCase):
         self.assertEqual(self.player1.x, 2)
         self.assertEqual(self.player1.y, 2)
 
-class TestBowmanAttack(unittest.TestCase):  
+class TestPlayerAttack(unittest.TestCase):  
     def setUp(self):
         map_content = StringIO("10 10\n"
                                "& . . . . . . . . .\n"
@@ -218,9 +218,9 @@ class TestBowmanAttack(unittest.TestCase):
                                ". . . . . . . . . &\n")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
-        self.player1 = Bowman(1, self.world)
+        self.player1 = Player(1, self.world)
         self.world.add_player(self.player1)
-        self.player2 = Bowman(2, self.world)
+        self.player2 = Player(2, self.world)
         self.world.add_player(self.player2)
         self.world.game_start()
 

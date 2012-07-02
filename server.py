@@ -5,12 +5,12 @@
 # GNU General Public License version 2 or any later version.
 
 from configparser import ConfigParser
-from game.server.exceptions import Exit, Restart
-from game.server.log import game_log
-from game.server.main import start, setup_socket
+from bowman.server.exceptions import Exit, Restart
+from bowman.server.log import game_log
+from bowman.server.main import start, setup_socket
 from argparse import ArgumentParser
 
-if __name__ == "__main__":
+def main():
     game_log.info("run Bowman v1.0")
     arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
     "See more: https://github.com/carzil/bowman")
@@ -32,3 +32,6 @@ if __name__ == "__main__":
             start(_map, max_players, server_socket, itb, config)
         except (Exit, Restart):
             pass
+
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,7 @@ from io import StringIO
 from .world import *
 from .entity import Grass, Wall, Spikes, HealthPack, SpawnPoint
 from .exceptions import Retry, Kill, Restart
-from .bowman import Bowman
+from .player import Player
 from ..info import PlayerInfo, WorldInfo, EntityInfo
 import sys
 
@@ -94,21 +94,21 @@ class TestWorld(unittest.TestCase):
         self.assertIsInstance(self.world.get_cell(0, 1), Spikes)
 
     def testAddPlayer(self):
-        player1 = Bowman(1, self.world)
+        player1 = Player(1, self.world)
         self.world.add_player(player1)
         self.assertEqual(len(self.world.players), 1)
         self.assertIs(self.world.players[0], player1)
 
-        player2 = Bowman(2, self.world)
+        player2 = Player(2, self.world)
         self.world.add_player(player2)
         self.assertEqual(len(self.world.players), 2)
         self.assertIs(self.world.players[1], player2)
 
     def testGameStart(self):
-        player1 = Bowman(1, self.world)
+        player1 = Player(1, self.world)
         self.world.add_player(player1)
 
-        player2 = Bowman(2, self.world)
+        player2 = Player(2, self.world)
         self.world.add_player(player2)
 
         self.assertIsInstance(self.world.get_cell(player1.x, player1.y), Grass)
@@ -118,8 +118,8 @@ class TestWorld(unittest.TestCase):
 
         self.assertGreater(self.world.players[1].n, self.world.players[0].n)
         self.assertEqual(self.world.players_num, 2)
-        self.assertIsInstance(self.world.get_cell(player1.x, player1.y), Bowman)
-        self.assertIsInstance(self.world.get_cell(player2.x, player2.y), Bowman)
+        self.assertIsInstance(self.world.get_cell(player1.x, player1.y), Player)
+        self.assertIsInstance(self.world.get_cell(player2.x, player2.y), Player)
 
 
 class TestWorldWithOnePlayer(unittest.TestCase):
@@ -127,7 +127,7 @@ class TestWorldWithOnePlayer(unittest.TestCase):
         map_content = StringIO("3 2\n. # &\n+ . *")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
-        self.player1 = Bowman(1, self.world)
+        self.player1 = Player(1, self.world)
         self.world.add_player(self.player1)
         self.world.game_start()
 
@@ -164,7 +164,7 @@ class TestWorldWithOnePlayer(unittest.TestCase):
     def testKillPlayer(self):
         x, y = self.player1.x, self.player1.y
         entity = self.world.get_cell(x, y)
-        self.assertIsInstance(entity, Bowman)
+        self.assertIsInstance(entity, Player)
 
         self.world.kill_player(self.player1)
         self.assertTrue(self.player1.killed)
@@ -234,8 +234,8 @@ class TestWorldWithPlayers(unittest.TestCase):
         map_content = StringIO("3 2\n. # &\n+ . &")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
-        self.player1 = Bowman(1, self.world)
-        self.player2 = Bowman(2, self.world)
+        self.player1 = Player(1, self.world)
+        self.player2 = Player(2, self.world)
         self.world.add_player(self.player1)
         self.world.add_player(self.player2)
         self.world.game_start()

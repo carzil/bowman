@@ -5,12 +5,12 @@
 
 from math import sqrt
 from random import randrange
-from .bowman import NetBowman, Bowman
+from .player import Player, NetPlayer
 from .exceptions import Retry, Kill
 from .log import game_log
 from .regen import ManaRegen
 
-class Ranger(NetBowman):
+class Ranger(NetPlayer):
     health = 3500
 
     regen_mod = 7
@@ -52,7 +52,7 @@ class Ranger(NetBowman):
             e = self.world.get_cell(opponent.x - 1, opponent.y + 1)
             z = self.world.get_cell(opponent.x + 1, opponent.y - 1)
             c = self.world.get_cell(opponent.x + 1, opponent.y + 1)
-            cells = list(filter(lambda x: isinstance(x, Bowman), [q, w, s, a, d, e, z, c]))
+            cells = list(filter(lambda x: isinstance(x, Player), [q, w, s, a, d, e, z, c]))
             for i in cells:
                 i.damage(splash_damage)
             if len(cells) > 1:
@@ -62,7 +62,7 @@ class Ranger(NetBowman):
                 game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
         return damage
 
-class Damager(NetBowman):
+class Damager(NetPlayer):
     health = 2400
 
     regen_mod = 6
@@ -99,7 +99,7 @@ class Damager(NetBowman):
         self.damage(life_steal)
         return damage
 
-class Tank(NetBowman):
+class Tank(NetPlayer):
     health = 7500
 
     regen_mod = 11
@@ -129,7 +129,7 @@ class Tank(NetBowman):
     def axe_damage_mod(self):
         return randrange(245, 403)
 
-class Mage(NetBowman):
+class Mage(NetPlayer):
 
     health = 2500
     mana = 1000
