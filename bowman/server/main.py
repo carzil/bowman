@@ -7,13 +7,13 @@ import os
 from random import choice
 from socket import socket, error
 import select
-from threading import Thread
 from configparser import ConfigParser
 from argparse import ArgumentParser
 from .exceptions import Restart, Exit
 from .log import net_log, game_log
 from .world import World
 from .actors import Ranger, Tank, Damager, Mage
+from ..utils import Connection
 
 def setup_socket(host, port):
     sock = socket()
@@ -26,18 +26,19 @@ def setup_socket(host, port):
 
 def accept_client(server_sock):
     sock, client = server_sock.accept()
+    conn = Connection(sock)
+    conn.send_pack("hello")
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
-    sock.send(b"hello")
-    return sock, client
+    return sock, client, conn
 
 def get_unit_type(unit_type, sock, n, world, client):
-    if unit_type == b"t":
+    if unit_type == "t":
         cls = Tank
         game_log.info("player %d is a tank", n)
-    elif unit_type == b"d":
+    elif unit_type == "d":
         cls = Damager
         game_log.info("player %d is a damager", n)
-    elif unit_type == b"m":
+    elif unit_type == "m":
         cls = Mage
         game_log.info("player %d is a mage", n)
     else:
@@ -50,13 +51,15 @@ def random_map(directory):
     return os.path.join(directory, choice(files))
 
 class PlayerInfo():
-    def __init__(self, client, n):
+    def __init__(self, client, n, conn):
         self.client = client
         self.n = n
+        self.connection = conn
 
     def __iter__(self):
         yield self.client
         yield self.n
+        yield self.connection
 
 def number_to_str(n):
     n = str(n)
@@ -81,14 +84,14 @@ def accept_all_clients(n, world, server_sock):
         for sock in r:
             if sock is server_sock:
                 i += 1
-                client_sock, client = accept_client(server_sock)
-                socks_info[client_sock] = PlayerInfo(client, i)
+                client_sock, client, conn = accept_client(server_sock)
+                socks_info[client_sock] = PlayerInfo(client, i, conn)
                 track.append(client_sock)
             else:
-                client, c_n = socks_info.get(sock)
+                client, c_n, conn = socks_info.get(sock)
                 try:
-                    unit_type = sock.recv(1)
-                    sock.send(bytes(number_to_str(c_n), "utf-8"))
+                    unit_type = conn.get_pack()
+                    conn.send_pack(number_to_str(c_n))
                 except error:
                     track.remove(sock)
                     del socks_info[sock]
@@ -111,7 +114,7 @@ def updater(world, sock):
         try:
             world.update()
         except (Exit, Restart):
-            return
+            exit(0)
         except:
             game_log.fatal("unhandled exception have been raised")
             game_log.fatal("abort")
@@ -151,11 +154,7 @@ def start(map_path, players_num, sock, itb, config):
         game_log.info("team game with %d players", players_num)
 
     world.game_start()
-    updater_process = Thread(target=updater, args=(world, sock))
-    try:
-        updater_process.start()
-    except:
-        raise
+    updater(world, sock)
 
 def main():
     game_log.info("run Bowman v1.0")

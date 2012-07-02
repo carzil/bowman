@@ -170,7 +170,7 @@ class Mage(NetPlayer):
         r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
         game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
         if spell.mana > self.mana:
-            game_log.info("player %d have not enough mana", self.n)
+            game_log.info("player %d have not enough mana (need %d, found %d)", self.n, spell.mana, self.mana)
             raise Retry
         is_miss, damage = spell.count_damage(self, opponent, r)
         if is_miss:

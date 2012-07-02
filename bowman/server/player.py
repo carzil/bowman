@@ -12,6 +12,7 @@ from .exceptions import Retry, Kill
 from .spells import FireBall, HealthBreak, Heal, Razor
 from .weapon import Spear, Axe, Bow
 from .regen import Regen
+from ..utils import Connection
 
 def command(*letters):
     def decorating_function(func):
@@ -485,14 +486,13 @@ class Player():
 class NetPlayer(Player):
     def __init__(self, socket, ci, *args, **kwargs):
         super(NetPlayer, self).__init__(*args, **kwargs)
-        self.socket = socket
+        self.connection = Connection(socket)
         self.client_info = ci
 
     def prompt(self):
-        self.socket.send(b"go")
+        self.connection.send_pack("go")
         try:
-            string = self.socket.recv(10)
-            string = str(string, "utf-8")
+            string = self.connection.get_pack()
             if string:
                 net_log.debug("client '%s:%s' (player %d) sent '%s'", self.client_info[0], self.client_info[1], self.n, string)
             else:
@@ -514,64 +514,62 @@ class NetPlayer(Player):
 
     def send_info(self, info):
         try:
-            i = dumps(info)
-            self.socket.send(b"mx")
-            self.socket.send(i)
-            self.socket.send(b"\xff" * 20)
+            self.connection.send_pack("mx")
+            self.connection.send_pack(info)
         except socket.error:
             pass
 
     def lose(self):
         try:
-            self.socket.send(b"lo")
+            self.connection.send_pack("lo")
         except socket.error:
             pass
 
     def win(self):
         try:
-            self.socket.send(b"wi")
+            self.connection.send_pack("wi")
         except socket.error:
             pass
 
     def near_border(self):
         try:
-            self.socket.send(b"nb")
+            self.connection.send_pack("nb")
         except socket.error:
             pass
 
     def miss(self):
         try:
-            self.socket.send(b"mi")
+            self.connection.send_pack("mi")
         except socket.error:
             pass
 
     def end_game(self):
         try:
-            self.socket.send(b"eg")
+            self.connection.send_pack("eg")
         except socket.error:
             pass
 
     def abort_game(self):
         try:
-            self.socket.send(b"ag")
+            self.connection.send_pack("ag")
         except socket.error:
             pass
 
     def ally_fire(self):
         try:
-            self.socket.send(b"af")
+            self.connection.send_pack("af")
         except socket.error:
             pass
 
     def team_win(self):
         try:
-            self.socket.send(b"tw")
+            self.connection.send_pack("tw")
         except socket.error:
             pass
 
     def team_lose(self):
         try:
-            self.socket.send(b"tl")
+            self.connection.send_pack("tl")
         except socket.error:
             pass
 

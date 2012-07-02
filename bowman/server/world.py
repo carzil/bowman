@@ -241,47 +241,14 @@ class World():
 
     def render_matrix(self):
         out = ""
-        for i in range(self.y):
-            for j in range(self.x):
-                s = str(self.world_map[i][j])
-                if len(s) == 2:
-                    out += str(s)
-                else:
-                    out += str(s) + " "
-
+        for i in self.world_map:
+            out += " ".join(map(str, i))
             out += "\n"
         return out
 
     def get_player_info(self, player):
-        return PlayerInfo(
-            player.klass,
-            player.n,
-            player.health,
-            player.mana,
-        )
-
-    def get_info(self):
-        p_info = []
-        matrix = [[None for j in range(self.x)] for i in range(self.y)]
-        for i in range(self.y):
-            for j in range(self.x):
-                e = self.world_map[i][j]
-                if isinstance(e, Player):
-                    obj = self.get_player_info(e)
-                    p_info.append(obj)
-                elif isinstance(e, Entity):
-                    obj = EntityInfo(e.symbol, e.name)
-                else:
-                    obj = None
-                matrix[i][j] = obj
-        p_info.sort(key=lambda x: x.n)
-        rt, bt = None, None
-        if self.itb:
-            rt = TeamInfo(self.team_red)
-            bt = TeamInfo(self.team_blue)
-        return WorldInfo(matrix, p_info, self.render_matrix(), rt, bt)
+        return player.get_info()
 
     def send_info(self):
-        info = self.get_info()
         for player in self.players:
-            player.send_info(info)
+            player.send_info(self.get_player_info(player))

@@ -10,7 +10,6 @@ from .world import *
 from .entity import Grass, Wall, Spikes, HealthPack, SpawnPoint
 from .exceptions import Retry, Kill, Restart
 from .player import Player
-from ..info import PlayerInfo, WorldInfo, EntityInfo
 import sys
 
 class TestWorld(unittest.TestCase):
@@ -183,42 +182,11 @@ class TestWorldWithOnePlayer(unittest.TestCase):
         self.assertEqual(players, [self.player1])
 
     def testRenderMatrix(self):
-        self.assertEqual(self.world.render_matrix(), ". # 1 \n+ . * \n")
+        self.assertEqual(self.world.render_matrix(), ". # 1\n+ . *\n")
 
     def testGetPlayerInfo(self):
         info = self.world.get_player_info(self.player1)
-        self.assertIsInstance(info, PlayerInfo)
-        self.assertEqual(info.klass, "s")
-        self.assertEqual(info.health, 250)
-        self.assertEqual(info.mana, 0)
-        self.assertEqual(info.n, 1)
-
-    def testGetInfo(self):
-        players = [self.player1]
-        info = self.world.get_info()
-        self.assertIsInstance(info, WorldInfo)
-
-        self.assertIsInstance(info.world[0][0], EntityInfo)
-        self.assertEqual(info.world[0][0].symbol, ".")
-        self.assertEqual(info.world[0][0].name, "grass")
-
-        self.assertIsInstance(info.world[0][0], EntityInfo)
-        self.assertEqual(info.world[0][1].symbol, "#")
-        self.assertEqual(info.world[0][1].name, "spikes")
-
-        self.assertIsInstance(info.world[0][2], PlayerInfo)
-
-        self.assertIsInstance(info.world[1][0], EntityInfo)
-        self.assertEqual(info.world[1][0].symbol, "+")
-        self.assertEqual(info.world[1][0].name, "heal")
-
-        self.assertIsInstance(info.world[1][1], EntityInfo)
-        self.assertEqual(info.world[1][1].symbol, ".")
-        self.assertEqual(info.world[1][1].name, "grass")
-
-        self.assertIsInstance(info.world[1][2], EntityInfo)
-        self.assertEqual(info.world[1][2].symbol, "*")
-        self.assertEqual(info.world[1][2].name, "wall")
+        self.assertIsInstance(info, str)
 
     def testUpdate(self):
         sys.stdin = StringIO("f\n" * 20)

@@ -18,10 +18,16 @@ class PlayerInfo():
         self.health = health
         self.mana = mana
 
+    def __str__(self):
+        str(self.n)
+
 class EntityInfo():
     def __init__(self, s, n):
         self.symbol = s
         self.name = n
+
+    def __str__(self):
+        return self.symbol
 
 class TeamInfo():
     def __init__(self, team):

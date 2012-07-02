@@ -7,15 +7,8 @@
 from socket import *
 from pickle import loads
 from argparse import ArgumentParser
+from bowman.utils import Connection
 import os, sys
-
-def is_matrix(bs):
-    try:
-        if bs[-20:] == b"\xff" * 20:
-            return True
-        return False
-    except IndexError:
-        return False
 
 class Client():
     def __init__(self, remote_ip, remote_port):
@@ -38,23 +31,23 @@ class Client():
     def connect(self):
         self.sock = socket(AF_INET, SOCK_STREAM)
         self.sock.connect((self.remote_ip, self.remote_port))
-        data = self.sock.recv(5)
-        if data == b"hello":
+        self.connection = Connection(self.sock)
+        data = self.connection.get_pack()
+        if data == "hello":
             return
         raise Exception("Oops! There is an server error")
 
-
     def choice_unit_type(self):
-        unit_type = b"r"
+        unit_type = "r"
         string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
         while not string:
             string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
         if string == "t":
-            unit_type = b"t"
+            unit_type = "t"
         elif string == "d":
-            unit_type = b"d"
+            unit_type = "d"
         elif string == "m":
-            unit_type = b"m"
+            unit_type = "m"
         return unit_type
 
     def lose(self):
@@ -112,14 +105,9 @@ class Client():
         return out
 
     def receive_matrix(self):
-        d = self.sock.recv(1)
-        while not is_matrix(d):
-            d += self.sock.recv(1)
-        matrix = loads(d)
-        self.world_info = matrix
+        data = self.connection.get_pack()
         self.clear_screen()
-        print(self.get_info_header(matrix))
-        print(matrix.world_s)
+        print(data)
 
     def end_game(self):
         print("Game finished!")
@@ -142,39 +130,38 @@ class Client():
         return input(">> ").strip()[:10]
 
     def main(self):
-        self.sock.send(self.unit_type)
-        n = self.sock.recv(2)
+        self.connection.send_pack(self.unit_type)
+        n = self.connection.get_pack()
         n = int(n)
         self.n = n
         print("Waiting for game start...")
         while True:
-            data = self.sock.recv(2)
-            if data == b"go":
+            data = self.connection.get_pack()
+            if data == "go":
                 string = self.prompt()
                 while not string:
                     string = self.prompt()
-                data = bytes(string.encode("utf-8"))
-                self.sock.send(data)
-            elif data == b"lo":
+                self.connection.send_pack(string)
+            elif data == "lo":
                 self.lose()
-            elif data == b"wi":
+            elif data == "wi":
                 self.win()
-            elif data == b"mi":
+            elif data == "mi":
                 self.miss()
-            elif data == b"nb":
+            elif data == "nb":
                 self.nb()
-            elif data == b"mx":
+            elif data == "mx":
                 self.receive_matrix()
-            elif data == b"af":
+            elif data == "af":
                 self.ally_fire()
-            elif data == b"tw":
+            elif data == "tw":
                 self.team_win()
-            elif data == b"tl":
+            elif data == "tl":
                 self.team_lose()
-            elif data == b"eg":
+            elif data == "eg":
                 self.end_game()
                 break
-            elif data == b"ag":
+            elif data == "ag":
                 self.abort_game()
                 break
 
