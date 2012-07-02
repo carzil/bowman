@@ -159,7 +159,7 @@ def start(map_path, players_num, sock, itb, config):
 
 def main():
     game_log.info("run Bowman v1.0")
-    arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
+    arg_parser = ArgumentParser(description="Bowman is a client-server console game.\n"
     "See more: https://github.com/carzil/bowman")
     arg_parser.add_argument("-c", "--config", default="config.cfg")
     args = arg_parser.parse_args()
