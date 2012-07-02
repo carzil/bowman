@@ -5,10 +5,10 @@
 
 from math import sqrt
 from random import randrange
-from game.server.bowman import NetBowman, Bowman
-from game.server.exceptions import Retry, Kill
-from game.server.log import game_log
-from game.server.regen import ManaRegen
+from .bowman import NetBowman, Bowman
+from .exceptions import Retry, Kill
+from .log import game_log
+from .regen import ManaRegen
 
 class Ranger(NetBowman):
     health = 3500

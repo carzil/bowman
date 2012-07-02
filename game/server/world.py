@@ -6,12 +6,12 @@
 from math import sqrt
 import os
 from random import choice
-from game.server.bowman import NetBowman, Bowman
-from game.server.entity import Grass, Entity, HealthPack, SpawnPoint
-from game.server.exceptions import Restart, Kill, Retry
-from game.server.log import game_log
-from game.info import WorldInfo, PlayerInfo, EntityInfo, TeamInfo
-from game.server.team import Team
+from .bowman import NetBowman, Bowman
+from .entity import Grass, Entity, HealthPack, SpawnPoint
+from .exceptions import Restart, Kill, Retry
+from .log import game_log
+from .team import Team
+from ..info import WorldInfo, PlayerInfo, EntityInfo, TeamInfo
 
 class World():
     def __init__(self, file_obj, is_team_battle):

@@ -6,12 +6,12 @@
 from math import sqrt
 from pickle import dumps
 import socket
-from game.server.log import game_log, net_log
-from game.server.exceptions import Retry, Kill
-from game.server.spells import FireBall, HealthBreak, Heal, Razor
-from game.server.weapon import Spear, Axe, Bow
-from game.server.regen import Regen
 from functools import wraps
+from .log import game_log, net_log
+from .exceptions import Retry, Kill
+from .spells import FireBall, HealthBreak, Heal, Razor
+from .weapon import Spear, Axe, Bow
+from .regen import Regen
 
 def command(*letters):
     def decorating_function(func):

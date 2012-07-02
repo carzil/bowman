@@ -4,7 +4,7 @@
 # GNU General Public License version 2 or any later version.
 
 from random import randrange, randint
-from game.server.const import BASE_BOW_DISTANCE, BASE_SPEAR_DISTANCE, BASE_AXE_DISTANCE
+from .const import BASE_BOW_DISTANCE, BASE_SPEAR_DISTANCE, BASE_AXE_DISTANCE
 
 class Weapon():
     name = "weapon"

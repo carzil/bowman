@@ -4,7 +4,7 @@
 # GNU General Public License version 2 or any later version.
 
 from random import randrange
-from game.server.log import game_log
+from .log import game_log
 
 class Entity():
     collidable = False

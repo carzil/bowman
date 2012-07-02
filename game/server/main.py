@@ -8,10 +8,10 @@ from random import choice
 from socket import socket, error
 import select
 from threading import Thread
-from game.server.exceptions import Restart, Exit
-from game.server.log import net_log, game_log
-from game.server.world import World
-from game.server.actors import Ranger, Tank, Damager, Mage
+from .exceptions import Restart, Exit
+from .log import net_log, game_log
+from .world import World
+from .actors import Ranger, Tank, Damager, Mage
 
 def setup_socket(host, port):
     sock = socket()
