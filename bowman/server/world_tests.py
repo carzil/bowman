@@ -6,11 +6,11 @@
 import unittest
 import logging
 from io import StringIO
-from game.server.world import *
-from game.server.entity import Grass, Wall, Spikes, HealthPack, SpawnPoint
-from game.server.exceptions import Retry, Kill, Restart
-from game.server.bowman import Bowman
-from game.info import PlayerInfo, WorldInfo, EntityInfo
+from .world import *
+from .entity import Grass, Wall, Spikes, HealthPack, SpawnPoint
+from .exceptions import Retry, Kill, Restart
+from .bowman import Bowman
+from ..info import PlayerInfo, WorldInfo, EntityInfo
 import sys
 
 class TestWorld(unittest.TestCase):
@@ -241,6 +241,12 @@ class TestWorldWithPlayers(unittest.TestCase):
         self.world.game_start()
 
     def testPlayersCollision(self):
+        x, y = 0, 2
+        cell = self.world.get_cell(x, y)
+        if cell is self.player1:
+            x, y = 1, 2
+
         with self.assertRaises(Kill) as exc:
-            self.world.set_player(1, 2, self.player1)
-        self.assertIs(exc.exception.player, player1)
+            self.world.set_player(x, y, self.player1)
+
+        self.assertIs(exc.exception.player, self.player1)

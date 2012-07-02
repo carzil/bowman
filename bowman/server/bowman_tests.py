@@ -5,12 +5,12 @@
 
 import unittest
 from io import StringIO
-from game.server.world import World
-from game.server.bowman import Bowman
-from game.server.weapon import Bow, Axe, Spear
-from game.server.spells import FireBall, Razor, HealthBreak, Heal
-from game.server.entity import Grass
-from game.server.exceptions import Retry
+from .world import World
+from .bowman import Bowman
+from .weapon import Bow, Axe, Spear
+from .spells import FireBall, Razor, HealthBreak, Heal
+from .entity import Grass
+from .exceptions import Retry
 import sys
 
 class TestBowman(unittest.TestCase):
