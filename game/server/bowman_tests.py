@@ -9,12 +9,13 @@ from game.server.world import World
 from game.server.bowman import Bowman
 from game.server.weapon import Bow, Axe, Spear
 from game.server.spells import FireBall, Razor, HealthBreak, Heal
+from game.server.entity import Grass
 from game.server.exceptions import Retry
 import sys
 
 class TestBowman(unittest.TestCase):
     def setUp(self):
-        map_content = StringIO("3 3\n. . .\n. & .\n. . .")
+        map_content = StringIO("3 3\n# . .\n. & .\n. . .")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
         self.player1 = Bowman(1, self.world)
@@ -60,6 +61,21 @@ class TestBowman(unittest.TestCase):
             self.player1._update()
         sys.stdout = _tmp
 
+    def testWeaponsSet(self):
+        self.assertIsInstance(self.player1.bow, Bow)
+        self.assertIsInstance(self.player1.spear, Spear)
+        self.assertIsInstance(self.player1.axe, Axe)
+
+    def testSpellsSet(self):
+        self.assertIsInstance(self.player1.fireball, FireBall)
+        self.assertIsInstance(self.player1.razor, Razor)
+        self.assertIsInstance(self.player1.heal, Heal)
+        self.assertIsInstance(self.player1.health_break, HealthBreak)
+
+    def testSetPosition(self):
+        self.player1.set_position(0, 0)
+        self.assertIsInstance(self.world.get_cell(1, 1), Grass)
+        self.assertIsInstance(self.world.get_cell(0, 0), Bowman)
 
 class TestBowmanMovements(unittest.TestCase):
     def setUp(self):
