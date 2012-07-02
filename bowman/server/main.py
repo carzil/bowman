@@ -150,7 +150,6 @@ def start(map_path, players_num, sock, itb, config):
 
     world.game_start()
     updater_process = Thread(target=updater, args=(world, sock))
-    updater_process.daemon = True
     try:
         updater_process.start()
     except:
