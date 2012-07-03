@@ -6,12 +6,11 @@
 from math import sqrt
 import os
 from random import choice
-from .player import Player, NetPlayer
+from .player import Player
 from .entity import Grass, Entity, HealthPack, SpawnPoint
 from .exceptions import Restart, Kill, Retry
 from .log import game_log
 from .team import Team
-from ..info import WorldInfo, PlayerInfo, EntityInfo, TeamInfo
 
 class World():
     def __init__(self, file_obj, is_team_battle):
