@@ -290,14 +290,14 @@ class Player():
             player = self.world.get_closest_player(self)
         return player
 
-    def get_weapon(self, splited_string, i):
+    def get_weapon(self, splited_string, i, player):
         """
         Return selected weapon or suitable weapon.
         """
         try:
             weapon_type = splited_string[i]
         except IndexError:
-            weapon_type = "b"
+            weapon_type = ""
         if weapon_type == "a":
             weapon = self.axe
         elif weapon_type == "s":
@@ -414,17 +414,17 @@ class Player():
         if self.team and player in self.team:
             self.ally_fire()
             raise Retry
-        weapon = self.get_weapon(splited_string, 2)
+        weapon = self.get_weapon(splited_string, 2, player)
         self.fire(player, weapon)
         player.check_heal()
 
     @command("m")
     def handle_spell(self, first_letter, splited_string):
         player = self.get_closest_player(splited_string, 2)
+        spell = self.get_spell(splited_string, 1)
         if self.team and not spell.allow_ally_fire and player in self.team:
             self.ally_fire()
             raise Retry
-        spell = self.get_spell(splited_string, 1)
         self.spell(player, spell)
         player.check_heal()
 
