@@ -31,7 +31,7 @@ def accept_client(server_sock):
     net_log.info("accepted client '%s:%s'" % (client[0], str(client[1])))
     return sock, client, conn
 
-def get_unit_type(unit_type, sock, n, world, client):
+def get_unit_type(unit_type, n):
     if unit_type == "t":
         cls = Tank
         game_log.info("player %d is a tank", n)
@@ -44,7 +44,8 @@ def get_unit_type(unit_type, sock, n, world, client):
     else:
         cls = Ranger
         game_log.info("player %d is a ranger", n)
-    return cls(sock, client, n, world)
+    return cls
+
 
 def random_map(directory):
     files = os.listdir(directory)
@@ -98,7 +99,8 @@ def accept_all_clients(n, world, server_sock):
                     net_log.warning("client '%s:%d' disconnected", client[0], client[1])
                     clients_missed += 1
                 else:
-                    player = get_unit_type(unit_type, sock, c_n, world, client)
+                    player_cls = get_unit_type(unit_type, c_n)
+                    player = player_cls(sock, client, c_n, world)
                     world.add_player(player)
                     players.append(player)
     if len(players) == 1:
