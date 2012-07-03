@@ -3,6 +3,7 @@
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
 import struct
+from .server.exceptions import Disconnect
 
 PACK_HEADER = ">l" # pack_size
 PACK_HEADER_SIZE = struct.calcsize(PACK_HEADER)
@@ -13,7 +14,10 @@ class Connection():
 
     def get_pack(self):
         data = self.socket.recv(PACK_HEADER_SIZE)
-        pack_size = struct.unpack(PACK_HEADER, data)[0]
+        try:
+            pack_size = struct.unpack(PACK_HEADER, data)[0]
+        except struct.error:
+            raise Disconnect()
         data = b""
         for i in range(pack_size):
             data = b"".join((data, self.socket.recv(1)))

@@ -9,7 +9,7 @@ from socket import socket, error
 import select
 from configparser import ConfigParser
 from argparse import ArgumentParser
-from .exceptions import Restart, Exit
+from .exceptions import Restart, Exit, Disconnect
 from .log import net_log, game_log
 from .world import World
 from .actors import Ranger, Tank, Damager, Mage
@@ -93,7 +93,7 @@ def accept_all_clients(n, world, server_sock):
                 try:
                     unit_type = conn.get_pack()
                     conn.send_pack(number_to_str(c_n))
-                except error:
+                except (error, Disconnect):
                     track.remove(sock)
                     del socks_info[sock]
                     net_log.warning("client '%s:%d' disconnected", client[0], client[1])
