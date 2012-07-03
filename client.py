@@ -39,9 +39,9 @@ class Client():
 
     def choice_unit_type(self):
         unit_type = "r"
-        string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
+        string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[:1]
         while not string:
-            string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[0]
+            string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[:1]
         if string == "t":
             unit_type = "t"
         elif string == "d":
@@ -127,7 +127,7 @@ class Client():
         print("Your team win!")
 
     def prompt(self):
-        return input(">> ").strip()[:10]
+        return input(">> ").strip()
 
     def main(self):
         self.connection.send_pack(self.unit_type)
