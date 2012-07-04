@@ -62,56 +62,6 @@ class Client():
     def nb(self):
         print("You have been stopped by wall!")
 
-    def get_info_header(self, info):
-        players = info.players
-        player = None
-        for i in players:
-            if i.n == self.n:
-                player = i
-                break
-        if not player:
-            out = "You have killed"
-        else:
-            if player.klass == "m":
-                out = "You have %d/2900 lives and %d/500 mana" % (player.health, player.mana)
-            elif player.klass == "t":
-                out = "You have %d/6200 lives" % (player.health,)
-            elif player.klass == "r":
-                out = "You have %d/4000 lives" % (player.health,)
-            else:
-                out = "You have %d/3100 lives" % (player.health,)
-        out += ", your marker is %d\n" % (self.n,)
-        for i in players:
-            if i.n != self.n:
-                if i.klass == "m":
-                    out += "Player %d has %d/2900 lives and %d/500 mana" % (i.n, i.health, i.mana)
-                elif i.klass == "t":
-                    out += "Player %d has %d/6200 lives" % (i.n, i.health)
-                elif i.klass == "r":
-                    out += "Player %d has %d/4000 lives" % (i.n, i.health)
-                else:
-                    out += "Player %d has %d/3100 lives" % (i.n, i.health)
-                out += "\n"
-        if self.world_info.blue_team and self.world_info.red_team:
-            if not self.tr_nums:
-                self.tr_nums = ", ".join([str(i.n) for i in self.world_info.red_team.players])
-            if not self.tb_nums:
-                self.tb_nums = ", ".join([str(i.n) for i in self.world_info.blue_team.players])
-            if not self.team:
-                for i in self.world_info.blue_team.players:
-                    if i.n == self.n:
-                        self.team = "b"
-                if not self.team:
-                    self.team = "r"
-            if self.team == "r":
-                print("Your team is %s" % (self.tr_nums,))
-                print("Blue team is %s" % (self.tb_nums,))
-            else:
-                print("Your team is %s" % (self.tb_nums,))
-                print("Red team is %s" % (self.tr_nums,))
-
-        return out
-
     def receive_matrix(self):
         data = self.connection.get_pack()
         self.clear_screen()
