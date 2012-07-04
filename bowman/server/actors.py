@@ -172,6 +172,7 @@ class Mage(NetPlayer):
         if spell.mana > self.mana:
             game_log.info("player %d have not enough mana (need %d, found %d)", self.n, spell.mana, self.mana)
             raise Retry
+        self.mana -= spell.mana
         if not spell.continues:
             is_miss, damage = spell.count_damage(self, opponent, r)
             if is_miss:
@@ -188,7 +189,6 @@ class Mage(NetPlayer):
                     raise Kill(opponent)
         else:
             opponent.add_spell(spell)
-        self.mana -= spell.mana
 
     def regenerate_mana(self):
         r = self.mana_regen.count_regen()
