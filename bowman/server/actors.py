@@ -53,13 +53,14 @@ class Ranger(NetPlayer):
             z = self.world.get_cell(opponent.x + 1, opponent.y - 1)
             c = self.world.get_cell(opponent.x + 1, opponent.y + 1)
             cells = list(filter(lambda x: isinstance(x, Player), [q, w, s, a, d, e, z, c]))
-            for i in cells:
-                i.damage(splash_damage)
-            if len(cells) > 1:
-                game_log.info("player %d caused splash damage %d to players %s", 
-                              self.n, splash_damage, ", ".join([str(i.n) for i in cells]))
-            else:
-                game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
+            if cells:
+                for i in cells:
+                    i.damage(splash_damage)
+                if len(cells) > 1:
+                    game_log.info("player %d caused splash damage %d to players %s",
+                                  self.n, splash_damage, ", ".join([str(i.n) for i in cells]))
+                else:
+                    game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
         return damage
 
 class Damager(NetPlayer):
