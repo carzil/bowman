@@ -38,7 +38,7 @@ class Spikes(Entity):
     symbol = "#"
 
     def damage(self, player):
-        return randrange(50, 100)
+        return randrange(120, 130)
 
 class HealthPack(Entity):
     lives = 200

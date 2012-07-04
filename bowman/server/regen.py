@@ -10,15 +10,15 @@ class Regen():
         self.regen = regen
 
     def count_regen(self):
-        a = randrange(8, 24)
+        a = randrange(5, 26)
         a /= 10
         return round(self.regen * a)
 
 class ManaRegen():
-    def __init__(self, regen=34):
+    def __init__(self, regen=12):
         self.regen = regen
 
     def count_regen(self):
-        a = randrange(6, 18)
+        a = randrange(9, 21)
         a /= 10
         return round(self.regen * a)
