@@ -66,12 +66,6 @@ class TestPlayer(unittest.TestCase):
         self.assertIsInstance(self.player1.spear, Spear)
         self.assertIsInstance(self.player1.axe, Axe)
 
-    def testSpellsSet(self):
-        self.assertIsInstance(self.player1.fireball, FireBall)
-        self.assertIsInstance(self.player1.razor, Razor)
-        self.assertIsInstance(self.player1.heal, Heal)
-        self.assertIsInstance(self.player1.health_break, HealthBreak)
-
     def testSetPosition(self):
         self.player1.set_position(0, 0)
         self.assertIsInstance(self.world.get_cell(1, 1), Grass)
@@ -226,19 +220,19 @@ class TestPlayerAttack(unittest.TestCase):
 
     def testGetWeapon(self):
         ss = ["f", "2", "b"]
-        weapon = self.player1.get_weapon(ss, 2)
+        weapon = self.player1.get_weapon(ss, 2, self.player2)
         self.assertIsInstance(weapon, Bow)
 
         ss = ["f", "2", "a"]
-        weapon = self.player1.get_weapon(ss, 2)
+        weapon = self.player1.get_weapon(ss, 2, self.player2)
         self.assertIsInstance(weapon, Axe)
 
         ss = ["f", "2", "s"]
-        weapon = self.player1.get_weapon(ss, 2)
+        weapon = self.player1.get_weapon(ss, 2, self.player2)
         self.assertIsInstance(weapon, Spear)
 
         ss = ["f", "2"]
-        weapon = self.player1.get_weapon(ss, 2)
+        weapon = self.player1.get_weapon(ss, 2, self.player2)
         self.assertIsInstance(weapon, Bow)
 
     def testGetClosestPlayer(self):
