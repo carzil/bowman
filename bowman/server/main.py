@@ -116,7 +116,7 @@ def updater(world, sock):
         try:
             world.update()
         except (Exit, Restart):
-            exit(0)
+            pass
         except:
             game_log.fatal("unhandled exception have been raised")
             game_log.fatal("abort")
