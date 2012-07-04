@@ -8,7 +8,7 @@ import socket
 from functools import wraps
 from .log import game_log, net_log
 from .exceptions import Retry, Kill
-from .spells import Spell, FireBall
+from .spells import Spell, FireBall, get_spells_help
 from .weapon import Spear, Axe, Bow
 from .regen import Regen
 from ..utils import Connection
@@ -289,7 +289,7 @@ class Player():
         """
         try:
             weapon_type = splited_string[i]
-        except IndexError:
+        except (IndexError, ValueError):
             weapon_type = ""
         if weapon_type == "a":
             weapon = self.axe
@@ -435,6 +435,11 @@ class Player():
         self.spell(player, spell)
         player.check_heal()
 
+    @command("h", "help", "?")
+    def handle_help(self, first_letter, splited_string):
+        self.print(get_spells_help())
+        raise Retry
+
     @command("p")
     def handle_pass(self, first_letter, splited_string):
         pass
@@ -455,6 +460,9 @@ class Player():
         pass
 
     def send_info(self, info):
+        pass
+
+    def print(self, string):
         pass
 
     def kill(self):
@@ -523,6 +531,13 @@ class NetPlayer(Player):
         try:
             self.connection.send_pack("mx")
             self.connection.send_pack(info)
+        except socket.error:
+            pass
+
+    def print(self, string):
+        try:
+            self.connection.send_pack("pr")
+            self.connection.send_pack(string)
         except socket.error:
             pass
 

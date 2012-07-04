@@ -534,8 +534,12 @@ class Bot():
         op = n_m[0]
         y_op, x_op = y_op_m[0], x_op_m[0]
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
-        u_n, u_health = self.get_me()
-        u_health, op_health = u_health, op_op[1]
+        u = self.get_me()
+        if u:
+            u_n, u_health = u
+        else:
+            u_health = 0
+        op_health = op_op[1]
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)

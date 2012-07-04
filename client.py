@@ -5,10 +5,9 @@
 # GNU General Public License version 2 or any later version.
 
 from socket import *
-from pickle import loads
 from argparse import ArgumentParser
 from bowman.utils import Connection
-import os, sys
+import sys, os
 
 class Client():
     def __init__(self, remote_ip, remote_port):
@@ -65,6 +64,11 @@ class Client():
     def receive_matrix(self):
         data = self.connection.get_pack()
         self.clear_screen()
+        print("Type 'help' or 'h' for help.")
+        print(data)
+
+    def print(self):
+        data = self.connection.get_pack()
         print(data)
 
     def end_game(self):
@@ -122,6 +126,8 @@ class Client():
             elif data == "ag":
                 self.abort_game()
                 break
+            elif data == "pr":
+                self.print()
 
 def main():
     arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
