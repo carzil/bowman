@@ -5,18 +5,14 @@
 # GNU General Public License version 2 or any later version.
 
 from socket import *
-from pickle import loads
 from argparse import ArgumentParser
 from math import sqrt
-import game.info
+from bowman.utils import Connection
+import re
 
-def is_matrix(bs):
-    try:
-        if bs[-20:] == b"\xff" * 20:
-            return True
-        return False
-    except IndexError:
-        return False
+PLAYER_RE = re.compile(r"Player (\d+) have (\d+) lives")
+ME_RE = re.compile(r"You have (\d+) lives, your marker is '(\d+)'")
+
 class Bot():
     def __init__(self, remote_ip, remote_port):
         self.remote_ip = remote_ip
@@ -25,54 +21,55 @@ class Bot():
         self.unit_type = self.choice_unit_type()
         self.main()
         self.world_info = None
+
     def connect(self):
         self.sock = socket(AF_INET, SOCK_STREAM)
         self.sock.connect((self.remote_ip, self.remote_port))
-        data = self.sock.recv(5)
-        if data == b"hello":
+        self.connection = Connection(self.sock)
+        data = self.connection.get_pack()
+        if data == "hello":
             return
         raise Exception("Oops! There is an server error")
+
     def choice_unit_type(self):
-        return b"r"
+        return "r"
+
     def lose(self):
         print("You lose!")
+
     def win(self):
         print("You win!")
+
     def miss(self):
         print("You missed!")
+
     def nb(self):
         print("You have been stopped by wall!")
-    def get_info_header(self, info):
-        players = info.players
-        player = None
-        for i in players:
-            if i.n == self.n:
-                player = i
-                break
-        if not player:
-            out = "You have killed"
-        else:
-            if player.klass == "m":
-                out = "You have %d lives and %d mana" % (player.health, player.mana)
-            else:
-                out = "You have %d lives" % (player.health,)
-        out += "\n"
-        for i in players:
-            if i.n != self.n:
-                if player.klass == "m":
-                    out += "Player %d has %d lives and %d mana" % (i.n, i.health, i.mana)
-                else:
-                    out += "Player %d has %d lives" % (i.n, i.health)
-                out += "\n"
-        return out
+
     def receive_matrix(self):
-        d = self.sock.recv(1)
-        while not is_matrix(d):
-            d += self.sock.recv(1)
-        matrix = loads(d)
-        self.world_info = matrix
-        print(self.get_info_header(matrix))
-        print(matrix.world_s)
+        data = self.connection.get_pack()
+        self.parse_matrix(data)
+        print(data)
+
+    def parse_matrix(self, data):
+        data = data.splitlines()
+        cnt = 0
+        for i in data:
+            cnt += 1
+            if not i:
+                break
+        players = []
+        m = ME_RE.match(data[0])
+        players.append(list(map(int, list(reversed(m.groups())))))
+        for i in data[:cnt]:
+            m = PLAYER_RE.match(i)
+            if m:
+                players.append(list(map(int, m.groups())))
+        data = data[cnt:]
+        data = list(map(lambda x: x.split(), data))
+        self.world = data
+        self.players = players
+
     def end_game(self):
         print("Game finished!")
         self.sock.close()
@@ -87,8 +84,8 @@ class Bot():
         print("Your team win!")
     def get_me(self):
         player = None
-        for i in self.world_info.players:
-            if i.n == self.n:
+        for i in self.players:
+            if i[0] == self.n:
                 player = i
                 break
         if not player:
@@ -106,10 +103,9 @@ class Bot():
             return round(sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
     def search_plus(self):
         res_x, res_y = [], []
-        for i in range(len(self.world_info.world)):
-            for j in range(len(self.world_info.world[i])):
-                if isinstance(self.world_info.world[i][j], game.info.EntityInfo):
-                    if self.world_info.world[i][j].symbol == "+":
+        for i in range(len(self.world)):
+            for j in range(len(self.world[i])):
+                    if self.world[i][j] == "+":
                         res_y += [i]
                         res_x += [j]
         if res_x != [] and res_y != []:
@@ -118,10 +114,9 @@ class Bot():
             return None, None
     def search_star(self):
         res_x, res_y = [], []
-        for i in range(len(self.world_info.world)):
-            for j in range(len(self.world_info.world[i])):
-                if isinstance(self.world_info.world[i][j], game.info.EntityInfo):
-                    if self.world_info.world[i][j].symbol == "*":
+        for i in range(len(self.world)):
+            for j in range(len(self.world[i])):
+                    if self.world[i][j] == "*":
                         res_y += [i]
                         res_x += [j]
         if res_x != [] and res_y != []:
@@ -322,57 +317,36 @@ class Bot():
                             return "c 1"
         return None
     def team_enemy(self):
-        if not self.world_info.blue_team:
-            return "n"
-        else:
-            for i in self.world_info.blue_team.players:
-                if i.n == self.n:
-                    return "r"
-            for i in self.world_info.red_team.players:
-                if i.n == self.n:
-                    return "b"
+        # TODO: rewrite this
+#        if not self.world_info.blue_team:
+#            return "n"
+#        else:
+#            for i in self.world_info.blue_team.players:
+#                if i.n == self.n:
+#                    return "r"
+#            for i in self.world_info.red_team.players:
+#                if i.n == self.n:
+#                    return "b"
+        return "n"
+
     def maxxy(self):
-        i = len(self.world_info.world)
-        j = len(self.world_info.world[0])
+        i = len(self.world)
+        j = len(self.world[0])
         return i, j
     def players_xy(self):
         res_y, res_x, res_n = [], [], []
-        enemy = self.team_enemy()
-        if enemy != "n":
-            for i in range(len(self.world_info.world)):
-                for j in range(len(self.world_info.world[i])):
-                    if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
-                        if enemy == "b":
-                            for x in self.world_info.blue_team.players:
-                                if self.world_info.world[i][j].n == x.n:
-                                    if x.n != self.n:
-                                        res_y.append(i)
-                                        res_x.append(j)
-                                        res_n.append(x.n)
-                        elif enemy == "r":
-                            for x in self.world_info.red_team.players:
-                                if self.world_info.world[i][j].n == x.n:
-                                    if x.n != self.n:
-                                        res_y.append(i)
-                                        res_x.append(j)
-                                        res_n.append(x.n)
-        else:
-            for i in range(len(self.world_info.world)):
-                for j in range(len(self.world_info.world[i])):
-                    if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
-                        if self.world_info.world[i][j].n != self.n:
-                            res_y.append(i)
-                            res_x.append(j)
-            for x in self.world_info.players:
-                if x.n != self.n:
-                    res_n.append(x.n)
+        for i in range(len(self.world)):
+            for j in range(len(self.world[i])):
+                    if self.world[i][j].isdigit() and self.world[i][j] != str(self.n):
+                        res_y.append(i)
+                        res_x.append(j)
+                        res_n.append(self.world[i][j])
         return res_y, res_x, res_n
     def koor(self, n_igrok):
         self.n_i = n_igrok
-        for i in range(0, len(self.world_info.world)):
-            for j in range(len(self.world_info.world[i])):
-                if isinstance(self.world_info.world[i][j], game.info.PlayerInfo):
-                    if self.world_info.world[i][j].n == self.n_i:
+        for i in range(0, len(self.world)):
+            for j in range(len(self.world[i])):
+                    if self.world[i][j] == str(self.n_i):
                         return i, j
     def go(self):
         ig_y, ig_x = self.koor(self.n)
@@ -556,12 +530,12 @@ class Bot():
     def prompt(self):
         y_u, x_u = self.koor(self.n)
         y_op_m, x_op_m, n_m = self.players_xy()
-        op_op = self.world_info.players[0]
+        op_op = self.players[0]
         op = n_m[0]
         y_op, x_op = y_op_m[0], x_op_m[0]
         r = self.sqrt_mi(y_u, y_op, x_u, x_op)
-        u = self.get_me()
-        u_health, op_health = u.health, op_op.health
+        u_n, u_health = self.get_me()
+        u_health, op_health = u_health, op_op[1]
         if u_health > 1000:
             if r < 15:
                 return "f " + str(op)
@@ -610,39 +584,40 @@ class Bot():
                 return "f " + str(op)
             else:
                 return self.go()
+
     def main(self):
-        self.sock.send(self.unit_type)
-        n = self.sock.recv(2)
+        self.connection.send_pack(self.unit_type)
+        n = self.connection.get_pack()
         n = int(n)
         self.n = n
+        print("Waiting for game start...")
         while True:
-            data = self.sock.recv(2)
-            if data == b"go":
+            data = self.connection.get_pack()
+            if data == "go":
                 string = self.prompt()
                 while not string:
                     string = self.prompt()
-                data = bytes(string.encode("utf-8"))
-                self.sock.send(data)
-            elif data == b"lo":
+                self.connection.send_pack(string)
+            elif data == "lo":
                 self.lose()
-            elif data == b"wi":
+            elif data == "wi":
                 self.win()
-            elif data == b"mi":
+            elif data == "mi":
                 self.miss()
-            elif data == b"nb":
+            elif data == "nb":
                 self.nb()
-            elif data == b"mx":
+            elif data == "mx":
                 self.receive_matrix()
-            elif data == b"af":
+            elif data == "af":
                 self.ally_fire()
-            elif data == b"tw":
+            elif data == "tw":
                 self.team_win()
-            elif data == b"tl":
+            elif data == "tl":
                 self.team_lose()
-            elif data == b"eg":
+            elif data == "eg":
                 self.end_game()
                 break
-            elif data == b"ag":
+            elif data == "ag":
                 self.abort_game()
                 break
 def main():
