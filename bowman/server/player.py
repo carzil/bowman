@@ -321,7 +321,7 @@ class Player():
         while True:
             try:
                 self._update()
-            except (IndexError, ValueError, Retry):
+            except Retry:
                 pass
             else:
                 break
