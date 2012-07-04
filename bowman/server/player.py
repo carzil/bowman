@@ -8,7 +8,7 @@ import socket
 from functools import wraps
 from .log import game_log, net_log
 from .exceptions import Retry, Kill
-from .spells import FireBall, HealthBreak, Heal, Razor, Poison, AllyPoison
+from .spells import Spell, FireBall
 from .weapon import Spear, Axe, Bow
 from .regen import Regen
 from ..utils import Connection
@@ -56,13 +56,6 @@ class Player():
         self.axe = Axe(self.axe_damage_mod, self.axe_distance_mod)
         self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
 
-        self.fireball = FireBall()
-        self.health_break = HealthBreak()
-        self.heal = Heal()
-        self.razor = Razor()
-        self.poison = Poison()
-        self.ally_poison = AllyPoison()
-
         self.regen = Regen(self.regen_mod)
 
         self.killed = False
@@ -72,6 +65,10 @@ class Player():
 
         self.applied_spells = []
 
+        self.spells_dict = {}
+        for i in Spell.__subclasses__():
+            for symbol in i.symbols:
+                self.spells_dict[symbol] = i
 
     def _set(self, x, y):
         return self.world.set_player(x, y, self)
@@ -272,18 +269,7 @@ class Player():
             symbol = splited_string[i]
         except IndexError:
             symbol = "f"
-        if symbol == "hb":
-            return self.health_break
-        elif symbol == "h":
-            return self.heal
-        elif symbol == "r":
-            return self.razor
-        elif symbol == "p":
-            return self.poison
-        elif symbol == "ap":
-            return self.ally_poison
-        else:
-            return self.fireball
+        return self.spells_dict.get(symbol, FireBall)()
 
     def get_closest_player(self, splited_string, i):
         """
@@ -293,7 +279,7 @@ class Player():
             player = self.world.get_player(int(splited_string[i]))
         except IndexError:
             player = self.world.get_closest_player(self)
-        if not player or player.n == self.n:
+        if not player:
             player = self.world.get_closest_player(self)
         return player
 

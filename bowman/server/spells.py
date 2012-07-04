@@ -12,6 +12,8 @@ class Spell():
     continues = False
     finished = False
 
+    symbols = []
+
     def count_damage(self, player, opponent, r):
         pass
 
@@ -20,12 +22,16 @@ class Spell():
 
 class FireBall(Spell):
     mana = 300
+
+    symbols = ["f", "fb"]
     
     def count_damage(self, player, opponent, r):
         return False, 230
 
 class HealthBreak(Spell):
     mana = 800
+
+    symbols = ["hb"]
 
     def count_damage(self, player, opponent, r):
         return False, opponent.health // 4
@@ -34,12 +40,16 @@ class Heal(Spell):
     mana = 550
     allow_ally_fire = True
 
+    symbols = ["h"]
+
     def count_damage(self, player, opponent, r):
         return False, -320
 
 class Razor(Spell):
     mana = 950
     allow_ally_fire = False
+
+    symbols = ["r", "rz"]
 
     def count_damage(self, player, opponent, r):
         if r > 14:
@@ -51,6 +61,8 @@ class Poison(Spell):
     continues = True
     mana = 50
     times = 3
+
+    symbols = ["p"]
 
     def apply(self, player):
         if self.times <= 0:
@@ -66,6 +78,8 @@ class AllyPoison(Spell):
     allow_ally_fire = True
     continues = True
     times = 5
+
+    symbols = ["ap"]
 
     def apply(self, player):
         if self.times <= 0:
