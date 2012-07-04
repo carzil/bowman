@@ -172,19 +172,22 @@ class Mage(NetPlayer):
         if spell.mana > self.mana:
             game_log.info("player %d have not enough mana (need %d, found %d)", self.n, spell.mana, self.mana)
             raise Retry
-        is_miss, damage = spell.count_damage(self, opponent, r)
-        if is_miss:
-            game_log.info("player %d missed", self.n)
-        else:
-            res = opponent.damage(damage)
-            if damage > 0:
-                game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+        if not spell.continues:
+            is_miss, damage = spell.count_damage(self, opponent, r)
+            if is_miss:
+                game_log.info("player %d missed", self.n)
             else:
-                game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
-            if not res:
-                game_log.info("player %d killed player %d", self.n, opponent.n)
-                opponent.lose()
-                raise Kill(opponent)
+                res = opponent.damage(damage)
+                if damage > 0:
+                    game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+                else:
+                    game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
+                if not res:
+                    game_log.info("player %d killed player %d", self.n, opponent.n)
+                    opponent.lose()
+                    raise Kill(opponent)
+        else:
+            opponent.add_spell(spell)
         self.mana -= spell.mana
 
     def regenerate_mana(self):

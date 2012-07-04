@@ -4,12 +4,11 @@
 # GNU General Public License version 2 or any later version.
 
 from math import sqrt
-from pickle import dumps
 import socket
 from functools import wraps
 from .log import game_log, net_log
 from .exceptions import Retry, Kill
-from .spells import FireBall, HealthBreak, Heal, Razor
+from .spells import FireBall, HealthBreak, Heal, Razor, Poison, AllyPoison
 from .weapon import Spear, Axe, Bow
 from .regen import Regen
 from ..utils import Connection
@@ -61,6 +60,8 @@ class Player():
         self.health_break = HealthBreak()
         self.heal = Heal()
         self.razor = Razor()
+        self.poison = Poison()
+        self.ally_poison = AllyPoison()
 
         self.regen = Regen(self.regen_mod)
 
@@ -68,6 +69,8 @@ class Player():
 
         self.team = team
         self.team_nums = ""
+
+        self.applied_spells = []
 
 
     def _set(self, x, y):
@@ -275,6 +278,10 @@ class Player():
             return self.heal
         elif symbol == "r":
             return self.razor
+        elif symbol == "p":
+            return self.poison
+        elif symbol == "ap":
+            return self.ally_poison
         else:
             return self.fireball
 
@@ -336,6 +343,20 @@ class Player():
     def update_regen(self):
         self.regenerate()
         self.regenerate_mana()
+        self.apply_spells()
+
+    def apply_spells(self):
+        to_remove = []
+        for spell in self.applied_spells:
+            spell.apply(self)
+            if spell.finished:
+                to_remove.append(spell)
+
+        for i in to_remove:
+            self.applied_spells.remove(i)
+
+    def add_spell(self, spell):
+        self.applied_spells.append(spell)
 
     def fire(self, opponent, weapon):
         # Distance from point A to point B in 2d euclid space is:
