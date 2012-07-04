@@ -246,7 +246,7 @@ class Player():
     def damage(self, damage):
         self.health -= damage
         if self.health < 0:
-            return False
+            raise Kill(self)
         if self.health > self.__class__.health:
             # it looks strange, but sometimes damage may be negative (for example, Damager's life steal)
             self.health = self.__class__.health
@@ -277,7 +277,7 @@ class Player():
         """
         try:
             player = self.world.get_player(int(splited_string[i]))
-        except IndexError:
+        except (ValueError, IndexError):
             player = self.world.get_closest_player(self)
         if not player:
             player = self.world.get_closest_player(self)
@@ -368,10 +368,6 @@ class Player():
                 game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
             else:
                 game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
-            if not res:
-                game_log.info("player %d killed player %d", self.n, opponent.n)
-                opponent.lose()
-                raise Kill(opponent)
         return damage
 
     @command("a", "s", "d", "w", "q", "e", "z", "c")
@@ -477,22 +473,19 @@ class Player():
     def team_lose(self):
         pass
 
-    def get_info(self):
+    def get_own_info(self):
         if not self.killed:
-            out = "You have %d lives, your marker is '%d'\n" % (self.health, self.n)
+            out = "You have %d lives, your marker is '%d'" % (self.health, self.n)
         else:
-            out = "You have killed\n"
-        if self.team:
-            if self.team_nums:
-                out += "Your team is %s" % (self.team_nums,)
-            else:
-                out += "Your team is %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
-            out += "\n"
-        for i in self.world.get_players():
-            if i is not self:
-                out += "Player %d have %d lives\n" % (i.n, i.health)
-        out += "\n"
-        out += self.world.render_matrix()
+            out = "You have killed"
+        return out
+
+    def get_info(self):
+        out = "Player %d has %d lives" % (self.n, self.health)
+        return out
+
+    def get_team_info(self):
+        out = "Players in your team: %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
         return out
 
     def __str__(self):

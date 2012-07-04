@@ -174,7 +174,7 @@ class Mage(NetPlayer):
             game_log.info("player %d have not enough mana (need %d, found %d)", self.n, spell.mana, self.mana)
             raise Retry
         self.mana -= spell.mana
-        if not spell.continues:
+        if not spell.continuous:
             is_miss, damage = spell.count_damage(self, opponent, r)
             if is_miss:
                 game_log.info("player %d missed", self.n)
@@ -197,22 +197,14 @@ class Mage(NetPlayer):
             self.mana += r
             game_log.info("player %d regenerated %d mana", self.n, r)
 
-    def get_info(self):
+    def get_own_info(self):
         if not self.killed:
-            out = "You have %d lives and %d mana, your marker is '%d'\n" % (self.health, self.mana, self.n)
+            out = "You have %d lives and %d mana, your marker is '%d'" % (self.health, self.mana, self.n)
         else:
-            out = "You have killed\n"
-        if self.team:
-            if self.team_nums:
-                out += "Your team is %s" % (self.team_nums,)
-            else:
-                out += "Your team is %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
-            out += "\n"
-        out += "\n"
-        for i in self.world.get_players():
-            if i is not self:
-                out += "Player %d have %d lives\n" % (i.n, i.health)
-        out += "\n"
-        out += self.world.render_matrix()
+            out = "You have killed"
+        return out
+
+    def get_info(self):
+        out = "Player %d has %d lives and %d mana" % (self.n, self.mana, self.health)
         return out
 

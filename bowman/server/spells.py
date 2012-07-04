@@ -70,7 +70,7 @@ class Razor(Spell):
 class Poison(Spell):
     continuous = True
     mana = 200
-    times = 5
+    times = 10
     damage = 65
     symbols = ["p"]
 
@@ -78,7 +78,7 @@ class Poison(Spell):
 
     def apply(self, player):
         if self.times <= 0:
-            game_log.info("poison on player %d", player.n)
+            game_log.info("player %d poisoning ended", player.n)
             self.finished = True
         else:
             player.damage(self.damage)
@@ -89,7 +89,7 @@ class AllyPoison(Poison):
     mana = 280
     allow_ally_fire = True
     continuous = True
-    times = 5
+    times = 10
     damage = -50
 
     symbols = ["ap"]

@@ -10,7 +10,7 @@ from math import sqrt
 from bowman.utils import Connection
 import re
 
-PLAYER_RE = re.compile(r"Player (\d+) have (\d+) lives")
+PLAYER_RE = re.compile(r"Player (\d+) has (\d+) lives")
 ME_RE = re.compile(r"You have (\d+) lives, your marker is '(\d+)'")
 
 class Bot():
