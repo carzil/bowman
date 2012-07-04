@@ -73,16 +73,24 @@ class Client():
             out = "You have killed"
         else:
             if player.klass == "m":
-                out = "You have %d lives and %d mana" % (player.health, player.mana)
+                out = "You have %d/2900 lives and %d/500 mana" % (player.health, player.mana)
+            elif player.klass == "t":
+                out = "You have %d/6200 lives" % (player.health,)
+            elif player.klass == "r":
+                out = "You have %d/4000 lives" % (player.health,)
             else:
-                out = "You have %d lives" % (player.health,)
+                out = "You have %d/3100 lives" % (player.health,)
         out += ", your marker is %d\n" % (self.n,)
         for i in players:
             if i.n != self.n:
                 if i.klass == "m":
-                    out += "Player %d has %d lives and %d mana" % (i.n, i.health, i.mana)
+                    out += "Player %d has %d/2900 lives and %d/500 mana" % (i.n, i.health, i.mana)
+                elif i.klass == "t":
+                    out += "Player %d has %d/6200 lives" % (i.n, i.health)
+                elif i.klass == "r":
+                    out += "Player %d has %d/4000 lives" % (i.n, i.health)
                 else:
-                    out += "Player %d has %d lives" % (i.n, i.health)
+                    out += "Player %d has %d/3100 lives" % (i.n, i.health)
                 out += "\n"
         if self.world_info.blue_team and self.world_info.red_team:
             if not self.tr_nums:
