@@ -241,7 +241,7 @@ class World():
     def render_matrix_for_player(self, player):
         out = ""
         for i in self.world_map:
-            out += "".join((map(str, i)))
+            out += " ".join((map(str, i)))
             out += "\n"
         return out
 

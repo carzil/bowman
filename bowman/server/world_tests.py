@@ -182,7 +182,7 @@ class TestWorldWithOnePlayer(unittest.TestCase):
         self.assertEqual(players, [self.player1])
 
     def testRenderMatrix(self):
-        self.assertEqual(self.world.render_matrix(), ". # 1\n+ . *\n")
+        self.assertEqual(self.world.render_matrix_for_player(self.player1), ". # 1\n+ . *\n")
 
     def testGetPlayerInfo(self):
         info = self.world.get_player_info(self.player1)

@@ -10,7 +10,7 @@ from .player import Player
 from .weapon import Bow, Axe, Spear
 from .spells import FireBall, Razor, HealthBreak, Heal
 from .entity import Grass
-from .exceptions import Retry
+from .exceptions import Retry, Kill
 import sys
 
 class TestPlayer(unittest.TestCase):
@@ -37,8 +37,9 @@ class TestPlayer(unittest.TestCase):
         self.assertGreater(self.player1.health, 1)
 
     def testKillDamage(self):
-        res = self.player1.damage(self.player1.__class__.health + 1)
-        self.assertFalse(res)
+        with self.assertRaises(Kill) as exc:
+            self.player1.damage(self.player1.__class__.health + 1)
+        self.assertIs(exc.exception.player, self.player1)   
 
     def testHealthRegenerate(self):
         self.player1.health = 1
