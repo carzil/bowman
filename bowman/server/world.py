@@ -6,11 +6,13 @@
 from math import sqrt
 import os
 from random import choice
+from copy import deepcopy
 from .player import Player
 from .entity import Wall, Grass, Entity, HealthPack, SpawnPoint
 from .exceptions import Restart, Kill, Retry
 from .log import game_log
 from .team import Team
+from .const import BASE_BOW_DISTANCE
 
 class World():
     def __init__(self, file_obj, is_team_battle):
@@ -239,8 +241,18 @@ class World():
             return "  "
 
     def render_matrix_for_player(self, player):
+        # TODO: ally map
+        # TODO: visibility modificator
         out = ""
-        for i in self.world_map:
+        world_map = deepcopy(self.world_map)
+        for i in range(len(world_map)): # y
+            for j in range(len(world_map[i])): # x
+                cell = world_map[i][j]
+                if isinstance(cell, Player):
+                    r = round(sqrt((j - player.y) ** 2 + (i - player.x) ** 2))
+                    if r > BASE_BOW_DISTANCE + player.bow_distance_mod:
+                        world_map[i][j] = self.get_cell_copy(i, j)
+        for i in world_map:
             out += " ".join((map(str, i)))
             out += "\n"
         return out
