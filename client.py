@@ -9,6 +9,8 @@ from argparse import ArgumentParser
 from bowman.utils import Connection
 import sys, os
 
+UNIT_TYPES_SYMBOLS = ["r", "k", "h", "w", "s", "a", "dm", "lm", "dr"]
+
 class Client():
     def __init__(self, remote_ip, remote_port):
         self.remote_ip = remote_ip
@@ -37,17 +39,10 @@ class Client():
         raise Exception("Oops! There is an server error")
 
     def choice_unit_type(self):
-        unit_type = "r"
-        string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[:1]
-        while not string:
-            string = input("Enter unit type, which you prefer (t, d, r, m): ").strip()[:1]
-        if string == "t":
-            unit_type = "t"
-        elif string == "d":
-            unit_type = "d"
-        elif string == "m":
-            unit_type = "m"
-        return unit_type
+        string = input("Enter unit type, which you prefer: ").strip()
+        while not string or string not in UNIT_TYPES_SYMBOLS:
+            string = input("Enter unit type, which you prefer: ").strip()
+        return string
 
     def lose(self):
         print("You lose!")

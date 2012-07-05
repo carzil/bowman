@@ -37,6 +37,8 @@ class Player():
     bow_distance_mod = 0
     spear_distance_mod = 0
 
+    visibility_mod = 0
+
     axe_defense = 0
     bow_defense = 0
     spear_defense = 0
@@ -45,8 +47,6 @@ class Player():
     max_diagonal_steps = 5
 
     mana = 0
-
-    klass = "s" # for WorldInfo
 
     def __init__(self, n, world, team=None):
         self.n = n

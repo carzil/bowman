@@ -10,6 +10,11 @@ from .exceptions import Retry, Kill
 from .log import game_log
 from .regen import ManaRegen
 
+
+#=============================
+#       Rangers
+#=============================
+
 class Ranger(NetPlayer):
     health = 4000
 
@@ -25,8 +30,6 @@ class Ranger(NetPlayer):
     axe_defense = 6
     bow_defense = 4
     spear_defense = 5
-
-    klass = "r"
 
     @property
     def bow_damage_mod(self):
@@ -63,6 +66,36 @@ class Ranger(NetPlayer):
                     game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
         return damage
 
+class Rogue(Ranger):
+    health = 2000
+
+    regen_mod = 7
+
+    max_steps = 6
+    max_diagonal_steps = 3
+
+    axe_defense = 5
+    bow_defense = 4
+    spear_defense = 5
+
+class Killer(Ranger):
+    health = 1500
+
+    regen_mod = 8
+
+    max_steps = 7
+    max_diagonal_steps = 3
+
+    spear_distance_mod = 1
+
+    axe_defense = 6
+    bow_defense = 5
+    spear_defense = 5
+
+#=============================
+#       Damagers
+#=============================
+
 class Damager(NetPlayer):
     health = 3100
 
@@ -78,8 +111,6 @@ class Damager(NetPlayer):
     axe_defense = 4
     bow_defense = 5
     spear_defense = 4
-
-    klass = "d"
 
     @property
     def bow_damage_mod(self):
@@ -99,6 +130,35 @@ class Damager(NetPlayer):
         game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
         self.damage(life_steal)
         return damage
+
+class Sniper(Damager):
+    health = 1600
+
+    regen_mod = 5
+
+    axe_damage_mod = 0
+    bow_damage_mod = 5
+    spear_damage_mod = 0
+
+    axe_distance_mod = 0
+    bow_distance_mod = 0
+    spear_distance_mod = 0
+
+    visibility_mod = 0
+
+    axe_defense = 0
+    bow_defense = 0
+    spear_defense = 0
+
+    max_steps = 3
+    max_diagonal_steps = 2
+
+class Assasin(Damager):
+    pass
+
+#=============================
+#       Tanks
+#=============================
 
 class Tank(NetPlayer):
     health = 6200
@@ -129,6 +189,16 @@ class Tank(NetPlayer):
     @property
     def axe_damage_mod(self):
         return randrange(298, 511)
+
+class Hunter(Tank):
+    pass
+
+class Warrior(Tank):
+    pass
+
+#=============================
+#       Mages
+#=============================
 
 class Mage(NetPlayer):
 
@@ -208,3 +278,11 @@ class Mage(NetPlayer):
         out = "Player %d has %d lives and %d mana" % (self.n, self.mana, self.health)
         return out
 
+class DarkMage(Mage):
+    pass
+
+class LightMage(Mage):
+    pass
+
+class Druid(Mage):
+    pass

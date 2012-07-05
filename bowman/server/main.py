@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from .exceptions import Restart, Exit, Disconnect
 from .log import net_log, game_log
 from .world import World
-from .actors import Ranger, Tank, Damager, Mage
+from .actors import *
 from ..utils import Connection
 
 def setup_socket(host, port):
@@ -32,20 +32,37 @@ def accept_client(server_sock):
     return sock, client, conn
 
 def get_unit_type(unit_type, n):
-    if unit_type == "t":
-        cls = Tank
-        game_log.info("player %d is a tank", n)
-    elif unit_type == "d":
-        cls = Damager
-        game_log.info("player %d is a damager", n)
-    elif unit_type == "m":
-        cls = Mage
-        game_log.info("player %d is a mage", n)
+    if unit_type == "r":
+        cls = Rogue
+        game_log.info("player %d is a rogue", n)
+    elif unit_type == "k":
+        cls = Killer
+        game_log.info("player %d is a killer", n)
+    elif unit_type == "h":
+        cls = Hunter
+        game_log.info("player %d is a hunter", n)
+    elif unit_type == "w":
+        cls = Warrior
+        game_log.info("player %d is a warrior", n)
+    elif unit_type == "s":
+        cls = Sniper
+        game_log.info("player %d is a sniper", n)
+    elif unit_type == "a":
+        cls = Assasin
+        game_log.info("player %d is an assasin", n)
+    elif unit_type == "dm":
+        cls = DarkMage
+        game_log.info("player %d is a dark mage", n)
+    elif unit_type == "dr":
+        cls = Druid
+        game_log.info("player %d is a druid", n)
+    elif unit_type == "lm":
+        cls = LightMage
+        game_log.info("player %d is a light mage", n)
     else:
-        cls = Ranger
-        game_log.info("player %d is a ranger", n)
+        cls = Rogue
+        game_log.info("player %d is a rogue", n)
     return cls
-
 
 def random_map(directory):
     files = os.listdir(directory)
@@ -124,6 +141,10 @@ def updater(world, sock):
             raise
 
 def start(map_path, players_num, sock, itb, config):
+    if players_num == 1:
+        game_log.critical("max_players in config must be greater than 1")
+        game_log.critical("abort")
+        exit(1)
     is_map_dir = False
     if os.path.isdir(map_path):
         is_map_dir = True
