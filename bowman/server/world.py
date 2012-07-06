@@ -240,9 +240,9 @@ class World():
         else:
             return "  "
 
+
     def render_matrix_for_player(self, player):
         # TODO: ally map
-        # TODO: visibility modificator
         out = ""
         world_map = deepcopy(self.world_map)
         for i in range(len(world_map)): # y

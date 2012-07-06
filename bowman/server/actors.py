@@ -23,6 +23,8 @@ class Ranger(NetPlayer):
     max_steps = 5
     max_diagonal_steps = 3
 
+    visibility_mod = 0
+
     axe_distance_mod = 0
     bow_distance_mod = 0
     spear_distance_mod = 1
@@ -45,7 +47,7 @@ class Ranger(NetPlayer):
 
     def fire(self, opponent, weapon):
         damage = super(Ranger, self).fire(opponent, weapon)
-        splash_damage = damage // 7
+        splash_damage = damage // 6
         if splash_damage:
             q = self.world.get_cell(opponent.x - 1, opponent.y - 1)
             w = self.world.get_cell(opponent.x - 1, opponent.y)
@@ -67,34 +69,57 @@ class Ranger(NetPlayer):
         return damage
 
 class Rogue(Ranger):
-    health = 2000
+    health = 2600
 
     regen_mod = 7
 
     max_steps = 6
     max_diagonal_steps = 3
 
-    axe_defense = 5
-    bow_defense = 4
+    axe_defense = 4
+    bow_defense = 5
     spear_defense = 5
 
-class Killer(Ranger):
-    health = 1500
+    @property
+    def bow_damage_mod(self):
+        return randrange(190, 250)
 
-    regen_mod = 8
+    @property
+    def spear_damage_mod(self):
+        return randrange(220, 260)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(250, 270)
+
+
+class Killer(Ranger):
+    health = 2400
+
+    regen_mod = 6
 
     max_steps = 7
     max_diagonal_steps = 3
 
+    visibility_mod = 0
+
     spear_distance_mod = 1
 
-    axe_defense = 6
-    bow_defense = 5
-    spear_defense = 5
+    axe_defense = 5
+    bow_defense = 4
+    spear_defense = 3
 
-#=============================
-#       Damagers
-#=============================
+    @property
+    def bow_damage_mod(self):
+        return randrange(263, 294)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(283, 310)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(301, 320)
 
 class Damager(NetPlayer):
     health = 3100
@@ -107,6 +132,8 @@ class Damager(NetPlayer):
     axe_distance_mod = 0
     bow_distance_mod = 1
     spear_distance_mod = 0
+
+    visibility_mod = 0
 
     axe_defense = 4
     bow_defense = 5
@@ -126,32 +153,41 @@ class Damager(NetPlayer):
 
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
-        life_steal = -(damage // 2)
+        life_steal = -(damage // 5)
         game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
         self.damage(life_steal)
         return damage
 
 class Sniper(Damager):
-    health = 1600
+    health = 2700
 
     regen_mod = 5
 
-    axe_damage_mod = 0
-    bow_damage_mod = 5
-    spear_damage_mod = 0
-
     axe_distance_mod = 0
-    bow_distance_mod = 0
+    bow_distance_mod = 5
     spear_distance_mod = 0
 
-    visibility_mod = 0
+    visibility_mod = 5
 
-    axe_defense = 0
-    bow_defense = 0
-    spear_defense = 0
+    axe_defense = 3
+    bow_defense = 6
+    spear_defense = 5
 
-    max_steps = 3
+    max_steps = 4
     max_diagonal_steps = 2
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(123, 151)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(146, 173)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(257, 287)
+
 
 class Assasin(Damager):
     pass
