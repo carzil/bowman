@@ -10,28 +10,23 @@ from .exceptions import Retry, Kill
 from .log import game_log
 from .regen import ManaRegen
 
-
-#=============================
-#       Rangers
-#=============================
-
 class Ranger(NetPlayer):
     health = 4000
 
     regen_mod = 8
 
-    max_steps = 5
+    max_steps = 6
     max_diagonal_steps = 3
 
     visibility_mod = 0
 
     axe_distance_mod = 0
     bow_distance_mod = 0
-    spear_distance_mod = 1
+    spear_distance_mod = 0
 
-    axe_defense = 6
-    bow_defense = 4
-    spear_defense = 5
+    axe_defense = 0
+    bow_defense = 0
+    spear_defense = 0
 
     @property
     def bow_damage_mod(self):
@@ -47,7 +42,7 @@ class Ranger(NetPlayer):
 
     def fire(self, opponent, weapon):
         damage = super(Ranger, self).fire(opponent, weapon)
-        splash_damage = damage // 6
+        splash_damage = round(damage / 6.6)
         if splash_damage:
             q = self.world.get_cell(opponent.x - 1, opponent.y - 1)
             w = self.world.get_cell(opponent.x - 1, opponent.y)
@@ -69,9 +64,9 @@ class Ranger(NetPlayer):
         return damage
 
 class Rogue(Ranger):
-    health = 2600
+    health = 3000
 
-    regen_mod = 7
+    regen_mod = 8
 
     max_steps = 6
     max_diagonal_steps = 3
@@ -82,47 +77,42 @@ class Rogue(Ranger):
 
     @property
     def bow_damage_mod(self):
-        return randrange(190, 250)
+        return randrange(178, 222)
 
     @property
     def spear_damage_mod(self):
-        return randrange(220, 260)
+        return randrange(227, 271)
 
     @property
     def axe_damage_mod(self):
-        return randrange(250, 270)
-
+        return randrange(253, 309)
 
 class Killer(Ranger):
-    health = 2400
+    health = 3400
 
-    regen_mod = 6
+    regen_mod = 8
 
     max_steps = 7
     max_diagonal_steps = 3
 
-    visibility_mod = 0
-
-    spear_distance_mod = 1
-
     axe_defense = 5
     bow_defense = 4
-    spear_defense = 3
+    spear_defense = 6
 
     @property
     def bow_damage_mod(self):
-        return randrange(263, 294)
+        return randrange(132, 156)
 
     @property
     def spear_damage_mod(self):
-        return randrange(283, 310)
+        return randrange(149, 164)
 
     @property
     def axe_damage_mod(self):
-        return randrange(301, 320)
+        return randrange(394, 443)
 
 class Damager(NetPlayer):
-    health = 3100
+    health = 3000
 
     regen_mod = 6
 
@@ -130,14 +120,14 @@ class Damager(NetPlayer):
     max_diagonal_steps = 3
 
     axe_distance_mod = 0
-    bow_distance_mod = 1
+    bow_distance_mod = 0
     spear_distance_mod = 0
 
     visibility_mod = 0
 
-    axe_defense = 4
-    bow_defense = 5
-    spear_defense = 4
+    axe_defense = 0
+    bow_defense = 0
+    spear_defense = 0
 
     @property
     def bow_damage_mod(self):
@@ -149,7 +139,7 @@ class Damager(NetPlayer):
 
     @property
     def axe_damage_mod(self):
-        return randrange(257, 287)
+        return randrange(259, 287)
 
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
@@ -159,42 +149,69 @@ class Damager(NetPlayer):
         return damage
 
 class Sniper(Damager):
-    health = 2700
+    health = 2800
 
-    regen_mod = 5
+    regen_mod = 6
 
-    axe_distance_mod = 0
     bow_distance_mod = 5
-    spear_distance_mod = 0
 
     visibility_mod = 5
 
     axe_defense = 3
-    bow_defense = 6
-    spear_defense = 5
+    bow_defense = 4
+    spear_defense = 4
 
     max_steps = 4
     max_diagonal_steps = 2
 
     @property
     def bow_damage_mod(self):
-        return randrange(123, 151)
+        return randrange(254, 298)
 
     @property
     def spear_damage_mod(self):
-        return randrange(146, 173)
+        return randrange(278, 307)
 
     @property
     def axe_damage_mod(self):
-        return randrange(257, 287)
+        return randrange(257, 281)
+    
+    def fire(self, opponent, weapon):
+        damage = super(Damager, self).fire(opponent, weapon)
+        life_steal = -(round(damage / 45))
+        game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
+        self.damage(life_steal)
+        return damage
 
 
 class Assasin(Damager):
-    pass
+    health = 2500
 
-#=============================
-#       Tanks
-#=============================
+    regen_mod = 9
+    
+    bow_distance_mod = 1
+    spear_distance_mod = 1
+
+    visibility_mod = 1
+
+    axe_defense = 8
+    bow_defense = 11
+    spear_defense = 9
+
+    max_steps = 8
+    max_diagonal_steps = 4
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(145, 234)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(169, 272)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(198, 343)
 
 class Tank(NetPlayer):
     health = 6200
@@ -227,14 +244,61 @@ class Tank(NetPlayer):
         return randrange(298, 511)
 
 class Hunter(Tank):
-    pass
+    health = 3700
+
+    regen_mod = 8
+
+    axe_distance_mod = 1
+    bow_distance_mod = 1
+
+    visibility_mod = 1
+
+    axe_defense = 4
+    bow_defense = 4
+    spear_defense = 5
+
+    max_steps = 6
+    max_diagonal_steps = 3
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(178, 222)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(219, 243)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(291, 426) 
 
 class Warrior(Tank):
-    pass
+    health = 15000
 
-#=============================
-#       Mages
-#=============================
+    regen_mod = 21
+
+    axe_distance_mod = 1
+    bow_distance_mod = -8
+    spear_distance_mod = -5
+
+    axe_defense = 6
+    bow_defense = 7
+    spear_defense = 7
+
+    max_steps = 4
+    max_diagonal_steps = 2
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(0, 1)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(0, 1)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(443, 517)
 
 class Mage(NetPlayer):
 
@@ -242,6 +306,7 @@ class Mage(NetPlayer):
     mana = 500
 
     regen_mod = 10
+    mana_regen_mod = 20
 
     max_steps = 5
     max_diagonal_steps = 3
@@ -253,13 +318,7 @@ class Mage(NetPlayer):
     axe_defense = 6
     bow_defense = 6
     spear_defense = 6
-
-    klass = "m"
-
-    def __init__(self, *args, **kwargs):
-        super(Mage, self).__init__(*args, **kwargs)
-        self.mana_regen = ManaRegen()
-
+    
     @property
     def bow_damage_mod(self):
         return randrange(50, 120)
@@ -305,20 +364,92 @@ class Mage(NetPlayer):
 
     def get_own_info(self):
         if not self.killed:
-            out = "You have %d lives and %d mana, your marker is '%d'" % (self.health, self.mana, self.n)
+            out = "You have %d/%d lives and %d/%d mana, your marker is '%d'" % (self.health, self.__class__.health,
+                                                                                self.mana, self.__class__.mana, self.n)
         else:
             out = "You have killed"
         return out
 
     def get_info(self):
-        out = "Player %d has %d lives and %d mana" % (self.n, self.mana, self.health)
+        out = "Player %d has %d/%d lives and %d/%d mana" % (self.n, self.health, self.__class__.health,
+                                                               self.mana, self.__class__.mana)
         return out
 
 class DarkMage(Mage):
-    pass
+    health = 3000
+    mana = 800
+
+    regen_mod = 9
+    mana_regen_mod = 38
+
+    axe_defense = 6
+    bow_defense = 6
+    spear_defense = 5
+
+    max_steps = 5
+    max_diagonal_steps = 2
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(150, 180)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(170, 200)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(200, 300)
 
 class LightMage(Mage):
-    pass
+    health = 3600
+    mana = 750
+
+    regen_mod = 7
+    mana_regen_mod = 41
+
+    axe_defense = 5
+    bow_defense = 6
+    spear_defense = 5
+
+    max_steps = 5
+    max_diagonal_steps = 2
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(110, 140)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(130, 160)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(150, 280)
+
 
 class Druid(Mage):
-    pass
+    health = 3300
+    mana = 700
+
+    regen_mod = 11
+    mana_regen_mod = 39
+
+    axe_defense = 7
+    bow_defense = 8
+    spear_defense = 5
+
+    max_steps = 6
+    max_diagonal_steps = 3
+
+    @property
+    def bow_damage_mod(self):
+        return randrange(120, 150)
+
+    @property
+    def spear_damage_mod(self):
+        return randrange(140, 160)
+
+    @property
+    def axe_damage_mod(self):
+        return randrange(150, 300)

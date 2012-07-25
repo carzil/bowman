@@ -27,11 +27,11 @@ class Bow(Weapon):
         if distance - self.distance_mod > BASE_BOW_DISTANCE:
             return True, 0
         else:
-            damage = randrange(20, 30) + self.damage_mod
+            damage = randrange(-10, 10) + self.damage_mod
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        a = randrange(6, 20)
+        a = randrange(11, 20)
         a /= 10
         return round(opponent.bow_defense * a)
 
@@ -42,11 +42,11 @@ class Axe(Weapon):
         if distance - self.distance_mod > BASE_AXE_DISTANCE:
             return True, 0
         else:
-            damage = randrange(40, 60) + self.damage_mod
+            damage = randrange(-20, 40) + self.damage_mod
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        a = randrange(9, 25)
+        a = randrange(9, 23)
         a /= 10
         return round(opponent.axe_defense * a)
 
@@ -57,10 +57,10 @@ class Spear(Weapon):
         if distance - self.distance_mod > BASE_SPEAR_DISTANCE:
             return True, 0
         else:
-            damage = randrange(30, 40) + self.damage_mod
+            damage = randrange(-10, 30) + self.damage_mod
             return False, damage
 
     def count_defense(self, player, opponent, distance):
-        a = randrange(9, 22)
+        a = randrange(10, 19)
         a /= 10
         return round(opponent.spear_defense * a)

@@ -23,58 +23,58 @@ class Spell():
         pass
 
 class FireBall(Spell):
-    mana = 140
+    mana = 150
 
     symbols = ["f", "fb"]
 
-    description = "simple spell, little damage"
+    description = "150 mp, 250 dmg"
     
     def count_damage(self, player, opponent, r):
-        return False, 215
+        return False, 250
 
 class HealthBreak(Spell):
-    mana = 450
+    mana = 600
 
     symbols = ["hb"]
 
-    description = "decrease enemy's lives on 25%"
+    description = "600 mp, dmg 25%"
 
     def count_damage(self, player, opponent, r):
         return False, opponent.health // 4
 
 class Heal(Spell):
-    mana = 340
+    mana = 300
     allow_ally_fire = True
 
     symbols = ["h"]
 
-    description = "heal any player"
+    description = "300 mp, heal 400 hp"
 
     def count_damage(self, player, opponent, r):
         return False, -400
 
 class Razor(Spell):
-    mana = 480
+    mana = 650
     allow_ally_fire = False
 
     symbols = ["r", "rz"]
 
-    description = "ultra-spell, big damage"
+    description = "650 mp, 800 dmg"
 
     def count_damage(self, player, opponent, r):
-        if r > 14:
+        if r > 9:
             return True, 0
         else:
-            return False, 690
+            return False, 800
 
 class Poison(Spell):
     continuous = True
     mana = 200
     times = 10
-    damage = 65
+    damage = 80
     symbols = ["p"]
 
-    description = "simple continuous spell"
+    description = "200 mp, 10 times 80 dmg per move"
 
     def apply(self, player):
         if self.times <= 0:
@@ -86,15 +86,46 @@ class Poison(Spell):
             self.times -= 1
 
 class AllyPoison(Poison):
-    mana = 280
+    mana = 220
     allow_ally_fire = True
     continuous = True
     times = 10
-    damage = -50
+    damage = -60
 
     symbols = ["ap"]
 
-    description = "continuous heal"
+    description = "220 mp, 10 times heal 60 xp per move"
+
+class Shield(Spell):
+    mana = 200
+
+    bow_defense = 5
+    axe_defense = 5
+    spear_defense = 5
+
+    times = 10
+
+    finished = False
+
+    symbol = "s"
+
+    def apply(self, player):
+        if self.times == self.__class__.times:
+            player.bow_defense += self.bow_defense
+            player.axe_defense += self.axe_defense
+            player.spear_defense += self.spear_defense
+        if self.times <= 0:
+            self.finished = True
+            player.bow_defense -= self.bow_defense
+            player.axe_defense -= self.axe_defense
+            player.spear_defense -= self.spear_defense
+        else:
+            self.time -= 1
+
+
+
+
+
 
 def get_spells_help():
     out = ""

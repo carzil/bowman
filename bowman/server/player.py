@@ -10,8 +10,9 @@ from .log import game_log, net_log
 from .exceptions import Retry, Kill
 from .spells import Spell, FireBall, get_spells_help
 from .weapon import Spear, Axe, Bow
-from .regen import Regen
+from .regen import Regen, ManaRegen
 from ..utils import Connection
+from .const import BASE_AXE_DISTANCE, BASE_SPEAR_DISTANCE
 
 def command(*letters):
     def decorating_function(func):
@@ -28,6 +29,7 @@ class Player():
     health = 250
 
     regen_mod = 1
+    mana_regen_mod = 1
 
     axe_damage_mod = 0
     bow_damage_mod = 0
@@ -57,6 +59,7 @@ class Player():
         self.spear = Spear(self.spear_damage_mod, self.spear_distance_mod)
 
         self.regen = Regen(self.regen_mod)
+        self.mana_regen = ManaRegen(self.mana_regen_mod)
 
         self.killed = False
 
@@ -299,9 +302,9 @@ class Player():
             weapon = self.bow
         else:
             r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
-            if r - self.axe_distance_mod < 2:
+            if r - self.axe_distance_mod < BASE_AXE_DISTANCE:
                 weapon = self.axe
-            elif r - self.spear_distance_mod < 8:
+            elif r - self.spear_distance_mod < BASE_SPEAR_DISTANCE:
                 weapon = self.spear
             else:
                 weapon = self.bow
@@ -475,13 +478,13 @@ class Player():
 
     def get_own_info(self):
         if not self.killed:
-            out = "You have %d lives, your marker is '%d'" % (self.health, self.n)
+            out = "You have %d/%d lives, your marker is '%d'" % (self.health, self.__class__.health, self.n)
         else:
             out = "You have killed"
         return out
 
     def get_info(self):
-        out = "Player %d has %d lives" % (self.n, self.health)
+        out = "Player %d has %d/%d lives" % (self.n, self.health, self.__class__.health)
         return out
 
     def get_team_info(self):

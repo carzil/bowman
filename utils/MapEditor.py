@@ -8,7 +8,7 @@ class creat_map():
     def creat(self):
         res_map = ''
         world_map =[[self.sim for x in range(0,self.x)] for y in range(0,self.y)]
-        file_name = "game/server/maps/" + self.name + ".txt"
+        file_name = "maps/" + self.name + ".txt"
         file = open(file_name, 'w')
         write = str(self.x) + ' ' + str(self.y) + "\n"
         file.write(write)
@@ -18,3 +18,5 @@ class creat_map():
             file.write(res_map)
             file.write("\n")
             res_map = ''
+a = input()
+creat_map(a).creat()
