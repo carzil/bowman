@@ -6,7 +6,7 @@
 from math import sqrt
 import os
 from random import choice
-from copy import deepcopy
+import copy
 from .player import Player
 from .entity import Wall, Grass, Entity, HealthPack, SpawnPoint
 from .exceptions import Restart, Kill, Retry
@@ -243,7 +243,7 @@ class World():
     def render_matrix_for_player(self, player):
         # TODO: ally map
         out = ""
-        world_map = deepcopy(self.world_map)
+        world_map = copy.copy(self.world_map)
         for i in range(len(world_map)): # y
             for j in range(len(world_map[i])): # x
                 r = round(sqrt((j - player.y) ** 2 + (i - player.x) ** 2))
@@ -254,21 +254,18 @@ class World():
             out += "\n"
         return out
 
-    def get_player_info(self, player):
+    def get_player_header_info(self, player):
         out = player.get_own_info()
         out += "\n"
         for pl in self.get_players():
-            if pl is not player:
-                out += pl.get_info()
-                out += "\n"
-        out += "\n"
+            out += pl.get_info()
+            out += "\n"
         if self.itb:
             out += player.get_team_info()
-            out += "\n"
         out += "\n"
-        out += self.render_matrix_for_player(player)
         return out
 
     def send_info(self):
         for player in self.players:
-            player.send_info(self.get_player_info(player))
+            player.print(self.get_player_header_info(player))
+            player.send_info(self.render_matrix_for_player(player))

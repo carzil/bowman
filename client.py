@@ -7,7 +7,10 @@ from socket import *
 from argparse import ArgumentParser
 from bowman.utils import Connection
 import sys, os
+from bowman.lib import colorama
 
+
+colorama.init(autoreset=True)
 UNIT_TYPES_SYMBOLS = ["r", "k", "h", "w", "s", "a", "dm", "lm", "dr"]
 
 class Client():
@@ -56,10 +59,22 @@ class Client():
         print("You have been stopped by wall!")
 
     def receive_matrix(self):
-        data = self.connection.get_pack()
         self.clear_screen()
         print("Type 'help' or 'h' for help.")
-        print(data)
+        data = self.connection.get_pack()
+        for i in data:
+            if i.isdigit() and i != str(self.n):
+                print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="", sep="")
+            elif i.isdigit() and i == str(self.n):
+                print(colorama.Fore.YELLOW + i, end="", sep="")
+            elif i == "*":
+                print(colorama.Fore.BLUE + i, end="", sep="")
+            elif i == "+":
+                print(colorama.Fore.GREEN  + colorama.Style.BRIGHT + i, end="", sep="")
+            elif i == "#":
+                print(colorama.Fore.RED + i, end="", sep="")
+            else:
+                print(i, end="", sep="")
 
     def print(self):
         data = self.connection.get_pack()
@@ -126,12 +141,12 @@ class Client():
 def main():
     arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
     "See more: https://github.com/carzil/bowman")
-    arg_parser.add_argument("ip", help="server IP address")
+    arg_parser.add_argument("--host", help="server host", default="localhost")
     arg_parser.add_argument("--port", default=9999, type=int, help="server port")
 
     args = arg_parser.parse_args()
 
-    Client(args.ip, args.port)
+    Client(args.host, args.port)
 
 
 if __name__ == "__main__":
