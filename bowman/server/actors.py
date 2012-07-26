@@ -178,14 +178,6 @@ class Sniper(Damager):
     @property
     def axe_damage_mod(self):
         return randrange(210, 260)
-    
-    def fire(self, opponent, weapon):
-        damage = super(Damager, self).fire(opponent, weapon)
-        life_steal = -(round(damage / 55))
-        game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
-        self.damage(life_steal)
-        return damage
-
 
 class Assasin(Damager):
     health = 3000
