@@ -248,7 +248,7 @@ class World():
             for j in range(len(world_map[i])): # x
                 r = round(sqrt((j - player.y) ** 2 + (i - player.x) ** 2))
                 if r > VISIBILITY_DISTANCE + player.visibility_mod:
-                    world_map[i][j] = '?' + str(world_map[i][j])
+                    world_map[i][j] = " "
         for i in world_map:
             out += " ".join((map(str, i)))
             out += "\n"
