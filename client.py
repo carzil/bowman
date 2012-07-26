@@ -1,3 +1,8 @@
+# Copyright 2012 Andreev Alexander <carzil@yandex.ru>
+#
+# This software may be used and distributed according to the terms of the
+# GNU General Public License version 2 or any later version.
+
 from socket import *
 from argparse import ArgumentParser
 from bowman.utils import Connection
@@ -54,17 +59,7 @@ class Client():
         data = self.connection.get_pack()
         self.clear_screen()
         print("Type 'help' or 'h' for help.")
-        world = data.splitlines()
-        for i in range(len(world)):
-            world[i] = world[i].split()
-        for i in range(len(world)):
-            for j in range(len(world[i])):
-                if world[i][j][0] == '?':
-                    world[i][j] = ' '
-        for i in range(len(world)):
-            world[i] = ' '.join(world[i])
-        world = '\n'.join(world)
-        print(world)
+        print(data)
 
     def print(self):
         data = self.connection.get_pack()
