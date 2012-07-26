@@ -131,6 +131,8 @@ class Damager(NetPlayer):
     bow_defense = 0
     spear_defense = 0
 
+    life_steal_divider = 4
+
     @property
     def bow_damage_mod(self):
         return randrange(123, 151)
@@ -145,7 +147,7 @@ class Damager(NetPlayer):
 
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
-        life_steal = -(damage // 4)
+        life_steal = -(damage // self.life_steal_divider)
         game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
         self.damage(life_steal)
         return damage
@@ -166,6 +168,8 @@ class Sniper(Damager):
 
     max_steps = 4
     max_diagonal_steps = 2
+
+    life_steal_divider = 6
 
     @property
     def bow_damage_mod(self):
