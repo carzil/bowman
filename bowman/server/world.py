@@ -243,10 +243,10 @@ class World():
     def render_matrix_for_player(self, player):
         # TODO: ally map
         out = ""
-        world_map = copy.copy(self.world_map)
+        world_map = copy.deepcopy(self.world_map)
         for i in range(len(world_map)): # y
             for j in range(len(world_map[i])): # x
-                r = round(sqrt((j - player.y) ** 2 + (i - player.x) ** 2))
+                r = round(sqrt((j - player.x) ** 2 + (i - player.y) ** 2))
                 if r > VISIBILITY_DISTANCE + player.visibility_mod:
                     world_map[i][j] = " "
         for i in world_map:
@@ -263,9 +263,10 @@ class World():
         if self.itb:
             out += player.get_team_info()
         out += "\n"
+        out += self.render_matrix_for_player(player)
         return out
 
     def send_info(self):
         for player in self.players:
-            player.print(self.get_player_header_info(player))
+            # player.print(self.get_player_header_info(player))
             player.send_info(self.render_matrix_for_player(player))
