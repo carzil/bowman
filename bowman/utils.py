@@ -35,3 +35,9 @@ class Connection():
         self.socket.send(pack_size)
         self.socket.send(data)
 
+def distance(player1, player2):
+    return round(
+        sqrt(
+            (player1.x - player2.x) ** 2 + (player1.y - player2.y) ** 2
+        )
+    )
