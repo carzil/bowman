@@ -6,12 +6,14 @@
 from socket import *
 from argparse import ArgumentParser
 from bowman.utils import Connection
-import sys, os
+import sys
+import os
 from bowman.lib import colorama
 
 
 colorama.init(autoreset=True)
 UNIT_TYPES_SYMBOLS = ["r", "k", "h", "w", "s", "a", "dm", "lm", "dr"]
+
 
 class Client():
     def __init__(self, remote_ip, remote_port):
@@ -64,13 +66,13 @@ class Client():
         data = self.connection.get_pack()
         for i in data:
             if i.isdigit() and i != str(self.n):
-                print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="", sep="")
+                print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="")
             elif i.isdigit() and i == str(self.n):
                 print(colorama.Fore.YELLOW + i, end="", sep="")
             elif i == "*":
                 print(colorama.Fore.BLUE + i, end="", sep="")
             elif i == "+":
-                print(colorama.Fore.GREEN  + colorama.Style.BRIGHT + i, end="", sep="")
+                print(colorama.Fore.GREEN + colorama.Style.BRIGHT + i, end="")
             elif i == "#":
                 print(colorama.Fore.RED + i, end="", sep="")
             else:
@@ -85,7 +87,9 @@ class Client():
         self.sock.close()
 
     def abort_game(self):
-        print("Game aborted, because fatal error has been raised on the server!")
+        print(
+            "Game aborted, because fatal error has been raised on the server!"
+        )
         self.sock.close()
 
     def ally_fire(self):
@@ -138,11 +142,25 @@ class Client():
             elif data == "pr":
                 self.print()
 
+
 def main():
-    arg_parser = ArgumentParser(description="Bowman is a client-server console game. "
-    "See more: https://github.com/carzil/bowman")
-    arg_parser.add_argument("--host", help="server host", default="localhost")
-    arg_parser.add_argument("--port", default=9999, type=int, help="server port")
+    arg_parser = ArgumentParser(
+        description="Bowman is a client-server console game. "
+        "See more: https://github.com/carzil/bowman"
+    )
+
+    arg_parser.add_argument(
+        "--host",
+        help="server host",
+        default="localhost"
+    )
+
+    arg_parser.add_argument(
+        "--port",
+        default=9999,
+        type=int,
+        help="server port"
+    )
 
     args = arg_parser.parse_args()
 
