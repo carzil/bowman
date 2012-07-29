@@ -14,9 +14,12 @@ from .regen import Regen, ManaRegen
 from ..utils import Connection
 from .const import BASE_AXE_DISTANCE, BASE_SPEAR_DISTANCE
 
+
 def command(*letters):
     def decorating_function(func):
-        for letter in letters: commands_dict[letter] = func
+        for letter in letters:
+            commands_dict[letter] = func
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
@@ -24,6 +27,7 @@ def command(*letters):
     return decorating_function
 
 commands_dict = {}
+
 
 class Player():
     health = 250
@@ -90,7 +94,8 @@ class Player():
 
     def move_down(self, m):
         """
-        Moves the player down on `m` cells and returns True if move preforms successful.
+        Moves the player down on `m` cells
+        and returns True if move preforms successful.
          . P .        . P .        . . .
          . . .   ->   . P .   ->   . P .
          . . .        . . .        . . .
@@ -112,7 +117,8 @@ class Player():
 
     def move_up(self, m):
         """
-        Moves the player up on `m` cells and returns True if move preforms successful.
+        Moves the player up on `m` cells
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -130,7 +136,8 @@ class Player():
 
     def move_left(self, m):
         """
-        Moves the player left on `m` cells and returns True if move preforms successful.
+        Moves the player left on `m` cells
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -148,7 +155,8 @@ class Player():
 
     def move_right(self, m):
         """
-        Moves the player right on `m` cells and returns True if move preforms successful.
+        Moves the player right on `m` cells
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -166,7 +174,8 @@ class Player():
 
     def move_up_left(self, m):
         """
-        Moves the player up and left on `m` cells direction and returns True if move preforms successful.
+        Moves the player up and left on `m` cells direction
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -185,7 +194,8 @@ class Player():
 
     def move_up_right(self, m):
         """
-        Moves the player up and right on `m` cells direction and returns True if move preforms successful.
+        Moves the player up and right on `m` cells direction
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -199,12 +209,16 @@ class Player():
             self.clean_position(ox, oy)
             self.x = x
             self.y = y
-        game_log.info("player %d moved by diagonal up right on %d m", self.n, m)
+        game_log.info(
+            "player %d moved by diagonal up right on %d m",
+            self.n, m
+        )
         return True
 
     def move_down_left(self, m):
         """
-        Moves the player down and left on `m` cells direction and returns True if move preforms successful.
+        Moves the player down and left on `m` cells direction
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -218,12 +232,16 @@ class Player():
             self.clean_position(ox, oy)
             self.x = x
             self.y = y
-        game_log.info("player %d moved by diagonal down left on %d m", self.n, m)
+        game_log.info(
+            "player %d moved by diagonal down left on %d m",
+            self.n, m
+        )
         return True
 
     def move_down_right(self, m):
         """
-        Moves the player down and right on `m` cells direction and returns True if move preforms successful.
+        Moves the player down and right on `m` cells direction
+        and returns True if move preforms successful.
         """
         for i in range(m):
             ox, oy = self.x, self.y
@@ -237,7 +255,10 @@ class Player():
             self.clean_position(ox, oy)
             self.x = x
             self.y = y
-        game_log.info("player %d moved by diagonal down right on %d m", self.n, m)
+        game_log.info(
+            "player %d moved by diagonal down right on %d m",
+            self.n, m
+        )
         return True
 
     def regenerate(self):
@@ -251,7 +272,9 @@ class Player():
         if self.health < 0:
             raise Kill(self)
         if self.health > self.__class__.health:
-            # it looks strange, but sometimes damage may be negative (for example, Damager's life steal)
+            # it looks strange,
+            # but sometimes damage may be negative
+            # (for example, Damager's life steal)
             self.health = self.__class__.health
         return True
 
@@ -301,7 +324,11 @@ class Player():
         elif weapon_type == "b":
             weapon = self.bow
         else:
-            r = round(sqrt((player.x - self.x) ** 2 + (player.y - self.y) ** 2))
+            r = round(
+                sqrt(
+                    (player.x - self.x) ** 2 + (player.y - self.y) ** 2
+                )
+            )
             if r - self.axe_distance_mod < BASE_AXE_DISTANCE:
                 weapon = self.axe
             elif r - self.spear_distance_mod < BASE_SPEAR_DISTANCE:
@@ -351,11 +378,25 @@ class Player():
         # Distance from point A to point B in 2d euclid space is:
         #      _______________________________
         # R = \|(A.x - B.x) ** 2 + (A.y - B.y)
-        r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
-        game_log.info("player %d fire player %d with %s", self.n, opponent.n, weapon.name)
-        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
+        r = round(
+            sqrt(
+                (opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2
+            )
+        )
+
+        game_log.info(
+            "player %d fire player %d with %s",
+            self.n, opponent.n, weapon.name
+        )
+
+        game_log.info(
+            "distance from player %d to player %d is %d",
+            self.n, opponent.n, r
+        )
+
         is_miss, damage = weapon.count_damage(self, opponent, r)
         defense = weapon.count_defense(self, opponent, r)
+
         if is_miss:
             self.miss()
             game_log.info("player %d missed", self.n)
@@ -366,11 +407,22 @@ class Player():
             else:
                 damage -= defense
             res = opponent.damage(damage)
-            game_log.info("player %d %s defense is %d", opponent.n, weapon.name, defense)
+
+            game_log.info(
+                "player %d %s defense is %d",
+                opponent.n, weapon.name, defense
+            )
+
             if damage > 0:
-                game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+                game_log.info(
+                    "player %d caused damage %d to player %d",
+                    self.n, damage, opponent.n
+                )
             else:
-                game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
+                game_log.info(
+                    "player %d heal player %d by %d lives",
+                    self.n, opponent.n, -damage
+                )
         return damage
 
     @command("a", "s", "d", "w", "q", "e", "z", "c")
@@ -413,7 +465,7 @@ class Player():
             if meters > self.max_diagonal_steps:
                 meters = self.max_diagonal_steps
             self.move_down_right(meters)
-    
+
     @command("f")
     def handle_fire(self, first_letter, splited_string):
         player = self.get_closest_player(splited_string, 1)
@@ -478,21 +530,28 @@ class Player():
 
     def get_own_info(self):
         if not self.killed:
-            out = "You have %d/%d lives, your marker is '%d'" % (self.health, self.__class__.health, self.n)
+            out = "You have {}/{} lives, your marker is '{}'".format(
+                self.health, self.__class__.health, self.n
+            )
         else:
             out = "You have killed"
         return out
 
     def get_info(self):
-        out = "Player %d has %d/%d lives" % (self.n, self.health, self.__class__.health)
+        out = "Player {} has {}/{} lives".format(
+            self.n, self.health, self.__class__.health
+        )
         return out
 
     def get_team_info(self):
-        out = "Players in your team: %s" % (", ".join([str(i.n) for i in self.team.get_players()]),)
+        out = "Players in your team: {}".format(
+            ", ".join([str(i.n) for i in self.team.get_players()])
+        )
         return out
 
     def __str__(self):
         return str(self.n)
+
 
 class NetPlayer(Player):
     def __init__(self, socket, ci, *args, **kwargs):
@@ -505,22 +564,32 @@ class NetPlayer(Player):
         try:
             string = self.connection.get_pack()
             if string:
-                net_log.debug("client '%s:%s' (player %d) sent '%s'", self.client_info[0], self.client_info[1], self.n, string)
+                net_log.debug(
+                    "client '%s:%s' (player %d) sent '%s'",
+                    self.client_info[0], self.client_info[1], self.n, string
+                )
             else:
-                net_log.warning("client '%s:%d' disconnected (player %d)",
-                    self.client_info[0], self.client_info[1], self.n)
+                net_log.warning(
+                    "client '%s:%d' disconnected (player %d)",
+                    self.client_info[0], self.client_info[1], self.n
+                )
                 raise Kill(self)
             return string
         except socket.error:
-            net_log.warning("client '%s:%d' disconnected (player %d)",
-                self.client_info[0], self.client_info[1], self.n)
+            net_log.warning(
+                "client '%s:%d' disconnected (player %d)",
+                self.client_info[0], self.client_info[1], self.n
+            )
             raise Kill(self)
 
     def update(self):
         try:
             super(NetPlayer, self).update()
         except socket.error:
-            net_log.warning("client '%s:%d' disconnected", self.client_info[0], self.client_info[1])
+            net_log.warning(
+                "client '%s:%d' disconnected",
+                self.client_info[0], self.client_info[1]
+            )
             raise Kill(self)
 
     def send_info(self, info):
