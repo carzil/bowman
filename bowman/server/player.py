@@ -13,12 +13,13 @@ from .weapon import Spear, Axe, Bow
 from .regen import Regen, ManaRegen
 from ..utils import Connection
 from .const import BASE_AXE_DISTANCE, BASE_SPEAR_DISTANCE
+import copy
 
 
 def command(*letters):
     def decorating_function(func):
         for letter in letters:
-            commands_dict[letter] = func
+            _commands_dict[letter] = func
 
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -26,7 +27,7 @@ def command(*letters):
         return wrapper
     return decorating_function
 
-commands_dict = {}
+_commands_dict = {}
 
 
 class Player():
@@ -341,7 +342,7 @@ class Player():
         string = self.prompt()
         first_letter = string[0]
         splited_string = string.split(" ")
-        cmd = commands_dict.get(first_letter)
+        cmd = _commands_dict.get(first_letter)
         if not cmd:
             raise Retry
 
@@ -662,3 +663,12 @@ class NetPlayer(Player):
 
     def __str__(self):
         return str(self.n)
+
+    def __getstate__(self):
+        '''
+        This function invokes when deserialization is happened
+        and returns dictionary, containing all fields except 'connection'.
+        '''
+        d = copy.copy(self.__dict__)
+        d.pop("connection")
+        return d
