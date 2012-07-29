@@ -3,7 +3,7 @@
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
 
-from socket import *
+from socket import socket
 from argparse import ArgumentParser
 from bowman.utils import Connection
 import sys
@@ -13,13 +13,19 @@ from bowman.lib import colorama
 
 colorama.init(autoreset=True)
 UNIT_TYPES_SYMBOLS = ["r", "k", "h", "w", "s", "a", "dm", "lm", "dr"]
+CHOICE_UNIT_TYPE_PROMT = "Enter unit type, which you prefer: "
+COLORED_OUTPUT = True
 
 
 class Client():
     def __init__(self, remote_ip, remote_port):
+        '''
+        Constructor for class Client.
+        It takes destination host and port and connect to it.
+        '''
         self.remote_ip = remote_ip
         self.remote_port = remote_port
-        self.connect()
+        self._connect()
         self.world_info = None
         self.unit_type = self.choice_unit_type()
         self.tr_nums = None
@@ -28,95 +34,144 @@ class Client():
         self.main()
 
     def clear_screen(self):
+        '''
+        This function call os command to clear screen.
+        '''
         if sys.platform == "win32":
             os.system("cls")
         else:
             os.system("clear")
 
-    def connect(self):
-        self.sock = socket(AF_INET, SOCK_STREAM)
-        self.sock.connect((self.remote_ip, self.remote_port))
-        self.connection = Connection(self.sock)
-        data = self.connection.get_pack()
+    def _connect(self):
+        '''
+        This function connect Client class instance to remote server.
+        '''
+        self._sock = socket()
+        self._sock.connect((self.remote_ip, self.remote_port))
+        self._connection = Connection(self._sock)
+        data = self._connection.get_pack()
         if data == "hello":
             return
         raise Exception("Oops! There is an server error")
 
     def choice_unit_type(self):
-        string = input("Enter unit type, which you prefer: ").strip()
+        '''
+        Reads from input string 
+        and if there is such unit abbreviate, returns it.
+        '''
+        string = input(CHOICE_UNIT_TYPE_PROMT).strip()
         while not string or string not in UNIT_TYPES_SYMBOLS:
-            string = input("Enter unit type, which you prefer: ").strip()
+            string = input(CHOICE_UNIT_TYPE_PROMT).strip()
         return string
 
     def lose(self):
+        '''
+        This function invokes when player lose.
+        '''
         print("You lose!")
 
     def win(self):
+        '''
+        This function invokes when player win.
+        '''
         print("You win!")
 
     def miss(self):
+        '''
+        This function invokes when player missed.
+        '''
         print("You missed!")
 
-    def nb(self):
-        print("You have been stopped by wall!")
-
     def receive_matrix(self):
+        '''
+        This function receive new battle field representation and colorize it
+        if COLORED_OUTPUT is True.
+        '''
         self.clear_screen()
         print("Type 'help' or 'h' for help.")
-        data = self.connection.get_pack()
-        for i in data:
-            if i.isdigit() and i != str(self.n):
-                print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="")
-            elif i.isdigit() and i == str(self.n):
-                print(colorama.Fore.YELLOW + i, end="", sep="")
-            elif i == "*":
-                print(colorama.Fore.BLUE + i, end="", sep="")
-            elif i == "+":
-                print(colorama.Fore.GREEN + colorama.Style.BRIGHT + i, end="")
-            elif i == "#":
-                print(colorama.Fore.RED + i, end="", sep="")
-            else:
-                print(i, end="", sep="")
+        data = self._connection.get_pack()
+        if COLORED_OUTPUT:
+            for i in data:
+                if i.isdigit() and i != str(self.n):
+                    print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="")
+                elif i.isdigit() and i == str(self.n):
+                    print(colorama.Fore.YELLOW + i, end="", sep="")
+                elif i == "*":
+                    print(colorama.Fore.BLUE + i, end="", sep="")
+                elif i == "+":
+                    print(colorama.Fore.GREEN + colorama.Style.BRIGHT + i, end="")
+                elif i == "#":
+                    print(colorama.Fore.RED + i, end="", sep="")
+                else:
+                    print(i, end="", sep="")
+        else:
+            print(data)
 
     def print(self):
-        data = self.connection.get_pack()
+        '''
+        Prints string received from server.
+        '''
+        data = self._connection.get_pack()
         print(data)
 
     def end_game(self):
+        '''
+        Notify that game was finished and close connection to server.
+        '''
         print("Game finished!")
         self.sock.close()
 
     def abort_game(self):
+        '''
+        Notify that game was aborted and close connection to server.
+        '''
         print(
             "Game aborted, because fatal error has been raised on the server!"
         )
         self.sock.close()
 
     def ally_fire(self):
+        '''
+        This function invokes when player is trying to fire his ally.
+        '''
         print("This player is your ally!")
 
     def team_lose(self):
+        '''
+        This function invokes when player team lose.
+        '''
         print("Your team lose!")
 
     def team_win(self):
+        '''
+        This function invokes when player team win.
+        '''
         print("Your team win!")
 
     def prompt(self):
+        '''
+        Prompt a string from user.
+        '''
         return input(">> ").strip()
 
     def main(self):
-        self.connection.send_pack(self.unit_type)
-        n = self.connection.get_pack()
+        '''
+        Main loop of client.
+        It receives two-symbol package 
+        and invokes function depend on package content.
+        '''
+        self._connection.send_pack(self.unit_type)
+        n = self._connection.get_pack()
         n = int(n)
         self.n = n
         print("Waiting for game start...")
         while True:
-            data = self.connection.get_pack()
+            data = self._connection.get_pack()
             if data == "go":
                 string = self.prompt()
                 while not string:
                     string = self.prompt()
-                self.connection.send_pack(string)
+                self._connection.send_pack(string)
             elif data == "lo":
                 self.lose()
             elif data == "wi":
