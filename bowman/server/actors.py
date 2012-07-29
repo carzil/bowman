@@ -9,6 +9,8 @@ from .player import Player, NetPlayer
 from .exceptions import Retry, Kill
 from .log import game_log
 from .regen import ManaRegen
+from ..utils import distance
+
 
 class Ranger(NetPlayer):
     health = 4000
@@ -52,16 +54,27 @@ class Ranger(NetPlayer):
             e = self.world.get_cell(opponent.x - 1, opponent.y + 1)
             z = self.world.get_cell(opponent.x + 1, opponent.y - 1)
             c = self.world.get_cell(opponent.x + 1, opponent.y + 1)
-            cells = list(filter(lambda x: isinstance(x, Player), [q, w, s, a, d, e, z, c]))
+            cells = list(
+                filter(
+                    lambda x: isinstance(x, Player),
+                    [q, w, s, a, d, e, z, c]
+                )
+            )
             if cells:
                 for i in cells:
                     i.damage(splash_damage)
                 if len(cells) > 1:
-                    game_log.info("player %d caused splash damage %d to players %s",
-                                  self.n, splash_damage, ", ".join([str(i.n) for i in cells]))
+                    game_log.info(
+                        "player %d caused splash damage %d to players %s",
+                        self.n, splash_damage, ", ".join(map(str, cells))
+                    )
                 else:
-                    game_log.info("player %d caused splash damage %d to player %d", self.n, splash_damage, cells[0].n)
+                    game_log.info(
+                        "player %d caused splash damage %d to player %d",
+                        self.n, splash_damage, cells[0].n
+                    )
         return damage
+
 
 class Rogue(Ranger):
     health = 3500
@@ -70,9 +83,9 @@ class Rogue(Ranger):
 
     max_steps = 6
     max_diagonal_steps = 3
-    
+
     spear_distance_mod = 0
-    
+
     axe_defense = 4
     bow_defense = 5
     spear_defense = 5
@@ -88,6 +101,7 @@ class Rogue(Ranger):
     @property
     def axe_damage_mod(self):
         return randrange(260, 300)
+
 
 class Killer(Ranger):
     health = 3200
@@ -112,6 +126,7 @@ class Killer(Ranger):
     @property
     def axe_damage_mod(self):
         return randrange(320, 390)
+
 
 class Damager(NetPlayer):
     health = 3000
@@ -148,9 +163,13 @@ class Damager(NetPlayer):
     def fire(self, opponent, weapon):
         damage = super(Damager, self).fire(opponent, weapon)
         life_steal = -(damage // self.life_steal_divider)
-        game_log.info("life steal for player %d is %d", self.n, abs(life_steal))
+        game_log.info(
+            "life steal for player %d is %d",
+            self.n, abs(life_steal)
+        )
         self.damage(life_steal)
         return damage
+
 
 class Sniper(Damager):
     health = 2600
@@ -183,11 +202,12 @@ class Sniper(Damager):
     def axe_damage_mod(self):
         return randrange(210, 260)
 
+
 class Assasin(Damager):
     health = 3000
 
     regen_mod = 8
-    
+
     bow_distance_mod = 1
 
     visibility_mod = 1
@@ -210,6 +230,7 @@ class Assasin(Damager):
     @property
     def axe_damage_mod(self):
         return randrange(260, 320)
+
 
 class Tank(NetPlayer):
     health = 6200
@@ -241,6 +262,7 @@ class Tank(NetPlayer):
     def axe_damage_mod(self):
         return randrange(298, 511)
 
+
 class Hunter(Tank):
     health = 3800
 
@@ -265,7 +287,8 @@ class Hunter(Tank):
 
     @property
     def axe_damage_mod(self):
-        return randrange(100, 410) 
+        return randrange(100, 410)
+
 
 class Warrior(Tank):
     health = 8000
@@ -293,6 +316,7 @@ class Warrior(Tank):
     def axe_damage_mod(self):
         return randrange(290, 510)
 
+
 class Mage(NetPlayer):
 
     health = 2900
@@ -311,7 +335,7 @@ class Mage(NetPlayer):
     axe_defense = 6
     bow_defense = 6
     spear_defense = 6
-    
+
     @property
     def bow_damage_mod(self):
         return randrange(50, 120)
@@ -326,10 +350,16 @@ class Mage(NetPlayer):
 
     def spell(self, opponent, spell):
         game_log.info("player %d make a spell", self.n)
-        r = round(sqrt((opponent.x - self.x) ** 2 + (opponent.y - self.y) ** 2))
-        game_log.info("distance from player %d to player %d is %d", self.n, opponent.n, r)
+        r = distance(self, opponent)
+        game_log.info(
+            "distance from player %d to player %d is %d",
+            self.n, opponent.n, r
+        )
         if spell.mana > self.mana:
-            game_log.info("player %d have not enough mana (need %d, found %d)", self.n, spell.mana, self.mana)
+            game_log.info(
+                "player %d have not enough mana (expected %d, found %d)",
+                self.n, spell.mana, self.mana
+            )
             raise Retry
         self.mana -= spell.mana
         if not spell.continuous:
@@ -339,11 +369,20 @@ class Mage(NetPlayer):
             else:
                 res = opponent.damage(damage)
                 if damage > 0:
-                    game_log.info("player %d caused damage (%d) to player %d", self.n, damage, opponent.n)
+                    game_log.info(
+                        "player %d caused damage (%d) to player %d",
+                        self.n, damage, opponent.n
+                    )
                 else:
-                    game_log.info("player %d heal player %d by %d lives", self.n, opponent.n, -damage)
+                    game_log.info(
+                        "player %d heal player %d by %d lives",
+                        self.n, opponent.n, -damage
+                    )
                 if not res:
-                    game_log.info("player %d killed player %d", self.n, opponent.n)
+                    game_log.info(
+                        "player %d killed player %d",
+                        self.n, opponent.n
+                    )
                     opponent.lose()
                     raise Kill(opponent)
         else:
@@ -357,16 +396,22 @@ class Mage(NetPlayer):
 
     def get_own_info(self):
         if not self.killed:
-            out = "You have %d/%d lives and %d/%d mana, your marker is '%d'" % (self.health, self.__class__.health,
-                                                                                self.mana, self.__class__.mana, self.n)
+            out = "You have {}/{} lives and {}/{} mana,"
+            "your marker is '{}'".format(
+                self.health, self.__class__.health,
+                self.mana, self.__class__.mana, self.n
+            )
         else:
             out = "You have killed"
         return out
 
     def get_info(self):
-        out = "Player %d has %d/%d lives and %d/%d mana" % (self.n, self.health, self.__class__.health,
-                                                               self.mana, self.__class__.mana)
+        out = "Player {} has {}/{} lives and {}/{} mana".format(
+            self.n, self.health, self.__class__.health,
+            self.mana, self.__class__.mana
+        )
         return out
+
 
 class DarkMage(Mage):
     health = 3000
@@ -393,6 +438,7 @@ class DarkMage(Mage):
     @property
     def axe_damage_mod(self):
         return randrange(200, 300)
+
 
 class LightMage(Mage):
     health = 3600
