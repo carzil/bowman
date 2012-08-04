@@ -200,20 +200,18 @@ class TestPlayerMovements(unittest.TestCase):
 
 class TestPlayerAttack(unittest.TestCase):  
     def setUp(self):
-        map_content = StringIO("10 10\n"
-                               "& . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . .\n"
-                               ". . . . . . . . . &\n")
+        map_content = StringIO("7 7\n"
+                               "& . . . . . .\n"
+                               ". . . . . . .\n"
+                               ". . . . . . .\n"
+                               ". . . . . . .\n"
+                               ". . . . . . .\n"
+                               ". . . . . . .\n"
+                               ". . . . . . &\n")
         map_content.name = "map0.txt"
         self.world = World(map_content, False)
         self.player1 = Player(1, self.world)
+        self.player1.bow_damage_mod = 100
         self.world.add_player(self.player1)
         self.player2 = Player(2, self.world)
         self.world.add_player(self.player2)

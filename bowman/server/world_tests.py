@@ -184,10 +184,6 @@ class TestWorldWithOnePlayer(unittest.TestCase):
     def testRenderMatrix(self):
         self.assertEqual(self.world.render_matrix_for_player(self.player1), ". # 1\n+ . *\n")
 
-    def testGetPlayerInfo(self):
-        info = self.world.get_player_info(self.player1)
-        self.assertIsInstance(info, str)
-
     def testUpdate(self):
         sys.stdin = StringIO("f\n" * 20)
         _tmp = sys.stdout

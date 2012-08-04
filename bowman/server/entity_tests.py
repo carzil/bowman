@@ -52,7 +52,7 @@ class TestEntity(unittest.TestCase):
         self.assertFalse(res)
 
     def testHPPicked(self):
-        self.player1.health = 1
+        self.player1.health -= self.hp.lives + 1
         res = self.hp.apply(self.player1)
         self.assertTrue(res)
         self.assertGreater(self.player1.health, 1)

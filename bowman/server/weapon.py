@@ -5,6 +5,7 @@
 
 from random import randrange, randint
 from .const import BASE_BOW_DISTANCE, BASE_SPEAR_DISTANCE, BASE_AXE_DISTANCE
+from .log import game_log
 
 class Weapon():
     name = "weapon"
@@ -27,7 +28,8 @@ class Bow(Weapon):
         if distance - self.distance_mod > BASE_BOW_DISTANCE:
             return True, 0
         else:
-            damage = randrange(-10, 10) + self.damage_mod
+            damage = randint(1, 10) + self.damage_mod
+            game_log.info("damage mod: %d, damage: %d", self.damage_mod, damage)
             return False, damage
 
     def count_defense(self, player, opponent, distance):
@@ -42,7 +44,7 @@ class Axe(Weapon):
         if distance - self.distance_mod > BASE_AXE_DISTANCE:
             return True, 0
         else:
-            damage = randrange(-20, 40) + self.damage_mod
+            damage = randrange(1, 40) + self.damage_mod
             return False, damage
 
     def count_defense(self, player, opponent, distance):
@@ -57,7 +59,7 @@ class Spear(Weapon):
         if distance - self.distance_mod > BASE_SPEAR_DISTANCE:
             return True, 0
         else:
-            damage = randrange(-10, 30) + self.damage_mod
+            damage = randrange(1, 30) + self.damage_mod
             return False, damage
 
     def count_defense(self, player, opponent, distance):

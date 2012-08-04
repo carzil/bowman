@@ -4,6 +4,7 @@
 # GNU General Public License version 2 or any later version.
 import struct
 from .server.exceptions import Disconnect
+import math
 
 PACK_HEADER = ">l" # pack_size
 PACK_HEADER_SIZE = struct.calcsize(PACK_HEADER)
@@ -21,10 +22,8 @@ class Connection():
         data = b""
         for i in range(pack_size):
             data = b"".join((data, self.socket.recv(1)))
-        try:
-            data = data.decode("utf-8")
-        except:
-            pass
+            
+        data = data.decode("utf-8")
         return data
 
     def send_pack(self, data):
@@ -37,7 +36,7 @@ class Connection():
 
 def distance(player1, player2):
     return round(
-        sqrt(
+        math.sqrt(
             (player1.x - player2.x) ** 2 + (player1.y - player2.y) ** 2
         )
     )
