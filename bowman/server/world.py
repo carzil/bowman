@@ -246,7 +246,7 @@ class World():
         world_map = copy.deepcopy(self.world_map)
         for i in range(len(world_map)): # y
             for j in range(len(world_map[i])): # x
-                r = round(sqrt((j - player.x) ** 2 + (i - player.y) ** 2))
+                r = round(sqrt((i - player.x) ** 2 + (j - player.y) ** 2))
                 if r > VISIBILITY_DISTANCE + player.visibility_mod:
                     world_map[i][j] = " "
         for i in world_map:
