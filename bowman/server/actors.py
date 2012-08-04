@@ -396,7 +396,7 @@ class Mage(NetPlayer):
 
     def get_own_info(self):
         if not self.killed:
-            out = "You have {}/{} lives and {}/{} mana,"\
+            out = "You have {}/{} lives and {}/{} mana, "\
             "your marker is '{}'".format(
                 self.health, self.__class__.health,
                 self.mana, self.__class__.mana, self.n
