@@ -430,7 +430,7 @@ class Player():
     def handle_move(self, first_letter, splited_string):
         try:
             meters = int(splited_string[1])
-        except IndexError:
+        except (IndexError, ValueError):
             raise Retry
 
         if meters > self.max_steps:
