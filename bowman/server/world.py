@@ -268,5 +268,4 @@ class World():
 
     def send_info(self):
         for player in self.players:
-            # player.print(self.get_player_header_info(player))
-            player.send_info(self.render_matrix_for_player(player))
+            player.send_info(self.get_player_header_info(player))
