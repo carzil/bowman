@@ -254,12 +254,13 @@ class World():
             out += "\n"
         return out
 
-    def get_player_header_info(self, player):
+    def get_player_info(self, player):
         out = player.get_own_info()
-        out += "\n"
+        out += "\n \n"
         for pl in self.get_players():
-            out += pl.get_info()
-            out += "\n"
+            if pl is not player:
+                out += pl.get_info()
+                out += "\n"
         if self.itb:
             out += player.get_team_info()
         out += "\n"
@@ -268,4 +269,4 @@ class World():
 
     def send_info(self):
         for player in self.players:
-            player.send_info(self.get_player_header_info(player))
+            player.send_info(self.get_player_info(player))
