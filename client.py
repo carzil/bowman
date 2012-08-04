@@ -119,7 +119,7 @@ class Client():
         Notify that game was finished and close connection to server.
         '''
         print("Game finished!")
-        self.sock.close()
+        self._sock.close()
 
     def abort_game(self):
         '''
@@ -128,7 +128,7 @@ class Client():
         print(
             "Game aborted, because fatal error has been raised on the server!"
         )
-        self.sock.close()
+        self._sock.close()
 
     def ally_fire(self):
         '''
