@@ -11,7 +11,7 @@ import os
 from bowman.lib import colorama
 
 
-colorama.init(autoreset=True)
+colorama.init()
 UNIT_TYPES_SYMBOLS = ["r", "k", "h", "w", "s", "a", "dm", "lm", "dr"]
 CHOICE_UNIT_TYPE_PROMT = "Enter unit type, which you prefer: "
 COLORED_OUTPUT = True
@@ -82,28 +82,43 @@ class Client():
         '''
         print("You missed!")
 
+    def colorize(self, data):
+        i = data.index("")
+        print("\n".join(data[:i]))
+        data = data[i:]
+        out = ""
+        for line in data:
+            for char in line:
+                if char.isdigit() and char != str(self.n):
+                    out += colorama.Fore.RED + colorama.Style.BRIGHT + char\
+                           + colorama.Fore.RESET + colorama.Style.NORMAL
+                elif char.isdigit() and char == str(self.n):
+                    out += colorama.Fore.YELLOW + char + colorama.Fore.RESET
+                elif char == "*":
+                    out += colorama.Fore.BLUE + char\
+                           + colorama.Fore.RESET + colorama.Back.RESET
+                elif char == "+":
+                    out += colorama.Fore.GREEN + colorama.Style.BRIGHT + char\
+                           + colorama.Fore.RESET
+                elif char == "#":
+                    out += colorama.Fore.RED + char + colorama.Fore.RESET
+                else:
+                    out += char
+            out += "\n"
+        return out
+
     def receive_matrix(self):
         '''
         This function receive new battle field representation and colorize it
         if COLORED_OUTPUT is True.
         '''
+        print(colorama.Style.NORMAL)
         self.clear_screen()
         print("Type 'help' or 'h' for help.")
-        data = self._connection.get_pack()
+        data = self._connection.get_pack().splitlines()
         if COLORED_OUTPUT:
-            for i in data:
-                if i.isdigit() and i != str(self.n):
-                    print(colorama.Fore.RED + colorama.Style.BRIGHT + i, end="")
-                elif i.isdigit() and i == str(self.n):
-                    print(colorama.Fore.YELLOW + i, end="", sep="")
-                elif i == "*":
-                    print(colorama.Fore.BLUE + i, end="", sep="")
-                elif i == "+":
-                    print(colorama.Fore.GREEN + colorama.Style.BRIGHT + i, end="")
-                elif i == "#":
-                    print(colorama.Fore.RED + i, end="", sep="")
-                else:
-                    print(i, end="", sep="")
+            out = self.colorize(data)
+            print(out)
         else:
             print(data)
 
