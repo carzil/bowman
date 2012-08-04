@@ -5,7 +5,7 @@
 
 import os
 from random import choice
-from socket import socket, error
+from socket import socket, error, IPPROTO_IP, SO_REUSEADDR
 import select
 from configparser import ConfigParser
 from argparse import ArgumentParser
@@ -19,6 +19,7 @@ def setup_socket(host, port):
     sock = socket()
     net_log.info("socket has created")
     sock.bind((host, port))
+    sock.setsockopt(IPPROTO_IP, SO_REUSEADDR, 0)
     net_log.info("socket has binded")
     net_log.info("server is listening at %s:%d", host or "*", port)
     sock.listen(10)
