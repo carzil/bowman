@@ -2,6 +2,7 @@
 #
 # This software may be used and distributed according to the terms of the
 # GNU General Public License version 2 or any later version.
+
 import struct
 from .server.exceptions import Disconnect
 import math
@@ -19,9 +20,7 @@ class Connection():
             pack_size = struct.unpack(PACK_HEADER, data)[0]
         except struct.error:
             raise Disconnect()
-        data = b""
-        for i in range(pack_size):
-            data = b"".join((data, self.socket.recv(1)))
+        data = self.socket.recv(pack_size)
             
         data = data.decode("utf-8")
         return data
